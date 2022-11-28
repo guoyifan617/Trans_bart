@@ -1,0 +1,41 @@
+#encoding: utf-8
+
+from torch import nn
+
+from modules.bow import DBOW as BOW
+from transformer.Encoder import Encoder as EncoderBase, EncoderLayer as EncoderLayerBase
+
+from cnfg.ihyp import *
+
+class EncoderLayer(EncoderLayerBase):
+
+	# window_size: 5 for DBOW corresponds to 11 for CBOW
+	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, norm_residual=norm_residual_default, window_size=5, **kwargs):
+
+		_ahsize = isize if ahsize is None else ahsize
+		_fhsize = _ahsize * 4 if fhsize is None else fhsize
+
+		super(EncoderLayer, self).__init__(isize, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, **kwargs)
+
+		self.attn = BOW(isize, _fhsize, isize, num_head=window_size, dropout=dropout, norm_residual=norm_residual)
+
+	def forward(self, inputs, mask=None, **kwargs):
+
+		bsize, seql = inputs.size()[:2]
+
+		return self.ff(self.attn(inputs, mask=mask))
+
+class Encoder(EncoderBase):
+
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, share_layer=False, **kwargs):
+
+		_ahsize = isize if ahsize is None else ahsize
+		_fhsize = _ahsize * 4 if fhsize is None else fhsize
+
+		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, xseql=xseql, ahsize=_ahsize, share_layer=share_layer, **kwargs)
+
+		if share_layer:
+			_shared_layer = EncoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize)
+			self.nets = nn.ModuleList([_shared_layer for i in range(num_layer)])
+		else:
+			self.nets = nn.ModuleList([EncoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize) for i in range(num_layer)])
