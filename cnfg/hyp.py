@@ -53,6 +53,9 @@ clip_beam_with_lp = True
 # optimize speed even if it sacrifices reproduction
 performance_over_reproduction = True
 
+# use torch.inference_mode if supported
+use_inference_mode = True
+
 # enable torch checks, only support anomaly detection for the autograd engine currently.
 enable_torch_check = False
 

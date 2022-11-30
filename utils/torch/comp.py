@@ -2,7 +2,7 @@
 
 import torch
 
-from cnfg.ihyp import allow_fp16_reduction, enable_torch_check, use_deterministic
+from cnfg.ihyp import allow_fp16_reduction, enable_torch_check, use_deterministic, use_inference_mode
 
 secure_type_map = {torch.float16: torch.float64, torch.float32: torch.float64, torch.uint8: torch.int64, torch.int8: torch.int64, torch.int16: torch.int64, torch.int32: torch.int64}
 
@@ -167,7 +167,7 @@ try:
 except Exception as e:
 	torch_autocast, GradScaler, torch_is_autocast_enabled, is_fp16_supported = EmptyAutocast, EmptyGradScaler, torch_is_autocast_enabled_empty, False
 
-# inference mode for torch >= 1.13.0
-torch_is_grad_enabled = torch.is_inference_mode_enabled if hasattr(torch, "is_inference_mode_enabled") else torch.is_grad_enabled
-torch_set_grad_enabled = torch.inference_mode if hasattr(torch, "inference_mode") else torch.set_grad_enabled
-torch_no_grad = torch.inference_mode if hasattr(torch, "inference_mode") else torch.no_grad
+# inference mode for torch >= 1.9.0
+using_inference_mode = use_inference_mode and hasattr(torch, "inference_mode") and hasattr(torch, "is_inference_mode_enabled")
+torch_is_grad_enabled, torch_set_grad_enabled, torch_no_grad = (torch.is_inference_mode_enabled, torch.inference_mode, torch.inference_mode,) if using_inference_mode else (torch.is_grad_enabled, torch.set_grad_enabled, torch.no_grad,)
+torch_is_grad_enabled_real, torch_set_grad_enabled_real, torch_no_grad_real = torch.is_grad_enabled, torch.set_grad_enabled, torch.no_grad

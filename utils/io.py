@@ -3,15 +3,15 @@
 from threading import Thread
 
 from utils.h5serial import h5load, h5save
+from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import h5modelwargs
 
 def load_model_cpu(modf, base_model):
 
-	mpg = h5load(modf)
-
-	for para, mp in zip(base_model.parameters(), mpg):
-		para.data = mp.data
+	with torch_no_grad():
+		for para, mp in zip(base_model.parameters(), h5load(modf)):
+			para.copy_(mp)
 
 	return base_model
 
