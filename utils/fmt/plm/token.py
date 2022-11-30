@@ -2,17 +2,17 @@
 
 import sys
 
-from utils.fmt.base import tostr
+from utils.fmt.base import iter_to_str
 
 tokenize_line = lambda lin, processor: " ".join(processor.convert_ids_to_tokens(processor(lin, return_token_type_ids=True, return_attention_mask=False, return_offsets_mapping=True).input_ids))
-map_line = lambda lin, processor: " ".join(tostr(processor(*lin.split("\t"), return_token_type_ids=True, return_attention_mask=False, return_offsets_mapping=True).input_ids))
+map_line = lambda lin, processor: " ".join(iter_to_str(processor(*lin.split("\t"), return_token_type_ids=True, return_attention_mask=False, return_offsets_mapping=True).input_ids))
 detokenize_line = lambda lin, processor: processor(lin, skip_special_tokens=False, clean_up_tokenization_spaces=False)
 
 def map_line_with_token_type(lin, processor):
 
 	_ = processor(*lin.decode("utf-8").split("\t"), return_token_type_ids=True, return_attention_mask=False, return_offsets_mapping=True)
 
-	return " ".join(tostr(_.input_ids)), " ".join(tostr(_.token_type_ids))
+	return " ".join(iter_to_str(_.input_ids)), " ".join(iter_to_str(_.token_type_ids))
 
 def loop_file_so(fsrc, vcb, frs, process_func=None, processor=None):
 

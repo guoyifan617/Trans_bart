@@ -2,7 +2,11 @@
 
 import sys
 from os import walk
-from os.path import join as pjoin
+from os.path import isfile, join as pjoin
+
+def check_file_type(fname):
+
+	return fname.endswith(".py") and fname.find("patch") < 0
 
 def apply_patch(line, rules):
 
@@ -49,13 +53,18 @@ def patch_decoder(fname):
 def walk_path(ptws):
 
 	for ptw in ptws:
-		for root, dirs, files in walk(ptw):
-			for execf in files:
-				if execf.endswith(".py") and execf.find("patch") < 0:
-					_execf = pjoin(root, execf)
-					#print("Processing %s" % (_execf))
-					if patch_decoder(_execf) > 0:
-						print("Patched %s" % (_execf))
+		if isfile(ptw):
+			if check_file_type(ptw):
+				if patch_decoder(ptw) > 0:
+					print("Patched %s" % (ptw))
+		else:
+			for root, dirs, files in walk(ptw):
+				for execf in files:
+					if check_file_type(execf):
+						_execf = pjoin(root, execf)
+						#print("Processing %s" % (_execf))
+						if patch_decoder(_execf) > 0:
+							print("Patched %s" % (_execf))
 
 if __name__ == "__main__":
 	walk_path(sys.argv[1:])

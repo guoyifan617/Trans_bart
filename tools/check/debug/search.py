@@ -2,7 +2,7 @@
 
 import sys
 from os import walk
-from os.path import join as pjoin
+from os.path import isfile, join as pjoin
 
 def search_file(fname, cstr, detail=False):
 
@@ -24,15 +24,22 @@ def search_file(fname, cstr, detail=False):
 def walk_path(ptws, cstr, detail=True):
 
 	for ptw in ptws:
-		for root, dirs, files in walk(ptw):
-			for pyf in files:
-				if pyf.endswith(".py"):
-					_pyf = pjoin(root, pyf)
-					rs = search_file(_pyf, cstr, detail=detail)
-					if rs:
-						print(_pyf)
-						if detail:
-							print("\n".join(rs))
+		if isfile(ptw):
+			rs = search_file(ptw, cstr, detail=detail)
+			if rs:
+				print(ptw)
+				if detail:
+					print("\n".join(rs))
+		else:
+			for root, dirs, files in walk(ptw):
+				for pyf in files:
+					if pyf.endswith(".py"):
+						_pyf = pjoin(root, pyf)
+						rs = search_file(_pyf, cstr, detail=detail)
+						if rs:
+							print(_pyf)
+							if detail:
+								print("\n".join(rs))
 
 if __name__ == "__main__":
 	walk_path(sys.argv[1:-1], sys.argv[-1])

@@ -4,7 +4,7 @@ import sys
 
 from utils.fmt.base import line_reader, reverse_dict
 
-from cnfg.vocab.plm.bert import *
+from cnfg.vocab.plm.bert import eos_id, mask_id, pad_id, sos_id, unk_id, vocab_size
 
 def ldvocab(vfile, *args, **kwargs):
 

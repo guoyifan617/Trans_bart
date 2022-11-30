@@ -10,7 +10,7 @@ from parallel.base import DataParallelCriterion
 from parallel.parallelMT import DataParallelMT
 from transformer.NMT import NMT
 from utils.base import free_cache, get_logger, mkdir, set_random_seed
-from utils.fmt.base import tostr
+from utils.fmt.base import iter_to_str
 from utils.fmt.base4torch import load_emb, parse_cuda
 from utils.h5serial import h5File
 from utils.init.base import init_model_params
@@ -273,7 +273,7 @@ cur_checkid = 0
 tminerr = inf_default
 
 minloss, minerr = eva(vd, nvalid, mymodel, lossf, cuda_device, multi_gpu)
-logger.info("".join(("Init lr: ", ",".join(tostr(getlr(optimizer))), ", Dev Loss/Error: %.3f %.2f" % (minloss, minerr))))
+logger.info("".join(("Init lr: ", ",".join(iter_to_str(getlr(optimizer))), ", Dev Loss/Error: %.3f %.2f" % (minloss, minerr))))
 
 if fine_tune_m is None:
 	save_model(mymodel, wkdir + "init.h5", multi_gpu)
@@ -370,7 +370,7 @@ for i in range(1, maxrun + 1):
 	#lrsch.step(terr)
 	#newlr = getlr(optimizer)
 	#if updated_lr(oldlr, newlr):
-		#logger.info("".join(("lr update from: ", ",".join(tostr(oldlr)), ", to: ", ",".join(tostr(newlr)))))
+		#logger.info("".join(("lr update from: ", ",".join(iter_to_str(oldlr)), ", to: ", ",".join(iter_to_str(newlr)))))
 		#hook_lr_update(optimizer, use_ams)
 
 if done_tokens > 0:

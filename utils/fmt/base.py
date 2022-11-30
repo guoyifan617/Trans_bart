@@ -7,9 +7,9 @@ from cnfg.vocab.base import *
 
 serial_func, deserial_func = repr, eval
 
-tostr = lambda lin: [str(lu) for lu in lin]
-toint = lambda lin: [int(lu) for lu in lin]
-tofloat = lambda lin: [float(lu) for lu in lin]
+iter_to_str = lambda lin: map(str, lin)
+iter_to_int = lambda lin: map(int, lin)
+iter_to_float = lambda lin: map(float, lin)
 
 def save_objects(fname, *inputs):
 
