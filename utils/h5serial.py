@@ -6,7 +6,7 @@ from collections.abc import Iterator
 
 from utils.fmt.base import dict_is_list, list2dict
 
-from cnfg.ihyp import h5_libver, h5modelwargs, hdf5_track_order
+from cnfg.ihyp import h5_libver, h5modelwargs, hdf5_track_order, list_key_func
 
 try:
 	h5py.get_config().track_order = hdf5_track_order
