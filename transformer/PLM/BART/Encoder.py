@@ -74,7 +74,13 @@ class Encoder(EncoderBase):
 	def forward(self, inputs, mask=None, **kwargs):
 
 		seql = inputs.size(1)
-		out = self.drop(self.out_normer(self.pemb.narrow(0, pemb_start_ind, seql) + self.wemb(inputs)))
+		out = self.wemb(inputs)
+		if self.pemb is not None:
+			out = out + self.pemb.narrow(0, pemb_start_ind, seql)
+		if self.out_normer is not None:
+			out = self.out_normer(out)
+		if self.drop is not None:
+			out = self.drop(out)
 
 		_mask = inputs.eq(pad_id).unsqueeze(1) if mask is None else mask
 		for net in self.nets:

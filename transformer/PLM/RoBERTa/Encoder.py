@@ -17,7 +17,16 @@ class Encoder(EncoderBase):
 	def forward(self, inputs, token_types=None, mask=None, **kwargs):
 
 		seql = inputs.size(1)
-		out = self.drop(self.out_normer(self.pemb.narrow(0, pemb_start_ind, seql) + (self.temb.weight[0] if token_types is None else self.temb(token_types)) + self.wemb(inputs)))
+		out = None if self.pemb is None else self.pemb.narrow(0, pemb_start_ind, seql)
+		if self.temb is not None:
+			_ = self.temb.weight[0] if token_types is None else self.temb(token_types)
+			out = _ if out is None else (out + _)
+		_ = self.wemb(inputs)
+		out = _ if out is None else (out + _)
+		if self.out_normer is not None:
+			out = self.out_normer(out)
+		if self.drop is not None:
+			out = self.drop(out)
 
 		_mask = inputs.eq(pad_id).unsqueeze(1) if mask is None else mask
 		for net in self.nets:
