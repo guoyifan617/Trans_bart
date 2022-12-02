@@ -64,3 +64,4 @@ if $debpe; then
 else
 	mv $tgtd/$bpef.clean $rsf
 fi
+rm $tgtd/test.h5

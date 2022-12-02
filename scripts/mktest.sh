@@ -60,3 +60,4 @@ if $debpe; then
 else
 	mv $tgtd/$bpef $rsf
 fi
+rm $tgtd/test.h5
