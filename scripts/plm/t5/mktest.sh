@@ -40,3 +40,4 @@ if $sort_decode; then
 else
 	mv $tgtd/$bpef $rsf
 fi
+rm $tgtd/$srctf.ids
