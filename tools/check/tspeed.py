@@ -8,7 +8,7 @@ from transformer.EnsembleNMT import NMT as Ensemble
 from transformer.NMT import NMT
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.base as cnfg
@@ -77,7 +77,7 @@ beam_size = cnfg.beam_size
 length_penalty = cnfg.length_penalty
 
 src_grp = td["src"]
-with torch_no_grad():
+with torch_inference_mode():
 	for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 		seq_batch = torch.from_numpy(src_grp[str(i)][()])
 		if cuda_device:

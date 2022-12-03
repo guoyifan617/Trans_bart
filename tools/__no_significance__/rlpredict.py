@@ -12,7 +12,7 @@ from utils.fmt.base import ldvocab, reverse_dict
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.base as cnfg
@@ -78,7 +78,7 @@ for _cur_r_layer in range(cnfg.nlayer):
 	mymodel.enc.nets = ModuleList(encl[:_cur_r_layer] + encl[_cur_r_layer + 1:])
 	mymodel.dec.nets = ModuleList(decl)
 	with open(fpe % (_cur_r_layer), "wb") as f:
-		with torch_no_grad():
+		with torch_inference_mode():
 			for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 				seq_batch = torch.from_numpy(src_grp[str(i)][()])
 				if cuda_device:
@@ -106,7 +106,7 @@ for _cur_r_layer in range(cnfg.nlayer):
 	mymodel.enc.nets = ModuleList(encl)
 	mymodel.dec.nets = ModuleList(decl[:_cur_r_layer] + decl[_cur_r_layer + 1:])
 	with open(fpd % (_cur_r_layer), "wb") as f:
-		with torch_no_grad():
+		with torch_inference_mode():
 			for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 				seq_batch = torch.from_numpy(src_grp[str(i)][()])
 				if cuda_device:

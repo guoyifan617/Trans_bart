@@ -24,7 +24,7 @@ from utils.io import load_model_cpu, save_model, save_states
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import getlr, optm_step_zero_grad_set_none
 from utils.train.dss import dynamic_sample
@@ -158,7 +158,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 	model.eval()
 
 	src_grp, pret_grp, tgt_grp = ed["src"], ed["pret"], ed["tgt"]
-	with torch_no_grad():
+	with torch_inference_mode():
 		for nsent, i_d in tqdm(nd, mininterval=tqdm_mininterval):
 			seq_batch = torch.from_numpy(src_grp[nsent][i_d][()])
 			seq_pret = torch.from_numpy(pret_grp[nsent][i_d][()])
@@ -264,7 +264,7 @@ if fine_tune_m is not None:
 		_tmpmdocenc = _tmpmdoc.enc
 		_tmpmdoc = None
 	mymodel.load_base(_tmpm, _tmpmdocenc)
-	with torch_no_grad():
+	with torch_inference_mode():
 		_tmpm.dec.classifier.bias[_tmpm.dec.classifier.bias.lt(-1e3)] = -1e3
 	#if cnfg.freeze_load_model:
 		#freeze_module(_tmpm)

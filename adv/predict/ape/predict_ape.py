@@ -11,7 +11,7 @@ from utils.fmt.base import ldvocab, reverse_dict
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.base as cnfg
@@ -67,7 +67,7 @@ ens = "\n".encode("utf-8")
 
 # using tgt instead of mt since data are processed by tools/mkiodata.py for the mt task
 src_grp, mt_grp = td["src"], td["tgt"]
-with open(sys.argv[1], "wb") as f, torch_no_grad():
+with open(sys.argv[1], "wb") as f, torch_inference_mode():
 	for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 		seq_batch = torch.from_numpy(src_grp[str(i)][()])
 		seq_mt = torch.from_numpy(mt_grp[str(i)][()])

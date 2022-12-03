@@ -5,7 +5,7 @@ from collections import defaultdict
 from threading import Thread
 from torch.optim.optimizer import Optimizer
 
-from utils.torch.comp import GradScaler#, torch_autocast, torch_is_autocast_enabled, torch_is_grad_enabled, torch_set_grad_enabled
+from utils.torch.comp import GradScaler#, torch_autocast, torch_inference_mode, torch_is_autocast_enabled, torch_is_grad_enabled, torch_is_inference_mode_enabled, torch_set_grad_enabled
 
 class MultiGPUOptimizer(Optimizer):
 
@@ -51,11 +51,11 @@ class MultiGPUGradScaler(GradScaler):
 
 def parallel_apply(optms, closure=None, devices=None):
 
-	#grad_enabled, torch_autocast_enabled = torch_is_grad_enabled(), torch_is_autocast_enabled()
+	#grad_enabled, autocast_enabled, inference_mode_enabled = torch_is_grad_enabled(), torch_is_autocast_enabled(), torch_is_inference_mode_enabled()
 
 	def _worker(optm, closure=None, device=None):
 
-		with torch.cuda.device(device):#, torch_set_grad_enabled(grad_enabled), torch_autocast(enabled=torch_autocast_enabled)
+		with torch.cuda.device(device):#, torch_set_grad_enabled(grad_enabled), torch_inference_mode(), torch_autocast(enabled=autocast_enabled)
 			optm.step(closure=closure)
 
 	threads = [Thread(target=_worker, args=(optm, closure, device)) for optm, device in zip(optms, devices)]

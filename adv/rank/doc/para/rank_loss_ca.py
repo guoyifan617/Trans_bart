@@ -16,7 +16,7 @@ from utils.base import set_random_seed
 from utils.fmt.base4torch import parse_cuda
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.docpara as cnfg
@@ -72,7 +72,7 @@ ens = "\n".encode("utf-8")
 num_prev_sent = cnfg.num_prev_sent
 
 src_grp, tgt_grp = td["src"]["4"], td["tgt"]["4"]
-with open(sys.argv[1], "wb") as f, torch_no_grad():
+with open(sys.argv[1], "wb") as f, torch_inference_mode():
 	for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 		_curid = str(i)
 		seq_batch = torch.from_numpy(src_grp[_curid][()])

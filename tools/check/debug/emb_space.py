@@ -5,7 +5,7 @@ from math import sqrt
 from torch import nn
 from torch.optim import Adam
 
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 from utils.tqdm import tqdm
 
 vdim = 32
@@ -19,7 +19,7 @@ device = torch.device("cuda", 0)
 nrun *= nacc
 
 tmod = nn.Sequential(nn.Embedding(vsize, vdim), nn.Linear(vdim, vsize, bias=False))
-with torch_no_grad():
+with torch_inference_mode():
 	for p in tmod.parameters():
 		_r = (1.0 / sqrt(p.size(0)))
 		p.data.uniform_(-_r, _r)

@@ -15,7 +15,7 @@ from utils.base import set_random_seed
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.base as cnfg
@@ -78,7 +78,7 @@ if cuda_device:
 else:
 	cum_p = torch.zeros(k, dtype=torch.double)
 	m_ind = torch.zeros(k, dtype=torch.long)
-with torch_no_grad():
+with torch_inference_mode():
 	for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 		bid = str(i)
 		seq_batch = torch.from_numpy(src_grp[bid][()])

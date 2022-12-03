@@ -5,7 +5,7 @@ from transformers import BartModel
 
 from transformer.PLM.BART.NMT import NMT
 from utils.fmt.plm.base import fix_parameter_name
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 
 import cnfg.plm.bart.base as cnfg
 from cnfg.plm.bart.ihyp import *
@@ -32,7 +32,7 @@ print("forward with transformers")
 tde = torch.as_tensor([0, 100, 50264, 15162, 4, 2], dtype=torch.long).unsqueeze(0)
 tdo = torch.as_tensor([2, 100, 33, 41, 15162, 4, 2], dtype=torch.long).unsqueeze(0)
 
-with torch_no_grad():
+with torch_inference_mode():
 	ers = smod(input_ids=tde, decoder_input_ids=tdo).last_hidden_state
 	print("forward for test")
 	trs = tmod(tde, tdo)

@@ -9,7 +9,7 @@ from utils.base import set_random_seed
 from utils.fmt.base import ldvocab, reverse_dict
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 
 import cnfg.mulang as cnfg
 from cnfg.ihyp import *
@@ -31,7 +31,7 @@ set_random_seed(cnfg.seed, False)
 mymodel = NMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes, ntask=ntask, ngroup=cnfg.ngroup)
 mymodel = load_model_cpu(sys.argv[1], mymodel)
 
-with torch_no_grad():
+with torch_inference_mode():
 	rs = torch.cat([mymodel.enc.task_emb.weight * sqrt(cnfg.isize), mymodel.enc.group_weight.softmax(-2).view(ntask, -1), mymodel.enc.group_weight_flayer.softmax(-2).view(ntask, -1), mymodel.dec.group_weight.softmax(-2).view(ntask, -1), mymodel.dec.group_weight_fl_common.softmax(-2).view(ntask, -1), mymodel.dec.group_weight_layer.softmax(-2).view(ntask, -1)], dim=-1).tolist()
 
 rsd = {}

@@ -20,7 +20,7 @@ from utils.io import load_model_cpu, save_model, save_states
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import getlr, optm_step, optm_step_zero_grad_set_none, reset_Adam
 from utils.train.dss import dynamic_sample
@@ -39,7 +39,7 @@ def back_translate(model, seq_in, taskid, beam_size, multi_gpu, enable_torch_aut
 		_g_out = model.gather_output
 		model.gather_output = True
 	sind = 0
-	with torch_no_grad(), torch_autocast(enabled=enable_torch_autocast):
+	with torch_inference_mode(), torch_autocast(enabled=enable_torch_autocast):
 		while sind < bsize:
 			num_narrow = min(_step_bsize, bsize - sind)
 			if pivot_bt:
@@ -165,7 +165,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 	sum_loss = 0.0
 	model.eval()
 	src_grp, tgt_grp, task_grp = ed["src"], ed["tgt"], ed["task"]
-	with torch_no_grad():
+	with torch_inference_mode():
 		for i in tqdm(range(nd), mininterval=tqdm_mininterval):
 			bid = str(i)
 			seq_batch = torch.from_numpy(src_grp[bid][()])

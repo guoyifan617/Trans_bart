@@ -16,7 +16,7 @@ from utils.base import set_random_seed
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.base as cnfg
@@ -72,7 +72,7 @@ beam_size = cnfg.beam_size
 length_penalty = cnfg.length_penalty
 
 src_grp, tgt_grp = td["src"], td["tgt"]
-with h5File(sys.argv[3], "w", libver=h5_libver) as rsf, torch_no_grad():
+with h5File(sys.argv[3], "w", libver=h5_libver) as rsf, torch_inference_mode():
 	p_grp = rsf.create_group("p")
 	ind_grp = rsf.create_group("ind")
 	for i in tqdm(range(ntest), mininterval=tqdm_mininterval):

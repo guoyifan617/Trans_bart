@@ -18,7 +18,7 @@ from utils.io import load_model_cpu, save_model, save_states
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import getlr, optm_step_zero_grad_set_none
 from utils.train.dss import dynamic_sample
@@ -130,7 +130,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu):
 	sum_loss = 0.0
 	model.eval()
 	src_grp, ref_grp, tgt_grp = ed["src"], ed["ref"], ed["tgt"]
-	with torch_no_grad():
+	with torch_inference_mode():
 		for i in tqdm(range(nd), mininterval=tqdm_mininterval):
 			bid = str(i)
 			seq_batch = torch.from_numpy(src_grp[bid][()])

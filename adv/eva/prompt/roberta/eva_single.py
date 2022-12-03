@@ -12,7 +12,7 @@ from utils.fmt.base4torch import parse_cuda
 from utils.fmt.plm.base import fix_parameter_name
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.prompt.roberta.base as cnfg
@@ -29,7 +29,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 	sum_loss = 0.0
 	model.eval()
 	src_grp, tgt_grp = ed["src"], ed["tgt"]
-	with torch_no_grad():
+	with torch_inference_mode():
 		for i in tqdm(range(nd), mininterval=tqdm_mininterval):
 			bid = str(i)
 			seq_batch = torch.from_numpy(src_grp[bid][()])

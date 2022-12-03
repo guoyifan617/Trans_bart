@@ -21,7 +21,7 @@ from utils.mulang import data_sampler
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import getlr, optm_step, optm_step_zero_grad_set_none, reset_Adam
 from utils.train.dss import dynamic_sample
@@ -132,7 +132,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 	r = w = 0
 	sum_loss = 0.0
 	model.eval()
-	with torch_no_grad():
+	with torch_inference_mode():
 		for i_d, taskid in tqdm(nd, mininterval=tqdm_mininterval):
 			task_grp = ed[str(taskid)]
 			seq_batch = torch.from_numpy(task_grp["src"][i_d][()])

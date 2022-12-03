@@ -18,7 +18,7 @@ from utils.io import load_model_cpu, save_model, save_states
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import getlr, optm_step_zero_grad_set_none, reset_Adam
 from utils.train.dss import dynamic_sample
@@ -137,7 +137,7 @@ def eva(ed, vl, model, lossf, mv_device, multi_gpu):
 	model.eval()
 	src_grp = ed["src"]
 	global p_mask_eva
-	with torch_no_grad():
+	with torch_inference_mode():
 		if multi_gpu:
 			_evam, _evaloss = model.module, lossf.module
 		else:

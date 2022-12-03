@@ -12,7 +12,7 @@ from utils.fmt.base import ldvocab, reverse_dict
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.docpret as cnfg
@@ -68,7 +68,7 @@ length_penalty = cnfg.length_penalty
 ens = "\n".encode("utf-8")
 
 src_grp, pret_grp = td["src"], td["pret"]
-with open(sys.argv[1], "wb") as f, torch_no_grad():
+with open(sys.argv[1], "wb") as f, torch_inference_mode():
 	for nsent, i_d in tqdm(tl, mininterval=tqdm_mininterval):
 		seq_batch = torch.from_numpy(src_grp[nsent][i_d][()])
 		seq_pret = torch.from_numpy(pret_grp[nsent][i_d][()])

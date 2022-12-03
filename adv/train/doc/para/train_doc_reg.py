@@ -22,7 +22,7 @@ from utils.io import load_model_cpu, save_model, save_states
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import freeze_module, getlr, optm_step_zero_grad_set_none
 from utils.train.dss import dynamic_sample
@@ -155,7 +155,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 	model.eval()
 
 	src_grp, tgt_grp = ed["src"], ed["tgt"]
-	with torch_no_grad():
+	with torch_inference_mode():
 		for nsent, i_d in tqdm(nd, mininterval=tqdm_mininterval):
 			seq_batch = torch.from_numpy(src_grp[nsent][i_d][()])
 			seq_o = torch.from_numpy(tgt_grp[nsent][i_d][()])
@@ -251,7 +251,7 @@ if fine_tune_m is not None:
 	logger.info("Load pre-trained model from: " + fine_tune_m)
 	_tmpm = BaseNMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
 	_tmpm = load_model_cpu(fine_tune_m, _tmpm)
-	#with torch_no_grad():
+	#with torch_inference_mode():
 		#_tmpm.dec.classifier.bias[_tmpm.dec.classifier.bias.lt(-1e3)] = -1e3
 	if cnfg.freeze_load_model:
 		freeze_module(_tmpm)

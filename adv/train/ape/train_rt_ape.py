@@ -21,7 +21,7 @@ from utils.io import load_model_cpu, save_model, save_states
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import freeze_module, getlr, optm_step, optm_step_zero_grad_set_none, reset_Adam
 from utils.train.dss import dynamic_sample
@@ -50,7 +50,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 
 		oi = seq_o.narrow(1, 0, lo)
 		ot = seq_o.narrow(1, 1, lo).contiguous()
-		with torch_no_grad(), torch_autocast(enabled=_use_amp):
+		with torch_inference_mode(), torch_autocast(enabled=_use_amp):
 			seq_batch = torch.cat((sos_pad, tgt_src_m.decode(seq_o, beam_size=beam_size, max_len=None, length_penalty=length_penalty),), dim=-1)
 			seq_mt = torch.cat((sos_pad, src_tgt_m.decode(seq_batch, beam_size=beam_size, max_len=None, length_penalty=length_penalty),), dim=-1)
 		with torch_autocast(enabled=_use_amp):
@@ -136,7 +136,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 	sum_loss = 0.0
 	model.eval()
 	src_grp, mt_grp, tgt_grp = ed["src"], ed["mt"], ed["tgt"]
-	with torch_no_grad():
+	with torch_inference_mode():
 		for i in tqdm(range(nd), mininterval=tqdm_mininterval):
 			bid = str(i)
 			seq_batch = torch.from_numpy(src_grp[bid][()])

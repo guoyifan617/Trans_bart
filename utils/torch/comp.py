@@ -169,5 +169,14 @@ except Exception as e:
 
 # inference mode for torch >= 1.9.0
 using_inference_mode = use_inference_mode and hasattr(torch, "inference_mode") and hasattr(torch, "is_inference_mode_enabled")
-torch_is_grad_enabled, torch_set_grad_enabled, torch_no_grad = (torch.is_inference_mode_enabled, torch.inference_mode, torch.inference_mode,) if using_inference_mode else (torch.is_grad_enabled, torch.set_grad_enabled, torch.no_grad,)
-torch_is_grad_enabled_real, torch_set_grad_enabled_real, torch_no_grad_real = torch.is_grad_enabled, torch.set_grad_enabled, torch.no_grad
+if using_inference_mode:
+	torch_is_inference_mode_enabled, torch_inference_mode = torch.is_inference_mode_enabled, torch.inference_mode
+else:
+	def torch_is_inference_mode_enabled():
+
+		return not torch.is_grad_enabled()
+
+	def torch_inference_mode(mode=True):
+
+		return torch.set_grad_enabled(not mode)
+torch_is_grad_enabled, torch_set_grad_enabled, torch_no_grad = torch.is_grad_enabled, torch.set_grad_enabled, torch.no_grad

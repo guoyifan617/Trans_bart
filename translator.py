@@ -9,7 +9,7 @@ from utils.fmt.base import clean_str, dict_insert_set, iter_dict_sort, ldvocab, 
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.fmt.single import batch_padder
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 
 from cnfg.ihyp import *
 from cnfg.vocab.base import eos_id
@@ -94,7 +94,7 @@ class TranslatorCore:
 
 	def __call__(self, sentences_iter, **kwargs):
 		rs = []
-		with torch_no_grad():
+		with torch_inference_mode():
 			for seq_batch in data_loader(sentences_iter, self.vcbi, self.minbsize, self.bsize, self.maxpad, self.maxpart, self.maxtoken):
 				if self.use_cuda:
 					seq_batch = seq_batch.to(self.cuda_device, non_blocking=True)

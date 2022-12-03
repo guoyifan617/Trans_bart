@@ -8,7 +8,7 @@ from transformer.MuLang.NMT import NMT
 from utils.base import set_random_seed
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.h5serial import h5File
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.mulang as cnfg
@@ -50,7 +50,7 @@ length_penalty = cnfg.length_penalty
 src_grp, tgt_grp, task_grp = td["src"], td["tgt"], td["task"]
 
 for i in range(warm_up):
-	with torch_no_grad():
+	with torch_inference_mode():
 		for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 			bid = str(i)
 			seq_batch = torch.from_numpy(src_grp[bid][()])
@@ -65,7 +65,7 @@ for i in range(warm_up):
 
 start = time()
 for i in range(niter):
-	with torch_no_grad():
+	with torch_inference_mode():
 		for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 			bid = str(i)
 			seq_batch = torch.from_numpy(src_grp[bid][()])

@@ -19,7 +19,7 @@ from utils.io import load_model_cpu, save_model, save_states
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import getlr, optm_step, optm_step_zero_grad_set_none, reset_Adam
 from utils.train.dss import dynamic_sample
@@ -139,7 +139,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 		_m, _l = model.module, lossf.module
 	else:
 		_m, _l = model, lossf
-	with torch_no_grad():
+	with torch_inference_mode():
 		while curind <= last_ind:
 			nretr = min(last_ind - curind, step_size)
 			seq_o = ed.narrow(-1, curind, nretr).long()

@@ -6,7 +6,7 @@ from threading import Lock, Thread
 from parallel.base import DataParallelModel
 from utils.base import pad_tensors
 from utils.fmt.base import clean_list
-from utils.torch.comp import torch_autocast, torch_is_autocast_enabled, torch_is_grad_enabled, torch_set_grad_enabled
+from utils.torch.comp import torch_autocast, torch_inference_mode, torch_is_autocast_enabled, torch_is_grad_enabled, torch_is_inference_mode_enabled, torch_set_grad_enabled
 
 class DataParallelMT(DataParallelModel):
 
@@ -53,13 +53,13 @@ def parallel_apply_decode(modules, inputs, devices, kwargs_tup=None, lock=None):
 
 	lock = Lock() if lock is None else lock
 	results = {}
-	grad_enabled, torch_autocast_enabled = torch_is_grad_enabled(), torch_is_autocast_enabled()
+	grad_enabled, autocast_enabled, inference_mode_enabled = torch_is_grad_enabled(), torch_is_autocast_enabled(), torch_is_inference_mode_enabled()
 
 	def _worker(i, module, input, kwargs, device=None):
 
 		if not isinstance(input, (list, tuple,)):
 			input = (input,)
-		with torch_set_grad_enabled(grad_enabled), torch.cuda.device(device), torch_autocast(enabled=torch_autocast_enabled):
+		with torch_set_grad_enabled(grad_enabled), torch_inference_mode(), torch.cuda.device(device), torch_autocast(enabled=autocast_enabled):
 			output = module.decode(*input, **kwargs)
 		with lock:
 			results[i] = output
@@ -85,13 +85,13 @@ def parallel_apply_train_decode(modules, inputs, devices, kwargs_tup=None, lock=
 
 	lock = Lock() if lock is None else lock
 	results = {}
-	grad_enabled, torch_autocast_enabled = torch_is_grad_enabled(), torch_is_autocast_enabled()
+	grad_enabled, autocast_enabled, inference_mode_enabled = torch_is_grad_enabled(), torch_is_autocast_enabled(), torch_is_inference_mode_enabled()
 
 	def _worker(i, module, input, kwargs, device=None):
 
 		if not isinstance(input, (list, tuple,)):
 			input = (input,)
-		with torch_set_grad_enabled(grad_enabled), torch.cuda.device(device), torch_autocast(enabled=torch_autocast_enabled):
+		with torch_set_grad_enabled(grad_enabled), torch_inference_mode(), torch.cuda.device(device), torch_autocast(enabled=autocast_enabled):
 			output = module.train_decode(*input, **kwargs)
 		with lock:
 			results[i] = output

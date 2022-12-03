@@ -5,7 +5,7 @@ from transformers import BertModel
 
 from transformer.PLM.BERT.NMT import NMT
 from utils.fmt.plm.base import fix_parameter_name
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 
 import cnfg.plm.bert.base as cnfg
 from cnfg.plm.bert.ihyp import *
@@ -31,7 +31,7 @@ smod.eval()
 print("forward with transformers")
 td = torch.as_tensor([101, 146, 1138, 1126, 12075, 119, 102], dtype=torch.long).unsqueeze(0)
 
-with torch_no_grad():
+with torch_inference_mode():
 	ers = smod(td).last_hidden_state
 	print("forward for test")
 	trs = tmod(td)

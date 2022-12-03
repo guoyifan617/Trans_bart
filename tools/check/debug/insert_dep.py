@@ -4,7 +4,7 @@ import sys
 from os import walk
 from os.path import isfile, join as pjoin
 
-depl = ["torch_no_grad"]
+depl = ["torch_inference_mode"]
 indep = "from utils.base import "
 
 def check_file_type(fname):

@@ -11,7 +11,7 @@ from utils.fmt.base import eos_id, init_vocab, ldvocab, reverse_dict, sos_id
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.probe as cnfg
@@ -54,7 +54,7 @@ ignore_ids = set(init_vocab.values())
 
 src_grp = td["src"]
 ens = "\n".encode("utf-8")
-with open(sys.argv[4], "wb") as fwrt, torch_no_grad():
+with open(sys.argv[4], "wb") as fwrt, torch_inference_mode():
 	for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 		bid = str(i)
 		seq_batch = torch.from_numpy(src_grp[bid][()])

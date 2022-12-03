@@ -16,7 +16,7 @@ from utils.fmt.base4torch import load_emb, parse_cuda
 from utils.h5serial import h5File
 from utils.io import load_model_cpu, save_model, save_states
 from utils.prune import init_model_bernparams
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import getlr, optm_step_zero_grad_set_none, reinit_Adam, reset_Adam
 from utils.train.dss import dynamic_sample
@@ -144,7 +144,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu):
 	sum_loss = 0.0
 	model.eval()
 	src_grp, tgt_grp = ed["src"], ed["tgt"]
-	with torch_no_grad():
+	with torch_inference_mode():
 		for i in tqdm(range(nd), mininterval=tqdm_mininterval):
 			bid = str(i)
 			seq_batch = torch.from_numpy(src_grp[bid][()])

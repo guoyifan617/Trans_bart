@@ -5,7 +5,7 @@ from transformers import T5ForConditionalGeneration, T5TokenizerFast as Tokenize
 
 from transformer.PLM.T5.NMT import NMT
 from utils.fmt.plm.base import fix_parameter_name
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 
 import cnfg.plm.t5.base as cnfg
 from cnfg.plm.t5.ihyp import *
@@ -33,7 +33,7 @@ print("forward with transformers")
 tde = torch.as_tensor([27, 43, 192, 16981, 5, 1], dtype=torch.long).unsqueeze(0)
 tdo = torch.as_tensor([0, 531, 25, 241, 80, 58], dtype=torch.long).unsqueeze(0)
 
-with torch_no_grad():
+with torch_inference_mode():
 	ers = smod(input_ids=tde, decoder_input_ids=tdo, output_hidden_states=True).decoder_hidden_states[-1]
 	print("forward for test")
 	trs = tmod(tde, tdo)
@@ -41,7 +41,7 @@ print(ers)
 print(trs)
 
 tde = torch.as_tensor([27, 43, 32099, 16981, 5, 32098, 241, 80, 58, 1], dtype=torch.long).unsqueeze(0)
-with torch_no_grad():
+with torch_inference_mode():
 	ers = smod.generate(tde)
 	trs = tmod.decode(tde)
 print(tokenizer.convert_ids_to_tokens(ers.squeeze(0)))

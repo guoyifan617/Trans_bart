@@ -8,7 +8,7 @@ import sys
 import torch
 
 from utils.h5serial import h5File
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 from utils.tqdm import tqdm
 
 from cnfg.ihyp import *
@@ -16,7 +16,7 @@ from cnfg.vocab.base import pad_id
 
 def handle(srcf, ref):
 
-	with h5File(srcf, "r") as fs, h5File(ref, "r") as fr, torch_no_grad():
+	with h5File(srcf, "r") as fs, h5File(ref, "r") as fr, torch_inference_mode():
 		p_grp, ind_grp, tgt_grp = fs["p"], fs["ind"], fr["tgt"]
 		ndata = fs["ndata"][()].item()
 		nword = 0

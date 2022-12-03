@@ -5,7 +5,7 @@ from transformers import RobertaModel
 
 from transformer.PLM.RoBERTa.NMT import NMT
 from utils.fmt.plm.base import fix_parameter_name
-from utils.torch.comp import torch_no_grad
+from utils.torch.comp import torch_inference_mode
 
 import cnfg.plm.roberta.base as cnfg
 from cnfg.plm.roberta.ihyp import *
@@ -31,7 +31,7 @@ smod.eval()
 print("forward with transformers")
 td = torch.as_tensor([0, 100, 33, 41, 15162, 4, 2], dtype=torch.long).unsqueeze(0)
 
-with torch_no_grad():
+with torch_inference_mode():
 	ers = smod(td).last_hidden_state
 	print("forward for test")
 	trs = tmod(td)

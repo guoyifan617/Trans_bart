@@ -20,7 +20,7 @@ from utils.io import load_model_cpu, save_model, save_states
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_autocast, torch_no_grad
+from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import getlr, optm_step, optm_step_zero_grad_set_none, reset_Adam
 from utils.train.dss import dynamic_sample
@@ -47,7 +47,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 		if mv_device:
 			seq_batch = seq_batch.to(mv_device, non_blocking=True)
 		seq_batch = seq_batch.long()
-		with torch_no_grad(), torch_autocast(enabled=_use_amp):
+		with torch_inference_mode(), torch_autocast(enabled=_use_amp):
 			ot = kdmodel.decode(seq_batch, beam_size, None, length_penalty)
 			oi = torch.cat((seq_batch.narrow(1, 0, 1), ot.narrow(1, 0, ot.size(1) - 1),), dim=1)
 
@@ -134,7 +134,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 	sum_loss = 0.0
 	model.eval()
 	src_grp, tgt_grp = ed["src"], ed["tgt"]
-	with torch_no_grad():
+	with torch_inference_mode():
 		for i in tqdm(range(nd), mininterval=tqdm_mininterval):
 			bid = str(i)
 			seq_batch = torch.from_numpy(src_grp[bid][()])
