@@ -334,28 +334,3 @@ class holder(dict):
 	def __exit__(self, *inputs, **kwargs):
 
 		pass
-
-class bestfkeeper:
-
-	def __init__(self, fnames=None, k=n_keep_best, **kwargs):
-
-		self.fnames, self.k = [] if fnames is None else fnames, k
-		self.clean()
-
-	def update(self, fname=None):
-
-		self.fnames.append(fname)
-		self.clean(last_fname=fname)
-
-	def clean(self, last_fname=None):
-
-		_n_files = len(self.fnames)
-		_last_fname = (self.fnames[-1] if self.fnames else None) if last_fname is None else last_fname
-		while _n_files > self.k:
-			fname = self.fnames.pop(0)
-			if (fname is not None) and (fname != _last_fname) and fs_check(fname):
-				try:
-					remove(fname)
-				except Exception as e:
-					print(e)
-			_n_files -= 1
