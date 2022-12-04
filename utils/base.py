@@ -10,8 +10,6 @@ from random import seed as rpyseed
 from torch import Tensor
 from torch.nn import ModuleDict
 
-from cnfg.ihyp import n_keep_best
-
 def pad_tensors(tensor_list, dim=-1):
 
 	def get_pad_size(tsize, stdlen, dim=-1):
