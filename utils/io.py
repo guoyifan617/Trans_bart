@@ -1,5 +1,6 @@
 #encoding: utf-8
 
+from os.path import exists as fs_check
 from threading import Thread
 
 from utils.h5serial import h5load, h5save
