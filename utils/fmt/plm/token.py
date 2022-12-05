@@ -42,9 +42,12 @@ def map_file_with_token_type(fsrc, vcb, frsi, frst, Tokenizer=None):
 			if tmp:
 				_input_ids, _token_type_ids = map_line_with_token_type(tmp.decode("utf-8"), tokenizer)
 				fwrti.write(_input_ids.encode("utf-8"))
+				fwrti.write(ens)
 				fwrtt.write(_token_type_ids.encode("utf-8"))
-			fwrti.write(ens)
-			fwrtt.write(ens)
+				fwrtt.write(ens)
+			else:
+				fwrti.write(ens)
+				fwrtt.write(ens)
 
 def map_back_file(fsrc, vcb, frs, Tokenizer=None):
 
