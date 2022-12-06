@@ -4,7 +4,7 @@ import logging
 import torch
 from functools import wraps
 from math import ceil
-from os import makedirs, remove
+from os import makedirs
 from os.path import exists as fs_check
 from random import seed as rpyseed
 from torch import Tensor
