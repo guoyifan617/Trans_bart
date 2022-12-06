@@ -86,7 +86,8 @@ class NMT(nn.Module):
 
 	def update_classifier(self, *args, **kwargs):
 
-		self.dec.update_classifier(*args, **kwargs)
+		if hasattr(self.dec, "update_classifier"):
+			self.dec.update_classifier(*args, **kwargs)
 
 	def train_decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, mask=None):
 

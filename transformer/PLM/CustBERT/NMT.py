@@ -1,14 +1,13 @@
 #encoding: utf-8
 
+from transformer.Encoder import Encoder
 from transformer.NMT import NMT as NMTBase
-from transformer.PLM.BERT.Decoder import Decoder
-from transformer.PLM.BERT.Encoder import Encoder
+from transformer.PLM.CustBERT.Decoder import Decoder
 from utils.fmt.parser import parse_double_value_tuple
-from utils.plm.base import set_ln_ieps
 from utils.relpos.base import share_rel_pos_cache
 
-from cnfg.plm.bert.ihyp import *
-from cnfg.vocab.plm.bert import pad_id
+from cnfg.ihyp import *
+from cnfg.vocab.plm.custbert import pad_id
 
 class NMT(NMTBase):
 
@@ -33,15 +32,8 @@ class NMT(NMTBase):
 		if rel_pos_enabled:
 			share_rel_pos_cache(self)
 
-	def forward(self, inpute, token_types=None, mask=None, word_prediction=False, **kwargs):
+	def forward(self, inpute, mask=None, mlm_mask=None, word_prediction=True, **kwargs):
 
 		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 
-		return self.dec(self.enc(inpute, token_types=token_types, mask=_mask), word_prediction=word_prediction)
-
-	def load_plm(self, plm_parameters, model_name=None, layer_idx=None):
-
-		_model_name = self.model_name if model_name is None else model_name
-		enc_model_name, dec_model_name = parse_double_value_tuple(_model_name)
-		self.enc.load_plm(plm_parameters, model_name=enc_model_name, layer_idx=layer_idx)
-		self.dec.load_plm(plm_parameters, model_name=dec_model_name, layer_idx=layer_idx)
+		return self.dec(self.enc(inpute, mask=_mask), mlm_mask=mlm_mask, word_prediction=word_prediction)

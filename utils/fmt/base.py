@@ -169,6 +169,49 @@ def ldvocab_list(vfile, minf=False, omit_vsize=False):
 
 	return rs, cwd
 
+def ldvocab_freq(vfile, minf=False, omit_vsize=False):
+
+	rs = {}
+	if omit_vsize:
+		vsize = omit_vsize
+	else:
+		vsize = False
+	cwd = 0
+	for data in list_reader(vfile, keep_empty_line=False):
+		freq = int(data[0])
+		if (not minf) or freq > minf:
+			if vsize:
+				ndata = len(data) - 1
+				if vsize >= ndata:
+					for _ in data[1:]:
+						rs[_] = freq
+					cwd += ndata
+				else:
+					for _ in data[1:vsize + 1]:
+						rs[_] = freq
+					cwd += vsize
+					break
+				vsize -= ndata
+				if vsize <= 0:
+					break
+			else:
+				for _ in data[1:]:
+					rs[_] = freq
+				cwd += len(data) - 1
+		else:
+			break
+
+	return rs, cwd
+
+def merge_vocab(*vcbin):
+
+	rs = {}
+	for _ in vcbin:
+		for k, v in _.items():
+			rs[k] = rs.get(k, 0) + v
+
+	return rs
+
 def clean_str(strin):
 
 	return " ".join([tmpu for tmpu in strin.split() if tmpu])
