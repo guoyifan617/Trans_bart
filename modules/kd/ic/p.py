@@ -60,8 +60,8 @@ class TopCache(nn.Module):
 			_f_gold = gold.view(-1)
 			_mask = ~gold_pad_mask.view(-1)
 			_f_gold = _f_gold[_mask]
-			_mask = _mask.unsqueeze(-1).expand(-1, num_topk)
-			_new_p, _new_i = _new_p[_mask].view(-1, num_topk), _new_i[_mask].view(-1, num_topk)
+			#_mask = _mask.unsqueeze(-1).expand(-1, num_topk)
+			_new_p, _new_i = _new_p[_mask], _new_i[_mask]#.view(-1, num_topk)
 			_new_i, _mask = correct_index(_new_i, _f_gold)
 			_new_p = _new_p.div_(self.T).softmax(-1) if self.T != 1.0 else _new_p.softmax(-1)
 			if self.min_gold_p is not None:
@@ -72,8 +72,8 @@ class TopCache(nn.Module):
 			if _df.numel() > 0:
 				_ind_counts = _ind_counts[_mask]
 				_mask = _f_gold.unsqueeze(-1).eq(_df)
-				_ = torch_any_dim(_mask, -1, keepdim=True).expand(-1, num_topk)
-				_new_p[_] = _new_p[_].view(-1, num_topk).div_(_ind_counts.to(_new_p.dtype, non_blocking=True).unsqueeze(0).expand(_new_p.size(0), -1)[_mask].unsqueeze(-1)).view(-1)
+				_ = torch_any_dim(_mask, -1, keepdim=False)#.expand(-1, num_topk)
+				_new_p[_] = _new_p[_].div_(_ind_counts.to(_new_p.dtype, non_blocking=True).unsqueeze(0).expand(_new_p.size(0), -1)[_mask].unsqueeze(-1)).view(-1)#.view(-1, num_topk)
 			_mavg_beta = self.mavg_beta if self.cache_update_steps >= self.warm_mvavg_steps else (self.mavg_beta * sqrt(float(self.cache_update_steps) / float(self.warm_mvavg_steps)))
 			_m_s_t = torch.sparse_coo_tensor(torch.stack([_gold_ind.unsqueeze(-1).repeat(1, num_topk_cache).view(-1), self.cache_index.index_select(0, _gold_ind).long().view(-1)], 0), (self.cache_p.index_select(0, _gold_ind) * _mavg_beta).view(-1), size=(vsize, vsize,), device=_new_p.device).add_(torch.sparse_coo_tensor(torch.stack([_f_gold.unsqueeze(-1).repeat(1, num_topk).view(-1), _new_i.view(-1)], 0), _new_p.view(-1), size=(vsize, vsize,), device=_new_p.device), alpha=1.0 - _mavg_beta).coalesce()
 			# when sorted is False, _gold_ind is in reverse order with pytorch 1.11.0

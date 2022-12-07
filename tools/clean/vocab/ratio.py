@@ -11,13 +11,12 @@ def handle(srcfs, srcft, tgtfs, tgtft, vcbfs, vcbft, vratio, dratio=None):
 
 	_dratio = vratio if dratio is None else dratio
 
-	ens = "\n".encode("utf-8")
-
 	vcbs, nvs = ldvocab_list(vcbfs)
 	vcbt, nvt = ldvocab_list(vcbft)
 	ilgs = set(vcbs[int(float(nvs) * (1.0 - vratio)):])
 	ilgt = set(vcbt[int(float(nvt) * (1.0 - vratio)):])
 
+	ens = "\n".encode("utf-8")
 	with open(srcfs, "rb") as fs, open(srcft, "rb") as ft, open(tgtfs, "wb") as fsw, open(tgtft, "wb") as ftw:
 		total = keep = 0
 		for ls, lt in zip(fs, ft):

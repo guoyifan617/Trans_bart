@@ -19,7 +19,8 @@ from utils.fmt.mono.base import init_token_id, mask_id
 from utils.h5serial import h5File
 from utils.init.base import init_model_params
 from utils.io import load_model_cpu, save_model, save_states
-from utils.mask.mass import get_batch, update_p
+from utils.mask.base import update_p
+from utils.mask.mass import get_batch
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState

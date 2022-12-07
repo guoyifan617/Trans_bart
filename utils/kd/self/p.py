@@ -33,13 +33,13 @@ def fix_gold_p(p, gold_ind_mask, min_gold_p):
 
 def fix_gold_thres(p, gold_ind_mask, min_gold_p):
 
-	_p_max, _i_max = p.max(-1, keepdim=True)
+	_p_max, _i_max = p.max(-1, keepdim=False)
 	_e_m = _i_max.ne(gold_ind_mask.nonzero().select(-1, -1).view_as(_i_max))
 	if exist_any(_e_m):
-		p[gold_ind_mask & _e_m] = _p_max[_e_m] + min_gold_p
-		_e_m = _e_m.expand_as(p)
-		_s_p = p[_e_m].view(-1, p.size(-1))
-		p[_e_m] = _s_p.div_(_s_p.sum(-1, keepdim=True)).view(-1)
+		p[gold_ind_mask & _e_m.unsqueeze(-1)] = _p_max[_e_m] + min_gold_p
+		#_e_m = _e_m.expand_as(p)
+		_s_p = p[_e_m]#.view(-1, p.size(-1))
+		p[_e_m] = _s_p.div_(_s_p.sum(-1, keepdim=True))#.view(-1)
 
 	return p
 
