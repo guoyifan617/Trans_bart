@@ -14,7 +14,7 @@ from utils.base import divide_para_ind, filter_para_grad, filter_para_grad_iter,
 from utils.comm import secure_broadcast_coalesced
 from utils.contpara import get_all_contiguous_parameters_m, get_contiguous_parameters_m, get_contiguous_parameters_p
 from utils.fmt.base import clean_list
-from utils.torch.comp import torch_autocast, torch_inference_mode, torch_is_autocast_enabled, torch_is_grad_enabled, torch_is_inference_mode_enabled, torch_no_grad, torch_set_grad_enabled
+from utils.torch.comp import torch_autocast, torch_inference_mode, torch_is_autocast_enabled, torch_is_grad_enabled, torch_is_inference_mode_enabled, torch_no_grad, torch_set_grad_enabled, using_inference_mode
 
 """	Example:
 
@@ -418,9 +418,9 @@ def replicate(network, devices, no_gradient=False):
 
 	return [network] + [module_copies[j][0] for j in range(num_replicas)]
 
-# update these two functions with the update of parallel_apply(https://github.com/pytorch/pytorch/blob/master/torch/nn/parallel/parallel_apply.py)
+# update below functions with the update of parallel_apply(https://github.com/pytorch/pytorch/blob/master/torch/nn/parallel/parallel_apply.py)
 
-def parallel_apply(modules, inputs, devices, kwargs_tup=None, lock=None):
+def parallel_apply_inference(modules, inputs, devices, kwargs_tup=None, lock=None):
 
 	if kwargs_tup is None:
 		kwargs_tup = ({},) * len(modules)
@@ -434,7 +434,7 @@ def parallel_apply(modules, inputs, devices, kwargs_tup=None, lock=None):
 		# this also avoids accidental slicing of `input` if it is a Tensor
 		if not isinstance(input, (list, tuple,)):
 			input = (input,)
-		with torch_set_grad_enabled(grad_enabled), torch_inference_mode(), torch.cuda.device(device), torch_autocast(enabled=autocast_enabled):
+		with torch_set_grad_enabled(grad_enabled), torch_inference_mode(inference_mode_enabled), torch.cuda.device(device), torch_autocast(enabled=autocast_enabled):
 			output = module(*input, **kwargs)
 		with lock:
 			results[i] = output
@@ -453,7 +453,7 @@ def parallel_apply(modules, inputs, devices, kwargs_tup=None, lock=None):
 
 	return outputs
 
-def criterion_parallel_apply(modules, inputs, targets, devices, kwargs_tup=None, lock=None):
+def criterion_parallel_apply_inference(modules, inputs, targets, devices, kwargs_tup=None, lock=None):
 
 	if kwargs_tup is None:
 		kwargs_tup = ({},) * len(modules)
@@ -468,7 +468,7 @@ def criterion_parallel_apply(modules, inputs, targets, devices, kwargs_tup=None,
 			input = (input,)
 		if not isinstance(target, (list, tuple,)):
 			target = (target,)
-		with torch_set_grad_enabled(grad_enabled), torch_inference_mode(), torch.cuda.device(device), torch_autocast(enabled=autocast_enabled):
+		with torch_set_grad_enabled(grad_enabled), torch_inference_mode(inference_mode_enabled), torch.cuda.device(device), torch_autocast(enabled=autocast_enabled):
 			output = module(*(input + target), **kwargs)
 		with lock:
 			results[i] = output
@@ -486,3 +486,71 @@ def criterion_parallel_apply(modules, inputs, targets, devices, kwargs_tup=None,
 		outputs.append(output)
 
 	return outputs
+
+def parallel_apply_grad(modules, inputs, devices, kwargs_tup=None, lock=None):
+
+	if kwargs_tup is None:
+		kwargs_tup = ({},) * len(modules)
+
+	lock = Lock() if lock is None else lock
+	results = {}
+	grad_enabled, autocast_enabled = torch_is_grad_enabled(), torch_is_autocast_enabled()
+
+	def _worker(i, module, input, kwargs, device=None):
+
+		if not isinstance(input, (list, tuple,)):
+			input = (input,)
+		with torch_set_grad_enabled(grad_enabled), torch.cuda.device(device), torch_autocast(enabled=autocast_enabled):
+			output = module(*input, **kwargs)
+		with lock:
+			results[i] = output
+
+	threads = [Thread(target=_worker, args=(i, module, input, kwargs, device)) for i, (module, input, kwargs, device) in enumerate(zip(modules, inputs, kwargs_tup, devices))]
+
+	for thread in threads:
+		thread.start()
+	for thread in threads:
+		thread.join()
+
+	outputs = []
+	for i in range(len(inputs)):
+		output = results[i]
+		outputs.append(output)
+
+	return outputs
+
+def criterion_parallel_apply_grad(modules, inputs, targets, devices, kwargs_tup=None, lock=None):
+
+	if kwargs_tup is None:
+		kwargs_tup = ({},) * len(modules)
+
+	lock = Lock() if lock is None else lock
+	results = {}
+	grad_enabled, autocast_enabled = torch_is_grad_enabled(), torch_is_autocast_enabled()
+
+	def _worker(i, module, input, target, kwargs, device):
+
+		if not isinstance(input, (list, tuple,)):
+			input = (input,)
+		if not isinstance(target, (list, tuple,)):
+			target = (target,)
+		with torch_set_grad_enabled(grad_enabled), torch.cuda.device(device), torch_autocast(enabled=autocast_enabled):
+			output = module(*(input + target), **kwargs)
+		with lock:
+			results[i] = output
+
+	threads = [Thread(target=_worker, args=(i, module, input, target, kwargs, device)) for i, (module, input, target, kwargs, device) in enumerate(zip(modules, inputs, targets, kwargs_tup, devices))]
+
+	for thread in threads:
+		thread.start()
+	for thread in threads:
+		thread.join()
+
+	outputs = []
+	for i in range(len(inputs)):
+		output = results[i]
+		outputs.append(output)
+
+	return outputs
+
+parallel_apply, criterion_parallel_apply = (parallel_apply_inference, criterion_parallel_apply_inference,) if using_inference_mode else (parallel_apply_grad, criterion_parallel_apply_grad,)

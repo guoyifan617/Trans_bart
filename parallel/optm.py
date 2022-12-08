@@ -5,7 +5,7 @@ from collections import defaultdict
 from threading import Thread
 from torch.optim.optimizer import Optimizer
 
-from utils.torch.comp import GradScaler#, torch_autocast, torch_inference_mode, torch_is_autocast_enabled, torch_is_grad_enabled, torch_is_inference_mode_enabled, torch_set_grad_enabled
+from utils.torch.comp import GradScaler#, torch_autocast, torch_inference_mode, torch_is_autocast_enabled, torch_is_grad_enabled, torch_is_inference_mode_enabled, torch_set_grad_enabled, using_inference_mode
 
 class MultiGPUOptimizer(Optimizer):
 

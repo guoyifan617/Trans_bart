@@ -10,7 +10,7 @@ advance_activation_function = None
 use_glu_ffn = None
 
 # choices: "v1", "v2"
-computation_order = "v2"
+computation_order = "v1"
 
 # default cached sequence length (for positional embedding, etc.)
 cache_len_default = 256

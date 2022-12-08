@@ -367,7 +367,7 @@ def legal_vocab(sent, ilgset, ratio):
 			total += 1
 	rt = float(ilg) / float(total)
 
-	return False if rt > ratio else True
+	return rt < ratio
 
 def all_in(lin, setin):
 

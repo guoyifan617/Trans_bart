@@ -22,8 +22,7 @@ def get_mlm_mask(seqin, p=0.15):
 	_m_b = torch_any_dim(_m, 1, keepdim=False)
 	if not torch_all_wodim(_m_b).item():
 		_m_b = ~_m_b
-		_ind = multinomial(_p[_m_b], 1, replacement=False, dim=-1)
-		_m[_m_b] = _m[_m_b].scatter_(1, i, 1)
+		_m[_m_b] = _m[_m_b].scatter_(1, multinomial(_p[_m_b], 1, replacement=False, dim=-1), 1)
 
 	return _m
 

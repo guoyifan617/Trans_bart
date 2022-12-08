@@ -1,70 +1,56 @@
 #encoding: utf-8
 
 import torch
-from random import shuffle
+from random import sample, shuffle
 from torch.optim import Adam as Optimizer
 
-from loss.base import LabelSmoothingLoss
+from loss.bert import LabelSmoothingLoss
 from lrsch import GoogleLR as LRScheduler
 from parallel.base import DataParallelCriterion
 from parallel.optm import MultiGPUGradScaler
 from parallel.parallelMT import DataParallelMT
-from transformer.NMT import NMT
+from transformer.PLM.CustBERT.NMT import NMT
 from utils.base import free_cache, get_logger, mkdir, set_random_seed
 from utils.contpara import get_model_parameters
-from utils.dynbatch import GradientMonitor
 from utils.fmt.base import iter_to_str
 from utils.fmt.base4torch import load_emb, parse_cuda
-from utils.fmt.parser import parse_double_value_tuple
 from utils.h5serial import h5File
 from utils.init.base import init_model_params
 from utils.io import load_model_cpu, save_model, save_states
+from utils.mask.custbert import get_batch
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
 from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
-from utils.train.base import getlr, optm_step, optm_step_zero_grad_set_none
+from utils.train.base import getlr, optm_step, optm_step_zero_grad_set_none, reset_Adam
 from utils.train.dss import dynamic_sample
 
-import cnfg.dynb as cnfg
+import cnfg.base as cnfg
 from cnfg.ihyp import *
-from cnfg.vocab.base import pad_id
+from cnfg.vocab.plm.custbert import pad_id
 
-update_angle = cnfg.update_angle
-enc_layer, dec_layer = parse_double_value_tuple(cnfg.nlayer)
-
-def select_function(modin, select_index):
-
-	_sel_m = (list(modin.enc.nets) + list(modin.dec.nets))[select_index]
-
-	return _sel_m.parameters()
-
-grad_mon = GradientMonitor(enc_layer + dec_layer, select_function, module=None, angle_alpha=cnfg.dyn_tol_alpha, num_tol_amin=cnfg.dyn_tol_amin, num_his_record=cnfg.num_dynb_his, num_his_gm=1)
+nvalid = 50
 
 def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tokens, multi_gpu, multi_gpu_optimizer, tokens_optm=32768, nreport=None, save_every=None, chkpf=None, state_holder=None, statesf=None, num_checkpoint=1, cur_checkid=0, report_eva=True, remain_steps=None, save_loss=False, save_checkp_epoch=False, scaler=None):
 
 	sum_loss = part_loss = 0.0
 	sum_wd = part_wd = 0
 	_done_tokens, _cur_checkid, _cur_rstep, _use_amp = done_tokens, cur_checkid, remain_steps, scaler is not None
-	global minerr, minloss, wkdir, save_auto_clean, namin, grad_mon, update_angle
+	global minerr, minloss, wkdir, save_auto_clean, namin
 	model.train()
 	cur_b, _ls = 1, {} if save_loss else None
-	src_grp, tgt_grp = td["src"], td["tgt"]
+	src_grp = td["src"]
 	for i_d in tqdm(tl, mininterval=tqdm_mininterval):
 		seq_batch = torch.from_numpy(src_grp[i_d][()])
-		seq_o = torch.from_numpy(tgt_grp[i_d][()])
-		lo = seq_o.size(1) - 1
 		if mv_device:
 			seq_batch = seq_batch.to(mv_device, non_blocking=True)
-			seq_o = seq_o.to(mv_device, non_blocking=True)
-		seq_batch, seq_o = seq_batch.long(), seq_o.long()
+		seq_batch = seq_batch.long()
 
-		oi = seq_o.narrow(1, 0, lo)
-		ot = seq_o.narrow(1, 1, lo).contiguous()
+		seq_i, mlm_mask = get_batch(seq_batch)
 		with torch_autocast(enabled=_use_amp):
-			output = model(seq_batch, oi)
-			loss = lossf(output, ot)
+			output = model(seq_i, mlm_mask=mlm_mask, word_prediction=True)
+			loss = lossf(output, seq_batch, sample_mask=mlm_mask)
 			if multi_gpu:
 				loss = loss.sum()
 		loss_add = loss.data.item()
@@ -74,27 +60,16 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 		else:
 			scaler.scale(loss).backward()
 
-		wd_add = ot.ne(pad_id).int().sum().item()
-		loss = output = oi = ot = seq_batch = seq_o = None
+		wd_add = mlm_mask.int().sum().item()#seq_batch[mlm_mask].ne(pad_id)
+		loss = output = seq_batch = seq_i = mlm_mask = None
 		sum_loss += loss_add
 		if save_loss:
 			_ls[i_d] = loss_add / wd_add
 		sum_wd += wd_add
 		_done_tokens += wd_add
 
-		_perform_dyn_optm_step, _cos_sim = grad_mon.update(model.module if multi_gpu else model)
-		if _perform_dyn_optm_step or (_done_tokens >= tokens_optm):
-			if not _perform_dyn_optm_step:
-				grad_mon.reset()
-			_do_optm_step = True if _cos_sim is None else (_cos_sim <= update_angle)
-			if _do_optm_step:
-				optm_step(optm, model=model, scaler=scaler, multi_gpu=multi_gpu, multi_gpu_optimizer=multi_gpu_optimizer, zero_grad_none=optm_step_zero_grad_set_none)
-				lrsch.step()
-			else:
-				if multi_gpu:
-					model.reset_grad()
-				else:
-					optm.zero_grad(set_to_none=optm_step_zero_grad_set_none)
+		if _done_tokens >= tokens_optm:
+			optm_step(optm, model=model, scaler=scaler, multi_gpu=multi_gpu, multi_gpu_optimizer=multi_gpu_optimizer, zero_grad_none=optm_step_zero_grad_set_none)
 			_done_tokens = 0
 			if _cur_rstep is not None:
 				if save_checkp_epoch and (save_every is not None) and (_cur_rstep % save_every == 0) and (chkpf is not None) and (_cur_rstep > 0):
@@ -107,10 +82,10 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 					save_model(model, _chkpf, multi_gpu, print_func=logger.info)
 					if statesf is not None:
 						save_states(state_holder.state_dict(update=False, **{"remain_steps": _cur_rstep, "checkpoint_id": _cur_checkid, "training_list": tl[cur_b - 1:]}), statesf, print_func=logger.info)
-				if _do_optm_step:
-					_cur_rstep -= 1
-					if _cur_rstep <= 0:
-						break
+				_cur_rstep -= 1
+				if _cur_rstep <= 0:
+					break
+			lrsch.step()
 
 		if nreport is not None:
 			part_loss += loss_add
@@ -154,35 +129,36 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 	r = w = 0
 	sum_loss = 0.0
+	global tl
 	model.eval()
-	src_grp, tgt_grp = ed["src"], ed["tgt"]
+	src_grp = ed["src"]
 	with torch_inference_mode():
-		for i in tqdm(range(nd), mininterval=tqdm_mininterval):
-			bid = str(i)
-			seq_batch = torch.from_numpy(src_grp[bid][()])
-			seq_o = torch.from_numpy(tgt_grp[bid][()])
-			lo = seq_o.size(1) - 1
+		for i in tqdm(sample(tl, nd), mininterval=tqdm_mininterval):
+			seq_batch = torch.from_numpy(src_grp[i][()])
 			if mv_device:
 				seq_batch = seq_batch.to(mv_device, non_blocking=True)
-				seq_o = seq_o.to(mv_device, non_blocking=True)
-			seq_batch, seq_o = seq_batch.long(), seq_o.long()
-			ot = seq_o.narrow(1, 1, lo).contiguous()
+			seq_batch = seq_batch.long()
+			seq_i, mlm_mask = get_batch(seq_batch)
 			with torch_autocast(enabled=use_amp):
-				output = model(seq_batch, seq_o.narrow(1, 0, lo))
-				loss = lossf(output, ot)
+				output = model(seq_i, mlm_mask=mlm_mask, word_prediction=True)
+				loss = lossf(output, seq_batch, sample_mask=mlm_mask)
 				if multi_gpu:
 					loss = loss.sum()
 					trans = torch.cat([outu.argmax(-1).to(mv_device, non_blocking=True) for outu in output], 0)
 				else:
 					trans = output.argmax(-1)
 			sum_loss += loss.data.item()
-			data_mask = ot.ne(pad_id)
-			correct = (trans.eq(ot) & data_mask).int()
-			w += data_mask.int().sum().item()
-			r += correct.sum().item()
-			correct = data_mask = trans = loss = output = ot = seq_batch = seq_o = None
+			ot = seq_batch[mlm_mask]
+			#data_mask = ot.ne(pad_id)
+			w += ot.numel()
+			r += trans.eq(ot).int().sum().item()
+			trans = loss = output = ot = seq_batch = mlm_mask = None
 	w = float(w)
 	return sum_loss / w, (w - r) / w * 100.0
+
+def hook_lr_update(optm, flags=None):
+
+	reset_Adam(optm, flags)
 
 def init_fixing(module):
 
@@ -228,10 +204,10 @@ multi_gpu_optimizer = multi_gpu and cnfg.multi_gpu_optimizer
 set_random_seed(cnfg.seed, use_cuda)
 
 td = h5File(cnfg.train_data, "r")
-vd = h5File(cnfg.dev_data, "r")
+vd = td#h5File(cnfg.dev_data, "r")
 
 ntrain = td["ndata"][()].item()
-nvalid = vd["ndata"][()].item()
+nvalid = min(nvalid, ntrain)
 nword = td["nword"][()].tolist()
 nwordi, nwordt = nword[0], nword[-1]
 
@@ -249,7 +225,8 @@ if fine_tune_m is not None:
 	mymodel = load_model_cpu(fine_tune_m, mymodel)
 	mymodel.apply(load_fixing)
 
-lossf = LabelSmoothingLoss(nwordt, cnfg.label_smoothing, ignore_index=pad_id, reduction="sum", forbidden_index=cnfg.forbidden_indexes)
+#lossf = NLLLoss(ignore_index=-1, reduction="sum")
+lossf = LabelSmoothingLoss(nwordt, cnfg.label_smoothing, ignore_index=-1, reduction="sum", forbidden_index=cnfg.forbidden_indexes)#pad_id
 
 if cnfg.src_emb is not None:
 	logger.info("Load source embedding from: " + cnfg.src_emb)
@@ -388,4 +365,4 @@ if statesf is not None:
 logger.info("model saved")
 
 td.close()
-vd.close()
+#vd.close()

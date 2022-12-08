@@ -28,11 +28,10 @@ class NMT(NMTBase):
 
 		self.dec = Decoder(isize, tnwd, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, emb_w=emb_w, num_head=num_head, model_name=dec_model_name)#, num_layer=dec_layer, xseql=xseql, ahsize=ahsize, norm_output=norm_output, bindemb=bindDecoderEmb, forbidden_index=forbidden_index
 
-		set_ln_ieps(self, ieps_ln_default)
 		if rel_pos_enabled:
 			share_rel_pos_cache(self)
 
-	def forward(self, inpute, mask=None, mlm_mask=None, word_prediction=True, **kwargs):
+	def forward(self, inpute, mask=None, mlm_mask=None, word_prediction=False, **kwargs):
 
 		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 

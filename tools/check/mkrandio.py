@@ -10,14 +10,16 @@ from cnfg.ihyp import h5_libver, h5datawargs
 
 def handle(bsize, seql, nword, frs, ndata=1):
 
-	_size = (bsize, seql,)
+	_bsize = bsize
 	with h5File(frs, "w", libver=h5_libver) as rsf:
 		src_grp = rsf.create_group("src")
 		tgt_grp = rsf.create_group("tgt")
 		for curd in range(ndata):
 			wid = str(curd)
+			_size = (_bsize, seql,)
 			src_grp.create_dataset(wid, data=np_randint(0, high=nword, size=_size, dtype=np_int32), **h5datawargs)
 			tgt_grp.create_dataset(wid, data=np_randint(0, high=nword, size=_size, dtype=np_int32), **h5datawargs)
+			_bsize += 1
 			curd += 1
 		rsf["ndata"] = np_array([ndata], dtype=np_int32)
 		rsf["nword"] = np_array([nword, nword], dtype=np_int32)
