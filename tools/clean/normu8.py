@@ -3,6 +3,14 @@
 import sys
 from html import unescape
 
+try:
+	from tokenizers.normalizers import NFKD as UniNormer#, NFC, NFD, NFKC
+	_uni_norm_func = UniNormer().normalize_str
+	process_func = lambda x: clean_line(_uni_norm_func(unescape(x.decode("utf-8")))).encode("utf-8")
+except:
+	_uni_norm_func = None
+	process_func = lambda x: clean_line(unescape(x.decode("utf-8"))).encode("utf-8")
+
 def clean_line(istr):
 
 	rs = []
@@ -24,8 +32,7 @@ def handle(srcf, rsf):
 		for line in frd:
 			tmp = line.strip()
 			if tmp:
-				tmp = clean_line(unescape(tmp.decode("utf-8"))).encode("utf-8")
-				fwrt.write(tmp)
+				fwrt.write(process_func(tmp))
 			fwrt.write(ens)
 
 if __name__ == "__main__":
