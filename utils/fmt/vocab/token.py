@@ -2,13 +2,13 @@
 
 import sys
 
-from utils.fmt.base import list_reader
+from utils.fmt.base import list_reader as file_reader
 
 from cnfg.vocab.base import init_normal_token_id, init_vocab
 
 sep_load, sep_save = None, " "
 
-def ldvocab(vfile, minf=False, omit_vsize=False, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id, sep=sep_load):
+def ldvocab(vfile, minf=False, omit_vsize=False, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id, sep=sep_load, file_reader=file_reader):
 
 	if vanilla:
 		rs, cwd = {}, 0
@@ -18,7 +18,7 @@ def ldvocab(vfile, minf=False, omit_vsize=False, vanilla=False, init_vocab=init_
 		vsize = omit_vsize
 	else:
 		vsize = False
-	for data in list_reader(vfile, keep_empty_line=False, sep=sep):
+	for data in file_reader(vfile, keep_empty_line=False, sep=sep):
 		freq = int(data[0])
 		if (not minf) or freq > minf:
 			if vsize:
@@ -72,7 +72,7 @@ def save_vocab(vcb_dict, fname, omit_vsize=False, sep=sep_save):
 				if remain <= 0:
 					break
 
-def ldvocab_list(vfile, minf=False, omit_vsize=False, sep=sep_load):
+def ldvocab_list(vfile, minf=False, omit_vsize=False, sep=sep_load, file_reader=file_reader):
 
 	rs = []
 	if omit_vsize:
@@ -80,7 +80,7 @@ def ldvocab_list(vfile, minf=False, omit_vsize=False, sep=sep_load):
 	else:
 		vsize = False
 	cwd = 0
-	for data in list_reader(vfile, keep_empty_line=False, sep=sep):
+	for data in file_reader(vfile, keep_empty_line=False, sep=sep):
 		freq = int(data[0])
 		if (not minf) or freq > minf:
 			if vsize:
@@ -103,7 +103,7 @@ def ldvocab_list(vfile, minf=False, omit_vsize=False, sep=sep_load):
 
 	return rs, cwd
 
-def ldvocab_freq(vfile, minf=False, omit_vsize=False, sep=sep_load):
+def ldvocab_freq(vfile, minf=False, omit_vsize=False, sep=sep_load, file_reader=file_reader):
 
 	rs = {}
 	if omit_vsize:
@@ -111,7 +111,7 @@ def ldvocab_freq(vfile, minf=False, omit_vsize=False, sep=sep_load):
 	else:
 		vsize = False
 	cwd = 0
-	for data in list_reader(vfile, keep_empty_line=False, sep=sep):
+	for data in file_reader(vfile, keep_empty_line=False, sep=sep):
 		freq = int(data[0])
 		if (not minf) or freq > minf:
 			if vsize:

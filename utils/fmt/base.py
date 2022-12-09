@@ -70,6 +70,33 @@ def line_reader(fname, keep_empty_line=True, print_func=print):
 				if keep_empty_line:
 					yield ""
 
+def list_reader_wst(fname, keep_empty_line=True, sep=None, print_func=print):
+
+	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as frd:
+		for line in frd:
+			tmp = line.strip("\r\n")
+			if tmp:
+				tmp = clean_list(tmp.decode("utf-8").split(sep=sep))
+				yield tmp
+			else:
+				if print_func is not None:
+					print_func("Reminder: encounter an empty line, which may not be the case.")
+				if keep_empty_line:
+					yield []
+
+def line_reader_wst(fname, keep_empty_line=True, print_func=print):
+
+	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as frd:
+		for line in frd:
+			tmp = line.strip("\r\n")
+			if tmp:
+				yield tmp.decode("utf-8")
+			else:
+				if print_func is not None:
+					print_func("Reminder: encounter an empty line, which may not be the case.")
+				if keep_empty_line:
+					yield ""
+
 def clean_str(strin):
 
 	return " ".join([tmpu for tmpu in strin.split() if tmpu])
