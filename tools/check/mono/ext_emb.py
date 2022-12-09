@@ -7,9 +7,9 @@
 import sys
 import torch
 
-from utils.fmt.base import reverse_dict
 from utils.fmt.base4torch import load_emb_txt
 from utils.fmt.mono.base import ldvocab
+from utils.fmt.vocab.base import reverse_dict
 from utils.h5serial import h5save
 
 def handle(vcbf, embf, rsf):

@@ -2,9 +2,10 @@
 
 from math import ceil
 
-from utils.fmt.base import get_bsize, map_batch, pad_batch
+from utils.fmt.base import get_bsize, pad_batch
 from utils.fmt.doc.base import doc_reader
 from utils.fmt.doc.para.single import batch_padder as batch_padder_single
+from utils.fmt.vocab.base import map_batch
 
 def batch_loader_many(filelist, bsize, maxpad, maxpart, maxtoken, minbsize):
 

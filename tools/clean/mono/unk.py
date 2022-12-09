@@ -2,7 +2,8 @@
 
 import sys
 
-from utils.fmt.base import clean_list, ldvocab_list
+from utils.fmt.base import clean_list
+from utils.fmt.vocab.token import ldvocab_list
 
 def handle(srcfs, tgtfs, vcbfs):
 

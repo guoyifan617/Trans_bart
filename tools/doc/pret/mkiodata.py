@@ -3,9 +3,10 @@
 import sys
 from numpy import array as np_array, int32 as np_int32
 
-from utils.fmt.base import dict2pairs, ldvocab
+from utils.fmt.base import dict2pairs
 from utils.fmt.doc.mono.base import ldvocab as ldvocab_pret
 from utils.fmt.doc.pret.triple import batch_padder
+from utils.fmt.vocab.token import ldvocab
 from utils.h5serial import h5File
 
 from cnfg.ihyp import *

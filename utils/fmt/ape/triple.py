@@ -2,7 +2,8 @@
 
 from math import ceil
 
-from utils.fmt.base import get_bsize, list_reader, map_batch, pad_batch
+from utils.fmt.base import get_bsize, list_reader as file_reader, pad_batch
+from utils.fmt.vocab.base import map_batch
 
 def batch_loader(finput, fmt, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize):
 
@@ -11,7 +12,7 @@ def batch_loader(finput, fmt, ftarget, bsize, maxpad, maxpart, maxtoken, minbsiz
 	rsm = []
 	rst = []
 	nd = maxlen = mlen_i = mlen_m = mlen_t = 0
-	for i_d, md, td in zip(list_reader(finput, keep_empty_line=True), list_reader(fmt, keep_empty_line=True), list_reader(ftarget, keep_empty_line=True)):
+	for i_d, md, td in zip(file_reader(finput, keep_empty_line=True), file_reader(fmt, keep_empty_line=True), file_reader(ftarget, keep_empty_line=True)):
 		lid = len(i_d)
 		lmd = len(md)
 		ltd = len(td)

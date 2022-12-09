@@ -3,7 +3,7 @@
 import sys
 from math import acos, pi, sqrt
 
-from utils.fmt.base import ldvocab
+from utils.fmt.vocab.token import ldvocab
 
 def lang_distance(lang1, lang2):
 

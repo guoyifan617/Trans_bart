@@ -2,7 +2,8 @@
 
 import sys
 
-from utils.fmt.base import ldvocab_freq, merge_vocab, save_vocab
+from utils.fmt.vocab.base import merge_vocab
+from utils.fmt.vocab.char import ldvocab_freq, save_vocab
 
 def handle(srcfl, rsf, vsize=65532):
 

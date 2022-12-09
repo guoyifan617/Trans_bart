@@ -40,15 +40,15 @@ if $share_vcb; then
 	export src_vcb=$wkd/common.vcb
 	export tgt_vcb=$src_vcb
 	if $build_vocab; then
-		python tools/mulang/share_vocab.py $wkd/src.train.srt --target $wkd/tgt.train.srt $src_vcb $wkd/lang.vcb $vsize
+		python tools/mulang/vocab/token/share.py $wkd/src.train.srt --target $wkd/tgt.train.srt $src_vcb $wkd/lang.vcb $vsize
 		python tools/check/mulang/fbindexes.py $tgt_vcb $wkd/src.train.srt $wkd/tgt.train.srt $wkd/src.dev.srt $wkd/tgt.dev.srt $wkd/lang.vcb $wkd/fbind.py &
 	fi
 else
 	export src_vcb=$wkd/src.vcb
 	export tgt_vcb=$wkd/tgt.vcb
 	if $build_vocab; then
-		python tools/mulang/vocab.py $wkd/src.train.srt $src_vcb $wkd/lang.vcb $vsize &
-		python tools/vocab.py $wkd/tgt.train.srt $tgt_vcb $vsize &
+		python tools/mulang/vocab/token/single.py $wkd/src.train.srt $src_vcb $wkd/lang.vcb $vsize &
+		python tools/vocab/token/single.py $wkd/tgt.train.srt $tgt_vcb $vsize &
 		wait
 		python tools/check/mulang/fbindexes.py $tgt_vcb $wkd/src.train.srt $wkd/tgt.train.srt $wkd/src.dev.srt $wkd/tgt.dev.srt $wkd/lang.vcb $wkd/fbind.py &
 	fi

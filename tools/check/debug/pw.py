@@ -9,7 +9,8 @@
 import sys
 
 from transformer.NMT import NMT
-from utils.fmt.base import ldvocab, reverse_dict
+from utils.fmt.vocab.base import reverse_dict
+from utils.fmt.vocab.token import ldvocab
 from utils.h5serial import h5File, h5load
 
 import cnfg.base as cnfg

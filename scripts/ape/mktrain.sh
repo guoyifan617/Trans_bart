@@ -42,15 +42,15 @@ if $share_vcb; then
 	export src_vcb=$wkd/common.vcb
 	export tgt_vcb=$src_vcb
 	if $build_vocab; then
-		python tools/share_vocab.py $wkd/src.train.srt $wkd/tgt.train.srt $wkd/mt.train.srt $src_vcb $vsize
+		python tools/vocab/token/share.py $wkd/src.train.srt $wkd/tgt.train.srt $wkd/mt.train.srt $src_vcb $vsize
 		python tools/check/fbindexes.py $tgt_vcb $wkd/tgt.train.srt $wkd/tgt.dev.srt $wkd/fbind.py &
 	fi
 else
 	export src_vcb=$wkd/src.vcb
 	export tgt_vcb=$wkd/tgt.vcb
 	if $build_vocab; then
-		python tools/vocab.py $wkd/src.train.srt $src_vcb $vsize &
-		python tools/share_vocab.py $wkd/tgt.train.srt $wkd/mt.train.srt $tgt_vcb $vsize &
+		python tools/vocab/token/single.py $wkd/src.train.srt $src_vcb $vsize &
+		python tools/vocab/token/share.py $wkd/tgt.train.srt $wkd/mt.train.srt $tgt_vcb $vsize &
 		wait
 	fi
 fi

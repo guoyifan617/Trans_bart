@@ -3,7 +3,7 @@
 import sys
 from random import shuffle
 
-from cnfg.vocab.base import *
+from cnfg.vocab.base import pad_id
 
 serial_func, deserial_func = repr, eval
 
@@ -43,13 +43,13 @@ def load_states(fname):
 
 	return rs
 
-def list_reader(fname, keep_empty_line=True, print_func=print):
+def list_reader(fname, keep_empty_line=True, sep=None, print_func=print):
 
 	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as frd:
 		for line in frd:
 			tmp = line.strip()
 			if tmp:
-				tmp = clean_list(tmp.decode("utf-8").split())
+				tmp = clean_list(tmp.decode("utf-8").split(sep=sep))
 				yield tmp
 			else:
 				if print_func is not None:
@@ -66,151 +66,9 @@ def line_reader(fname, keep_empty_line=True, print_func=print):
 				yield tmp.decode("utf-8")
 			else:
 				if print_func is not None:
-					print_func("Reminder: encounter an empty line, which shall not be the case.")
+					print_func("Reminder: encounter an empty line, which may not be the case.")
 				if keep_empty_line:
 					yield ""
-
-def ldvocab(vfile, minf=False, omit_vsize=False, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id):
-
-	if vanilla:
-		rs, cwd = {}, 0
-	else:
-		rs, cwd = init_vocab.copy(), init_normal_token_id
-	if omit_vsize:
-		vsize = omit_vsize
-	else:
-		vsize = False
-	for data in list_reader(vfile, keep_empty_line=False):
-		freq = int(data[0])
-		if (not minf) or freq > minf:
-			if vsize:
-				ndata = len(data) - 1
-				if vsize >= ndata:
-					for wd in data[1:]:
-						rs[wd] = cwd
-						cwd += 1
-				else:
-					for wd in data[1:vsize + 1]:
-						rs[wd] = cwd
-						cwd += 1
-						ndata = vsize
-					break
-				vsize -= ndata
-				if vsize <= 0:
-					break
-			else:
-				for wd in data[1:]:
-					rs[wd] = cwd
-					cwd += 1
-		else:
-			break
-	return rs, cwd
-
-def save_vocab(vcb_dict, fname, omit_vsize=False):
-
-	r_vocab = {}
-	for k, v in vcb_dict.items():
-		if v not in r_vocab:
-			r_vocab[v]=[str(v), k]
-		else:
-			r_vocab[v].append(k)
-
-	freqs = list(r_vocab.keys())
-	freqs.sort(reverse=True)
-
-	ens = "\n".encode("utf-8")
-	remain = omit_vsize
-	with sys.stdout.buffer if fname == "-" else open(fname, "wb") as f:
-		for freq in freqs:
-			cdata = r_vocab[freq]
-			ndata = len(cdata) - 1
-			if remain and (remain < ndata):
-				cdata = cdata[:remain + 1]
-				ndata = remain
-			f.write(" ".join(cdata).encode("utf-8"))
-			f.write(ens)
-			if remain:
-				remain -= ndata
-				if remain <= 0:
-					break
-
-def reverse_dict(din):
-
-	return {v:k for k, v in din.items()}
-
-def ldvocab_list(vfile, minf=False, omit_vsize=False):
-
-	rs = []
-	if omit_vsize:
-		vsize = omit_vsize
-	else:
-		vsize = False
-	cwd = 0
-	for data in list_reader(vfile, keep_empty_line=False):
-		freq = int(data[0])
-		if (not minf) or freq > minf:
-			if vsize:
-				ndata = len(data) - 1
-				if vsize >= ndata:
-					rs.extend(data[1:])
-					cwd += ndata
-				else:
-					rs.extend(data[1:vsize + 1])
-					cwd += vsize
-					break
-				vsize -= ndata
-				if vsize <= 0:
-					break
-			else:
-				rs.extend(data[1:])
-				cwd += len(data) - 1
-		else:
-			break
-
-	return rs, cwd
-
-def ldvocab_freq(vfile, minf=False, omit_vsize=False):
-
-	rs = {}
-	if omit_vsize:
-		vsize = omit_vsize
-	else:
-		vsize = False
-	cwd = 0
-	for data in list_reader(vfile, keep_empty_line=False):
-		freq = int(data[0])
-		if (not minf) or freq > minf:
-			if vsize:
-				ndata = len(data) - 1
-				if vsize >= ndata:
-					for _ in data[1:]:
-						rs[_] = freq
-					cwd += ndata
-				else:
-					for _ in data[1:vsize + 1]:
-						rs[_] = freq
-					cwd += vsize
-					break
-				vsize -= ndata
-				if vsize <= 0:
-					break
-			else:
-				for _ in data[1:]:
-					rs[_] = freq
-				cwd += len(data) - 1
-		else:
-			break
-
-	return rs, cwd
-
-def merge_vocab(*vcbin):
-
-	rs = {}
-	for _ in vcbin:
-		for k, v in _.items():
-			rs[k] = rs.get(k, 0) + v
-
-	return rs
 
 def clean_str(strin):
 
@@ -281,19 +139,6 @@ def get_bsize(maxlen, maxtoken, maxbsize):
 
 	return min(rs, maxbsize)
 
-def no_unk_mapper(vcb, ltm, print_func=None):
-
-	if print_func is None:
-		return [vcb[wd] for wd in ltm if wd in vcb]
-	else:
-		rs = []
-		for wd in ltm:
-			if wd in vcb:
-				rs.append(vcb[wd])
-			else:
-				print_func("Error mapping: "+ wd)
-		return rs
-
 def list2dict(lin, kfunc=None):
 
 	return {k: lu for k, lu in enumerate(lin)} if kfunc is None else {kfunc(k): lu for k, lu in enumerate(lin)}
@@ -357,18 +202,6 @@ def dict_insert_list(dict_in, value, *keys):
 
 	return dict_in
 
-def legal_vocab(sent, ilgset, ratio):
-
-	total = ilg = 0
-	for tmpu in sent.split():
-		if tmpu:
-			if tmpu in ilgset:
-				ilg += 1
-			total += 1
-	rt = float(ilg) / float(total)
-
-	return rt < ratio
-
 def all_in(lin, setin):
 
 	return all(lu in setin for lu in lin)
@@ -406,20 +239,6 @@ def get_bi_ratio(ls, lt):
 		return float(ls) / float(lt)
 	else:
 		return float(lt) / float(ls)
-
-def map_batch_core(i_d, vocabi, use_unk=use_unk, sos_id=sos_id, eos_id=eos_id, unk_id=unk_id, **kwargs):
-
-	if isinstance(i_d[0], (tuple, list,)):
-		return [map_batch_core(idu, vocabi, use_unk=use_unk, sos_id=sos_id, eos_id=eos_id, unk_id=unk_id, **kwargs) for idu in i_d]
-	else:
-		rsi = [sos_id]
-		rsi.extend([vocabi.get(wd, unk_id) for wd in i_d] if use_unk else no_unk_mapper(vocabi, i_d))#[vocabi[wd] for wd in i_d if wd in vocabi]
-		rsi.append(eos_id)
-		return rsi
-
-def map_batch(i_d, vocabi, use_unk=use_unk, sos_id=sos_id, eos_id=eos_id, unk_id=unk_id, **kwargs):
-
-	return map_batch_core(i_d, vocabi, use_unk=use_unk, sos_id=sos_id, eos_id=eos_id, unk_id=unk_id, **kwargs), 2
 
 def pad_batch(i_d, mlen_i, pad_id=pad_id):
 

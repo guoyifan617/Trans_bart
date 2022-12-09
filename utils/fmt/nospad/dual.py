@@ -2,7 +2,7 @@
 
 from math import ceil
 
-from utils.fmt.base import get_bsize, list_reader
+from utils.fmt.base import get_bsize, list_reader as file_reader
 from utils.fmt.dual import batch_padder as batch_padder_base
 
 def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize):
@@ -11,7 +11,7 @@ def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize):
 	rsi = []
 	rst = []
 	nd = maxlen = mlen_i = mlen_t = 0
-	for i_d, td in zip(list_reader(finput, keep_empty_line=True), list_reader(ftarget, keep_empty_line=True)):
+	for i_d, td in zip(file_reader(finput, keep_empty_line=True), file_reader(ftarget, keep_empty_line=True)):
 		lid = len(i_d)
 		ltd = len(td)
 		lgth = lid + ltd

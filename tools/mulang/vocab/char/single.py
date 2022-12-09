@@ -2,7 +2,7 @@
 
 import sys
 
-from utils.fmt.base import clean_list, save_vocab
+from utils.fmt.vocab.char import save_vocab
 
 def handle(srcf, rsf, rslangf, vsize=65532):
 
@@ -13,10 +13,11 @@ def handle(srcf, rsf, rslangf, vsize=65532):
 		for line in f:
 			tmp = line.strip()
 			if tmp:
-				tokens = clean_list(tmp.decode("utf-8").split())
-				for token in tokens[1:]:
+				tokens = tmp.decode("utf-8")
+				_ = tokens.find(" ")
+				for token in tokens[_ + 1:]:
 					vocab[token] = vocab.get(token, 0) + 1
-				token = tokens[0]
+				token = tokens[:_]
 				lang_vocab[token] = lang_vocab.get(token, 0) + 1
 
 	save_vocab(vocab, rsf, omit_vsize=vsize)

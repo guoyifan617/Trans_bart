@@ -2,11 +2,9 @@
 
 import sys
 
-from utils.fmt.base import clean_list_iter, init_normal_token_id
+from utils.fmt.base import clean_list_iter
 
 def handle(srcfl):
-
-	global init_normal_token_id
 
 	vocab = set()
 
@@ -20,9 +18,8 @@ def handle(srcfl):
 							vocab.add(token)
 
 	nvcb = len(vocab)
-	nvcb += init_normal_token_id
 
-	print("The size of the vocabulary is: %d (with special tokens counted)" % (nvcb))
+	print("The size of the vocabulary is: %d (special tokens discounted)" % (nvcb))
 
 if __name__ == "__main__":
 	handle(sys.argv[1:])

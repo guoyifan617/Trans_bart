@@ -3,7 +3,7 @@
 from subprocess import run
 from threading import Lock, Thread
 
-from utils.fmt.base import ldvocab
+from utils.fmt.vocab.token import ldvocab
 
 def run_task(gpuid, task):
 

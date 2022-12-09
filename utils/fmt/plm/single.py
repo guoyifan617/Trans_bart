@@ -2,14 +2,16 @@
 
 from math import ceil
 
-from utils.fmt.base import get_bsize, iter_to_int, list_reader, pad_batch, pad_id
+from utils.fmt.base import get_bsize, iter_to_int, list_reader as file_reader, pad_batch
+
+from cnfg.vocab.base import pad_id
 
 def batch_loader(finput, bsize, maxpad, maxpart, maxtoken, minbsize):
 
 	_f_maxpart = float(maxpart)
 	rsi = []
 	nd = maxlen = minlen = mlen_i = 0
-	for i_d in list_reader(finput, keep_empty_line=True):
+	for i_d in file_reader(finput, keep_empty_line=True):
 		i_d = list(iter_to_int(i_d))
 		lgth = len(i_d)
 		if maxlen == 0:

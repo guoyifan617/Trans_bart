@@ -2,7 +2,8 @@
 
 from math import ceil
 
-from utils.fmt.base import get_bsize, line_reader, list_reader, map_batch, pad_batch
+from utils.fmt.base import get_bsize, line_reader, list_reader, pad_batch
+from utils.fmt.vocab.base import map_batch
 
 def batch_loader_many(filelist, bsize, maxpad, maxpart, maxtoken, minbsize):
 

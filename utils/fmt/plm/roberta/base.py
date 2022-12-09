@@ -1,7 +1,7 @@
 #encoding: utf-8
 
-from utils.fmt.base import reverse_dict
 from utils.fmt.json import dumpf, loadf
+from utils.fmt.vocab.base import reverse_dict
 
 from cnfg.vocab.plm.roberta import eos_id, mask_id, pad_id, sos_id, unk_id, vocab_size
 

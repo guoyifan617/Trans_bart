@@ -2,14 +2,10 @@
 
 import sys
 from html import unescape
+from unicodedata import normalize as uni_norm_func
 
-try:
-	from tokenizers.normalizers import NFKD as UniNormer#, NFC, NFD, NFKC
-	_uni_norm_func = UniNormer().normalize_str
-	process_func = lambda x: clean_line(_uni_norm_func(unescape(x.decode("utf-8")))).encode("utf-8")
-except:
-	_uni_norm_func = None
-	process_func = lambda x: clean_line(unescape(x.decode("utf-8"))).encode("utf-8")
+#"NFC", "NFD", "NFKD"
+uni_normer = "NFKC"
 
 def clean_line(istr):
 
@@ -25,14 +21,14 @@ def clean_line(istr):
 
 	return ''.join(rs)
 
-def handle(srcf, rsf):
+def handle(srcf, rsf, uni_normer=uni_normer):
 
 	ens="\n".encode("utf-8")
 	with sys.stdin.buffer if srcf == "-" else open(srcf, "rb") as frd, sys.stdout.buffer if rsf == "-" else open(rsf, "wb") as fwrt:
 		for line in frd:
 			tmp = line.strip()
 			if tmp:
-				fwrt.write(process_func(tmp))
+				fwrt.write(unescape(clean_line(uni_norm_func(uni_normer, tmp.decode("utf-8")))).encode("utf-8"))
 			fwrt.write(ens)
 
 if __name__ == "__main__":

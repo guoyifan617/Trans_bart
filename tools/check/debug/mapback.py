@@ -3,7 +3,8 @@
 import sys
 import torch
 
-from utils.fmt.base import ldvocab, reverse_dict
+from utils.fmt.vocab.base import reverse_dict
+from utils.fmt.vocab.token import ldvocab
 from utils.h5serial import h5File
 
 def handle(h5f, vcbsf, vcbtf, rsfs, rsft):

@@ -2,9 +2,10 @@
 
 from math import ceil
 
-from utils.fmt.base import get_bsize, map_batch, pad_batch
-from utils.fmt.doc.base import doc_reader
+from utils.fmt.base import get_bsize, pad_batch
+from utils.fmt.doc.base import doc_reader as file_reader
 from utils.fmt.doc.mono.base import map_batch as map_batch_pret
+from utils.fmt.vocab.base import map_batch
 
 def batch_loader(finput, fpret, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize):
 
@@ -13,7 +14,7 @@ def batch_loader(finput, fpret, ftarget, bsize, maxpad, maxpart, maxtoken, minbs
 	rsp = []
 	rst = []
 	nd = maxlen = minlen = mlen_i = mlen_p = mlen_t = nsent = 0
-	for (i_d, i_lgth), (pd, p_lgth), (td, t_lgth) in zip(doc_reader(finput), doc_reader(fpret), doc_reader(ftarget)):
+	for (i_d, i_lgth), (pd, p_lgth), (td, t_lgth) in zip(file_reader(finput), file_reader(fpret), file_reader(ftarget)):
 		cur_nsent = len(i_d)
 		lgth = i_lgth + p_lgth + t_lgth
 		if maxlen == 0:

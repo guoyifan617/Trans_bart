@@ -44,7 +44,7 @@ if $share_vcb; then
 	export src_vcb=$wkd/common.vcb
 	export tgt_vcb=$src_vcb
 	if $build_vocab; then
-		python tools/share_vocab.py $wkd/src.train.srt $wkd/tgt.train.srt $src_vcb $vsize
+		python tools/vocab/token/share.py $wkd/src.train.srt $wkd/tgt.train.srt $src_vcb $vsize
 		python tools/check/mono/fbindexes.py $src_vcb $wkd/tgt.train.srt $wkd/tgtfbind.py &
 		python tools/check/mono/fbindexes.py $src_vcb $wkd/src.train.srt $wkd/srcfbind.py &
 	fi
@@ -52,8 +52,8 @@ else
 	export src_vcb=$wkd/src.vcb
 	export tgt_vcb=$wkd/tgt.vcb
 	if $build_vocab; then
-		python tools/vocab.py $wkd/src.train.srt $src_vcb $vsize &
-		python tools/vocab.py $wkd/tgt.train.srt $tgt_vcb $vsize &
+		python tools/vocab/token/single.py $wkd/src.train.srt $src_vcb $vsize &
+		python tools/vocab/token/single.py $wkd/tgt.train.srt $tgt_vcb $vsize &
 		wait
 	fi
 fi

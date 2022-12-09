@@ -2,8 +2,8 @@
 
 import sys
 
-from utils.fmt.base import ldvocab_list
 from utils.fmt.doc.base import legal_vocab
+from utils.fmt.vocab.token import ldvocab_list
 
 # vratio: percentages of vocabulary size of retrieved words of least frequencies
 # dratio: a datum will be dropped who contains high frequency words less than this ratio

@@ -64,7 +64,7 @@ def sort_comp(impl):
 
 def is_import_line(strin):
 
-	return ((not strin.strip()) or strin.find("import ") >= 0) and (strin.find("\"") < 0) and (strin.find("'") < 0)
+	return ((not strin.strip()) or strin.find("import ") >= 0) and (strin.find("\"") < 0) and (strin.find("'") < 0) and (not strin.strip().startswith("# "))
 
 def sort_imp(lin):
 

@@ -30,7 +30,7 @@ def skip_comment(lin):
 				if tmp:
 					yield tmp
 
-def load_defs(lin):
+def load_defs(lin, skip_package=None):
 
 	rs = set()
 	_try_except_mode = False
@@ -60,14 +60,15 @@ def load_defs(lin):
 							if legal_name(_m) and (_m not in rs):
 								rs.add(_m)
 					elif _tmp_s.startswith("from "):
-						_ = tmp.find(" import ")
-						if _ > 5:
-							for tmp in tmp[_ + 8:].split(","):
-								_ = tmp.find(" as ")
-								_m = tmp[_ + 4:] if _ > 0 else tmp
-								_m = _m.strip()
-								if legal_name(_m) and (_m not in rs):
-									rs.add(_m)
+						if (skip_package is None) or _tmp_s.find(" %s " % skip_package) < 0:
+							_ = tmp.find(" import ")
+							if _ > 5:
+								for tmp in tmp[_ + 8:].split(","):
+									_ = tmp.find(" as ")
+									_m = tmp[_ + 4:] if _ > 0 else tmp
+									_m = _m.strip()
+									if legal_name(_m) and (_m not in rs):
+										rs.add(_m)
 					elif tmp.startswith("try:") or tmp.startswith("except "):
 						_try_except_mode = True
 					else:
@@ -138,7 +139,7 @@ def process_file(fname, oimpl, nimpl, cts):
 
 def handle(srcf, opkg, ptws):
 
-	_defs = load_defs(load_file(srcf))
+	_defs = load_defs(load_file(srcf), skip_package=opkg)
 	_oimpl = "from %s import " % opkg
 	_nimpl = "from %s import " % srcf.replace("/", ".")[:-3]
 	for ptw in ptws:

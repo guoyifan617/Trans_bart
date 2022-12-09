@@ -7,9 +7,9 @@ from parallel.parallelMono import DataParallelMT
 from transformer.EnsembleNMT import NMT as Ensemble
 from transformer.Mono.NMT import NMT
 from utils.base import set_random_seed
-from utils.fmt.base import reverse_dict
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.fmt.mono.base import eos_id, ldvocab
+from utils.fmt.vocab.base import reverse_dict
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
 from utils.torch.comp import torch_autocast, torch_inference_mode

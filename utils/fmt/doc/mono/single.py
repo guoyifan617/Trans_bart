@@ -2,16 +2,17 @@
 
 from math import ceil
 
-from utils.fmt.base import get_bsize, map_batch, pad_batch
-from utils.fmt.doc.base import doc_reader
+from utils.fmt.base import get_bsize, pad_batch
+from utils.fmt.doc.base import doc_reader as file_reader
 #from utils.fmt.doc.mono.base import map_batch
+from utils.fmt.vocab.base import map_batch
 
 def batch_loader(finput, bsize, maxpad, maxpart, maxtoken, minbsize):
 
 	_f_maxpart = float(maxpart)
 	rsi = []
 	nd = maxlen = minlen = mlen_i = nsent = 0
-	for i_d, lgth in doc_reader(finput):
+	for i_d, lgth in file_reader(finput):
 		cur_nsent = len(i_d)
 		if maxlen == 0:
 			_maxpad = max(1, min(maxpad, ceil(lgth / _f_maxpart)) // 2)

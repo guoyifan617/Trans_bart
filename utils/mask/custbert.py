@@ -17,12 +17,16 @@ def get_sptok_mask(seqin):
 
 def get_mlm_mask(seqin, p=0.15):
 
-	_p = seqin.new_full(seqin.size(), p, dtype=torch.float).masked_fill_(get_sptok_mask(seqin), 0.0)
-	_m = _p.bernoulli().to(mask_tensor_type, non_blocking=True)
+	_n = seqin.numel()
+	_m = torch.randperm(_n, dtype=torch.int32, device=seqin.device).view_as(seqin).lt(max(1, int(_n * p)))
+	_sp_mask = get_sptok_mask(seqin)
+	_m &= ~_sp_mask
 	_m_b = torch_any_dim(_m, 1, keepdim=False)
 	if not torch_all_wodim(_m_b).item():
 		_m_b = ~_m_b
-		_m[_m_b] = _m[_m_b].scatter_(1, multinomial(_p[_m_b], 1, replacement=False, dim=-1), 1)
+		_ = _sp_mask[_m_b]
+		_p = _.new_full(_.size(), p, dtype=torch.float).masked_fill_(_, 0.0)
+		_m[_m_b] = _m[_m_b].scatter_(1, multinomial(_p, 1, replacement=False, dim=-1), 1)
 
 	return _m
 

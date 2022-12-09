@@ -1,6 +1,7 @@
 #encoding: utf-8
 
-from utils.fmt.base import list_reader, no_unk_mapper
+from utils.fmt.base import list_reader
+from utils.fmt.vocab.base import no_unk_mapper
 
 from cnfg.vocab.doc.mono import *
 

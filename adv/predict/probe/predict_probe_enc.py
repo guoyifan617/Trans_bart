@@ -7,8 +7,9 @@ import torch
 
 from transformer.Probe.NMT import NMT
 from utils.base import set_random_seed
-from utils.fmt.base import eos_id, init_vocab, ldvocab, reverse_dict, sos_id
 from utils.fmt.base4torch import parse_cuda_decode
+from utils.fmt.vocab.base import reverse_dict
+from utils.fmt.vocab.token import init_vocab, ldvocab
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
 from utils.torch.comp import torch_autocast, torch_inference_mode
@@ -16,6 +17,7 @@ from utils.tqdm import tqdm
 
 import cnfg.probe as cnfg
 from cnfg.ihyp import *
+from cnfg.vocab.base import eos_id, sos_id
 
 def load_fixing(module):
 

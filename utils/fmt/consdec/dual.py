@@ -1,8 +1,8 @@
 #encoding: utf-8
 
-from utils.fmt.base import map_batch
 from utils.fmt.consdec import map_batch as map_batch_no_st
 from utils.fmt.dual import batch_loader, batch_padder as batch_padder_base
+from utils.fmt.vocab.base import map_batch
 
 def batch_mapper(finput, ftarget, vocabi, vocabt, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=None):
 

@@ -1,5 +1,6 @@
 #encoding: utf-8
 
+from utils.fmt.base import get_bsize, list_reader as file_reader
 from utils.fmt.plm.dual import batch_padder as batch_padder_base
 
 from cnfg.vocab.plm.roberta import eos_id, pad_id
@@ -10,7 +11,7 @@ def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, tg
 	rsi = []
 	rst = []
 	nd = maxlen = mlen_i = mlen_t = 0
-	for i_d, td in zip(list_reader(finput, keep_empty_line=True), list_reader(ftarget, keep_empty_line=True)):
+	for i_d, td in zip(file_reader(finput, keep_empty_line=True), file_reader(ftarget, keep_empty_line=True)):
 		i_d, td = list(iter_to_int(i_d)), list(iter_to_int(td))
 		if tgt_start_id is not None:
 			td[0] = tgt_start_id
