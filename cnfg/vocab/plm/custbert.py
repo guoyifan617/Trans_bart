@@ -12,4 +12,4 @@ else:
 	init_vocab = {"<pad>":pad_id, "<sos>":sos_id, "<eos>":eos_id, "<mask>":mask_id}
 	init_normal_token_id = 4
 init_token_id = 4
-vocab_size = 32768
+vocab_size = 36864

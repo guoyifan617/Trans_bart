@@ -24,9 +24,9 @@ def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, ge
 			maxlen = lgth + min(maxpad, ceil(lgth / _f_maxpart))
 			_bsize = get_bsize(maxlen, maxtoken, bsize)
 		if (nd < minbsize) or (lgth <= maxlen and nd < _bsize):
-			rsi.append(i_d[_ind + 1:])
+			rsi.append(list(i_d[_ind + 1:]))
 			rstask.append(i_d[:_ind])
-			rst.append(td)
+			rst.append(list(td))
 			if lid > mlen_i:
 				mlen_i = lid
 			if ltd > mlen_t:
@@ -34,9 +34,9 @@ def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, ge
 			nd += 1
 		else:
 			yield rsi, rst, rstask, mlen_i, mlen_t
-			rsi = [i_d[_ind + 1:]]
+			rsi = [list(i_d[_ind + 1:])]
 			rstask = [i_d[:_ind]]
-			rst = [td]
+			rst = [list(td)]
 			mlen_i = lid
 			mlen_t = ltd
 			maxlen = lgth + min(maxpad, ceil(lgth / _f_maxpart))

@@ -34,11 +34,8 @@ def handle(cached, tgtfl, remove_same=False, shuf=True, max_remove=True):
 				if curfid not in opened:
 					pg = paral_reader([pjoin(cache_dir, "%d.%s.txt" % (i, curfid,)) for i in range(num_files)])
 					opened.add(curfid)
-					try:
-						prd = next(pg)
-					except StopIteration:
-						prd = None
-					if prd:
+					prd = next(pg, None)
+					if prd is not None:
 						rs.append(pg)
 						query.append((prd[0], prd[1:],))
 
@@ -54,12 +51,12 @@ def handle(cached, tgtfl, remove_same=False, shuf=True, max_remove=True):
 				min_len = lens
 				rs = (du, lens,)
 				rid = ind
-		try:
-			_next_v = next(fl[rid])
-			query[rid] = (_next_v[0], _next_v[1:],)
-		except StopIteration:
+		_next_v = next(fl[rid], None)
+		if _next_v is None:
 			del query[rid]
 			del fl[rid]
+		else:
+			query[rid] = (_next_v[0], _next_v[1:],)
 
 		return rs, query, fl
 

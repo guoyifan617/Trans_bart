@@ -22,15 +22,15 @@ def batch_loader(finput, bsize, maxpad, maxpart, maxtoken, minbsize, get_bsize=g
 			minlen = lgth - _maxpad
 			_bsize = get_bsize(maxlen, maxtoken, bsize)
 		if (nd < minbsize) or (lgth <= maxlen and lgth >= minlen and nd < _bsize):
-			rsi.append(i_d[_ind + 1:])
+			rsi.append(list(i_d[_ind + 1:]))
 			rstask.append(i_d[:_ind])
 			if lgth > mlen_i:
 				mlen_i = lgth
 			nd += 1
 		else:
 			yield rsi, rstask, mlen_i
-			rsi = [i_d[_ind + 1:]]
-			rstask = [i_d[_ind]]
+			rsi = [list(i_d[_ind + 1:])]
+			rstask = [i_d[:_ind]]
 			mlen_i = lgth
 			_maxpad = max(1, min(maxpad, ceil(lgth / _f_maxpart)) // 2)
 			maxlen = lgth + _maxpad
