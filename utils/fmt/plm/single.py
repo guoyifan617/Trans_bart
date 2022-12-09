@@ -6,7 +6,7 @@ from utils.fmt.base import get_bsize, iter_to_int, list_reader as file_reader, p
 
 from cnfg.vocab.base import pad_id
 
-def batch_loader(finput, bsize, maxpad, maxpart, maxtoken, minbsize):
+def batch_loader(finput, bsize, maxpad, maxpart, maxtoken, minbsize, get_bsize=get_bsize, file_reader=file_reader, iter_to_int=iter_to_int, **kwargs):
 
 	_f_maxpart = float(maxpart)
 	rsi = []
@@ -36,8 +36,7 @@ def batch_loader(finput, bsize, maxpad, maxpart, maxtoken, minbsize):
 	if rsi:
 		yield rsi, mlen_i
 
-def batch_padder(finput, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=None, pad_id=pad_id, **kwargs):
+def batch_padder(finput, bsize, maxpad, maxpart, maxtoken, minbsize, pad_batch=pad_batch, batch_loader=batch_loader, pad_id=pad_id, **kwargs):
 
-	_batch_loader = batch_loader if custom_batch_loader is None else custom_batch_loader
-	for i_d, mlen_i in _batch_loader(finput, bsize, maxpad, maxpart, maxtoken, minbsize):
+	for i_d, mlen_i in batch_loader(finput, bsize, maxpad, maxpart, maxtoken, minbsize, **kwargs):
 		yield pad_batch(i_d, mlen_i, pad_id=pad_id)

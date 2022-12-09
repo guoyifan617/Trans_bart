@@ -2,16 +2,16 @@
 
 from math import ceil
 
-from utils.fmt.base import get_bsize, list_reader
+from utils.fmt.base import get_bsize, list_reader as file_reader
 from utils.fmt.many import batch_padder_many as batch_padder_many_base
 
-def batch_loader_many(filelist, bsize, maxpad, maxpart, maxtoken, minbsize):
+def batch_loader_many(filelist, bsize, maxpad, maxpart, maxtoken, minbsize, get_bsize=get_bsize, file_reader=file_reader, **kwargs):
 
 	_f_maxpart = float(maxpart)
 	rs = [[] for i in range(len(filelist))]
 	nd = maxlen = 0
 	mlen = None
-	for lines in zip(*[list_reader(f, keep_empty_line=True) for f in filelist]):
+	for lines in zip(*[file_reader(f, keep_empty_line=True) for f in filelist]):
 		lens = [len(line) for line in lines]
 		lgth = sum(lens)
 		if maxlen == 0:
@@ -35,6 +35,6 @@ def batch_loader_many(filelist, bsize, maxpad, maxpart, maxtoken, minbsize):
 	if rs:
 		yield rs, mlen
 
-def batch_padder(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=None, custom_batch_mapper=None):
+def batch_padder(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, batch_loader=batch_loader_many, **kwargs):
 
-	return batch_padder_many_base(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=batch_loader_many if custom_batch_loader is None else custom_batch_loader, custom_batch_mapper=custom_batch_mapper)
+	return batch_padder_many_base(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, batch_loader=batch_loader, **kwargs)

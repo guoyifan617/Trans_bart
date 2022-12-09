@@ -5,7 +5,7 @@ from math import ceil
 from utils.fmt.base import get_bsize, line_reader as file_reader
 from utils.fmt.mulang.dual import batch_padder as batch_padder_base
 
-def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize):
+def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, get_bsize=get_bsize, file_reader=file_reader, **kwargs):
 
 	_f_maxpart = float(maxpart)
 	rsi = []
@@ -45,6 +45,6 @@ def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize):
 	if rsi:
 		yield rsi, rst, rstask, mlen_i, mlen_t
 
-def batch_padder(finput, ftarget, vocabi, vocabt, vocabtask, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=batch_loader, custom_batch_mapper=None, **kwargs):
+def batch_padder(finput, ftarget, vocabi, vocabt, vocabtask, bsize, maxpad, maxpart, maxtoken, minbsize, batch_loader=batch_loader, **kwargs):
 
-	return batch_padder_base(finput, ftarget, vocabi, vocabt, vocabtask, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=custom_batch_loader, custom_batch_mapper=custom_batch_mapper, **kwargs)
+	return batch_padder_base(finput, ftarget, vocabi, vocabt, vocabtask, bsize, maxpad, maxpart, maxtoken, minbsize, batch_loader=batch_loader, **kwargs)

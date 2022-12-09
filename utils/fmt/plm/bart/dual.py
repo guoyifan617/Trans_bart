@@ -5,7 +5,7 @@ from utils.fmt.plm.dual import batch_padder as batch_padder_base
 
 from cnfg.vocab.plm.roberta import eos_id, pad_id
 
-def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, tgt_start_id=eos_id):
+def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, get_bsize=get_bsize, file_reader=file_reader, tgt_start_id=eos_id, **kwargs):
 
 	_f_maxpart = float(maxpart)
 	rsi = []
@@ -41,6 +41,6 @@ def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, tg
 	if rsi:
 		yield rsi, rst, mlen_i, mlen_t
 
-def batch_padder(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=batch_loader, pad_id=pad_id, **kwargs):
+def batch_padder(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, batch_loader=batch_loader, pad_id=pad_id, **kwargs):
 
-	return batch_padder_base(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=custom_batch_loader, pad_id=pad_id, **kwargs)
+	return batch_padder_base(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, batch_loader=batch_loader, pad_id=pad_id, **kwargs)

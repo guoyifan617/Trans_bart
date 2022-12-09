@@ -6,7 +6,9 @@ from utils.fmt.base import get_bsize, list_reader, pad_batch
 from utils.fmt.mulang.eff.single import batch_padder as batch_padder_single
 from utils.fmt.vocab.base import map_batch
 
-def batch_loader_many(filelist, bsize, maxpad, maxpart, maxtoken, minbsize):
+from cnfg.vocab.base import pad_id
+
+def batch_loader_many(filelist, bsize, maxpad, maxpart, maxtoken, minbsize, get_bsize=get_bsize, file_reader=file_reader, **kwargs):
 
 	_f_maxpart = float(maxpart)
 	rs = [[] for i in range(len(filelist))]
@@ -46,11 +48,10 @@ def batch_loader_many(filelist, bsize, maxpad, maxpart, maxtoken, minbsize):
 	if rs:
 		yield rs, rstask, mlen
 
-def batch_mapper_many(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=None):
+def batch_mapper_many(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, map_batch=map_batch, batch_loader=batch_loader_many, **kwargs):
 
-	_batch_loader = batch_loader_many if custom_batch_loader is None else custom_batch_loader
 	vocabtask = vocablist[-1]
-	for _rs, taskd, _mlen in _batch_loader(filelist, bsize, maxpad, maxpart, maxtoken, minbsize):
+	for _rs, taskd, _mlen in batch_loader(filelist, bsize, maxpad, maxpart, maxtoken, minbsize, **kwargs):
 		rs = []
 		mlen = []
 		for rsu, mlenu, vocab in zip(_rs, _mlen, vocablist):
@@ -59,18 +60,17 @@ def batch_mapper_many(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, min
 			mlen.append(mlenu + extok)
 		yield rs, vocabtask[taskd], mlen
 
-def batch_padder_many(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=None, custom_batch_mapper=None):
+def batch_padder_many(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, pad_batch=pad_batch, batch_mapper=batch_mapper_many, pad_id=pad_id, **kwargs):
 
-	_batch_mapper = batch_mapper_many if custom_batch_mapper is None else custom_batch_mapper
-	for rs, taskd, mlen in _batch_mapper(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=custom_batch_loader):
-		yield *tuple(pad_batch(rsu, mlenu) for rsu, mlenu in zip(rs, mlen)), taskd
+	for rs, taskd, mlen in batch_mapper(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, **kwargs):
+		yield *tuple(pad_batch(rsu, mlenu, pad_id=pad_id) for rsu, mlenu in zip(rs, mlen)), taskd
 
-def batch_padder(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=None, custom_batch_mapper=None):
+def batch_padder(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, **kwargs):
 
 	if isinstance(filelist, (list, tuple,)):
 		if len(filelist) > 1:
-			return batch_padder_many(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=custom_batch_loader, custom_batch_mapper=custom_batch_mapper)
+			return batch_padder_many(filelist, vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, **kwargs)
 		else:
-			return batch_padder_single(filelist[0], *vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=custom_batch_loader, custom_batch_mapper=custom_batch_mapper)
+			return batch_padder_single(filelist[0], *vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, **kwargs)
 	else:
-		return batch_padder_single(filelist, *vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, custom_batch_loader=custom_batch_loader, custom_batch_mapper=custom_batch_mapper)
+		return batch_padder_single(filelist, *vocablist, bsize, maxpad, maxpart, maxtoken, minbsize, **kwargs)
