@@ -31,7 +31,7 @@ def inf_file_loader(sfiles, dfiles, max_len=510, sent_file_reader=sent_file_read
 					yield _data
 					if print_func is not None:
 						_num_line += 1
-						if _num_line % 1000000 == 0:
+						if _num_line % 10000000 == 0:
 							print_func("%d lines loaded" % _num_line)
 			if _cl:
 				for _ in reversed(_cl):

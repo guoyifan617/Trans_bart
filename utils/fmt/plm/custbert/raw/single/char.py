@@ -28,7 +28,7 @@ def doc_file_reader(dfile, max_len=510, eos_token=eos_token):
 				else:
 					if (prev_sent_len + _cur_l) < _max_len_p:
 						_rs = list(prev_sent)
-						if eos_token is None:
+						if eos_token is not None:
 							_rs.append(eos_token)
 						_rs.extend(list(tmp))
 						yield tuple(_rs)
