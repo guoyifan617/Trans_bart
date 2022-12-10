@@ -154,10 +154,10 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 	model.eval()
 	#src_grp = ed["src"]
 	_ed = []
-	for i in range(nvalid):
-		_ = next(ed, None)
-		if _ is not None:
-			_ed.append(_)
+	for i, _ in enumerate(ed(), 1):
+		_ed.append(_)
+		if i == nvalid:
+			break
 	with torch_inference_mode():
 		for seq_batch in tqdm(_ed, mininterval=tqdm_mininterval):
 			#seq_batch = torch.from_numpy(src_grp[i][()])
