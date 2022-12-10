@@ -9,6 +9,7 @@ def inf_file_loader(sfiles, dfiles, max_len=510, sent_file_reader=sent_file_read
 
 	_s_files = FileList(sfiles, "rb")
 	_d_files = FileList(dfiles, "rb")
+	_num_line = 0
 	while True:
 		for _ in _s_files:
 			_.seek(0)
@@ -20,7 +21,6 @@ def inf_file_loader(sfiles, dfiles, max_len=510, sent_file_reader=sent_file_read
 				print_func("open %s" % _)
 		_files = [sent_file_reader(_, max_len=max_len) for _ in _s_files]
 		_files.extend([doc_file_reader(_, max_len=max_len) for _ in _d_files])
-		_num_line = 0
 		while _files:
 			_cl = []
 			for i, _f in enumerate(_files):
