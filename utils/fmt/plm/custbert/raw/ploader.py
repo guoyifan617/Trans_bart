@@ -48,7 +48,8 @@ class Loader:
 							self.print_func("end of file stream")
 					else:
 						_raw.append(_data)
-				_raw = [torch.as_tensor(_, dtype=torch.int32, device=_cpu).share_memory_() for _ in batch_padder(_raw, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=sort_list_file_reader, map_batch=map_batch, pad_id=pad_id)]
+				# as the reference to the tensor will be released after put into the queue, we cannot move it to the shared memory with .share_memory_()
+				_raw = [torch.as_tensor(_, dtype=torch.int32, device=_cpu) for _ in batch_padder(_raw, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=sort_list_file_reader, map_batch=map_batch, pad_id=pad_id)]
 				shuffle(_raw)
 				_raw = seperate_list(_raw, self.nbatch)
 				with self.cache_lck:
