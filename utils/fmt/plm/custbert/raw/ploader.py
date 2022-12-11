@@ -2,9 +2,9 @@
 
 import torch
 try:
-	from multiprocessing import Queue, Value
-except:
 	from torch.multiprocessing import Queue, Value
+except:
+	from multiprocessing import Queue, Value
 from math import ceil
 from random import shuffle
 from threading import Lock
