@@ -6,6 +6,7 @@ from random import shuffle
 from threading import Lock
 from time import sleep
 
+from utils.fmt.base import seperate_list
 from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_list_file_reader
 from utils.fmt.single import batch_padder
 from utils.fmt.vocab.char import ldvocab
@@ -17,9 +18,9 @@ from cnfg.vocab.plm.custbert import init_normal_token_id, init_vocab, pad_id, vo
 
 class Loader:
 
-	def __init__(self, sfiles, dfiles, vcbf, max_len=510, num_cache=8, raw_cache_size=1048576, minfreq=False, vsize=vocab_size, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, file_loader=inf_file_loader, ldvocab=ldvocab, print_func=print):
+	def __init__(self, sfiles, dfiles, vcbf, max_len=510, num_cache=1024, raw_cache_size=1048576, nbatch=256, minfreq=False, vsize=vocab_size, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, file_loader=inf_file_loader, ldvocab=ldvocab, print_func=print):
 
-		self.sent_files, self.doc_files, self.max_len, self.num_cache, self.raw_cache_size, self.minbsize, self.maxpad, self.maxpart, self.sleep_secs, self.file_loader, self.print_func = sfiles, dfiles, max_len, num_cache, raw_cache_size, ngpu, maxpad, maxpart, sleep_secs, file_loader, print_func
+		self.sent_files, self.doc_files, self.max_len, self.num_cache, self.raw_cache_size, self.nbatch, self.minbsize, self.maxpad, self.maxpart, self.sleep_secs, self.file_loader, self.print_func = sfiles, dfiles, max_len, num_cache, raw_cache_size, nbatch, ngpu, maxpad, maxpart, sleep_secs, file_loader, print_func
 		self.bsize, self.maxtoken = (bsize, maxtoken,) if self.minbsize == 1 else (bsize * self.minbsize, maxtoken * self.minbsize,)
 		self.vcb = ldvocab(vcbf, minf=minfreq, omit_vsize=vsize, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id)[0]
 		self.out = []
@@ -46,15 +47,9 @@ class Loader:
 							_cache.append(_data)
 					_cache = [torch.as_tensor(_, dtype=torch.int32, device=_cpu) for _ in batch_padder(_cache, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=sort_list_file_reader, map_batch=map_batch, pad_id=pad_id)]
 					shuffle(_cache)
-					_l = len(_cache)
-					if _l > 1:
-						_ind = _l // 2
-						with self.out_lck:
-							self.out.append(_cache[:_ind])
-							self.out.append(_cache[_ind:])
-					else:
-						with self.out_lck:
-							self.out.append(_cache)
+					_cache = seperate_list(_cache, self.nbatch)
+					with self.out_lck:
+						self.out.extend(_cache)
 			else:
 				sleep(self.sleep_secs)
 
