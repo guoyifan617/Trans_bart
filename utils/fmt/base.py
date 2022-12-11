@@ -242,6 +242,24 @@ def dict_insert_list(dict_in, value, *keys):
 
 	return dict_in
 
+def seperate_list_iter(lin, k):
+
+	i = 0
+	_ = []
+	for lu in lin:
+		_.append(lu)
+		i += 1
+		if i >= k:
+			yield _
+			_ = []
+			i = 0
+	if _:
+		yield _
+
+def seperate_list(lin, k):
+
+	return list(seperate_list_iter(lin, k))
+
 def all_in(lin, setin):
 
 	return all(lu in setin for lu in lin)

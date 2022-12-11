@@ -41,7 +41,7 @@ class Loader:
 						_data = next(dloader, None)
 						if _data is None:
 							if self.print_func is not None:
-								self.print_func("end of data")
+								self.print_func("end of file stream")
 						else:
 							_cache.append(_data)
 					_cache = [torch.as_tensor(_, dtype=torch.int32, device=_cpu) for _ in batch_padder(_cache, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=sort_list_file_reader, map_batch=map_batch, pad_id=pad_id)]
