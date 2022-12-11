@@ -18,7 +18,7 @@ from cnfg.vocab.plm.custbert import init_normal_token_id, init_vocab, pad_id, vo
 
 class Loader:
 
-	def __init__(self, sfiles, dfiles, vcbf, max_len=510, num_cache=1024, raw_cache_size=1048576, nbatch=256, minfreq=False, vsize=vocab_size, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, file_loader=inf_file_loader, ldvocab=ldvocab, print_func=print):
+	def __init__(self, sfiles, dfiles, vcbf, max_len=510, num_cache=512, raw_cache_size=1048576, nbatch=256, minfreq=False, vsize=vocab_size, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, file_loader=inf_file_loader, ldvocab=ldvocab, print_func=print):
 
 		self.sent_files, self.doc_files, self.max_len, self.num_cache, self.raw_cache_size, self.nbatch, self.minbsize, self.maxpad, self.maxpart, self.sleep_secs, self.file_loader, self.print_func = sfiles, dfiles, max_len, num_cache, raw_cache_size, nbatch, ngpu, maxpad, maxpart, sleep_secs, file_loader, print_func
 		self.bsize, self.maxtoken = (bsize, maxtoken,) if self.minbsize == 1 else (bsize * self.minbsize, maxtoken * self.minbsize,)
