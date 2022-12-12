@@ -6,6 +6,7 @@ from numpy import array as np_array, int32 as np_int32
 from os import remove
 from os.path import exists as fs_check
 from random import seed as rpyseed, shuffle
+from shutil import rmtree
 from time import sleep
 from uuid import uuid4 as uuid_func
 
@@ -44,17 +45,14 @@ def get_cache_fname(fpath, i=0, fprefix=cache_file_prefix):
 
 	return "%s%s.%d.h5" % (fpath, fprefix, i,)
 
-def remove_file(fname, print_func=print, ntry=5):
+def remove_file(fname, print_func=print):
 
-	for i in range(ntry):
-		if fs_check(fname):
-			try:
-				remove(fname)
-			except Exception as e:
-				if print_func is not None:
-					print_func(e)
-		else:
-			break
+	if fs_check(fname):
+		try:
+			remove(fname)
+		except Exception as e:
+			if print_func is not None:
+				print_func(e)
 
 class Loader:
 
@@ -85,6 +83,11 @@ class Loader:
 			for i in range(self.num_cache):
 				_cache_file = get_cache_fname(self.cache_path, i=i, fprefix=cache_file_prefix)
 				while fs_check(_cache_file):
+					for _ in range(self.num_cache):
+						if _ != i:
+							_tmp = get_cache_fname(self.cache_path, i=_, fprefix=cache_file_prefix)
+							if not fs_check(_tmp):
+								remove_file(_cache_file, print_func=self.print_func)
 					sleep(self.sleep_secs)
 				_raw = []
 				for _ in range(self.raw_cache_size):
@@ -141,3 +144,4 @@ class Loader:
 			for _fname in self.out:
 				remove_file(_fname, print_func=self.print_func)
 			self.out.clear()
+		rmtree(self.cache_path)
