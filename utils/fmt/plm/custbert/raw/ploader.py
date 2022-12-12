@@ -29,6 +29,7 @@ class Loader:
 		self.running = Value("d", 1)
 		self.p_loader = start_process(target=process_keeper, args=(self.running, self.sleep_secs,), kwargs={"target": self.loader})
 		self.t_builder = self.t_sender = None
+		self.iter = None
 
 	def builder(self):
 
@@ -80,7 +81,7 @@ class Loader:
 
 		return self.running.value
 
-	def __call__(self, *args, **kwargs):
+	def iter_func(self, *args, **kwargs):
 
 		while self.running.value:
 			for _ in range(self.out.qsize()):
@@ -89,6 +90,13 @@ class Loader:
 				else:
 					_ = self.out.get()
 					yield from _
+
+	def __call__(self, *args, **kwargs):
+
+		if self.iter is None:
+			self.iter = self.iter_func()
+		for _ in self.iter:
+			yield _
 
 	def status(self, mode=True):
 

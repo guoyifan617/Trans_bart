@@ -26,6 +26,7 @@ class Loader:
 		self.out_lck = Lock()
 		self.running = LockHolder(True)
 		self.t = start_thread(target=thread_keeper, args=((self.running,), all, self.sleep_secs,), kwargs={"target": self.loader})
+		self.iter = None
 
 	def loader(self):
 
@@ -45,7 +46,7 @@ class Loader:
 			else:
 				sleep(self.sleep_secs)
 
-	def __call__(self, *args, **kwargs):
+	def iter_func(self, *args, **kwargs):
 
 		while self.running():
 			with self.out_lck:
@@ -55,6 +56,13 @@ class Loader:
 					_ = None
 			if _ is not None:
 				yield from _
+
+	def __call__(self, *args, **kwargs):
+
+		if self.iter is None:
+			self.iter = self.iter_func()
+		for _ in self.iter:
+			yield _
 
 	def status(self, mode=True):
 

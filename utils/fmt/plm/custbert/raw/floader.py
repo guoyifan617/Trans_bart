@@ -68,6 +68,7 @@ class Loader:
 		self.todo = self.manager.list([get_cache_fname(self.cache_path, i=_, fprefix=cache_file_prefix) for _ in range(self.num_cache)])
 		self.running = Value("d", 1)
 		self.p_loader = start_process(target=process_keeper, args=(self.running, self.sleep_secs,), kwargs={"target": self.loader})
+		self.iter = None
 
 	def clean_cache_file(self):
 
@@ -94,7 +95,7 @@ class Loader:
 			else:
 				sleep(self.sleep_secs)
 
-	def __call__(self, *args, **kwargs):
+	def iter_func(self, *args, **kwargs):
 
 		while self.running.value:
 			if self.out:
@@ -120,6 +121,13 @@ class Loader:
 				self.todo.append(_cache_file)
 			else:
 				sleep(self.sleep_secs)
+
+	def __call__(self, *args, **kwargs):
+
+		if self.iter is None:
+			self.iter = self.iter_func()
+		for _ in self.iter:
+			yield _
 
 	def status(self, mode=True):
 
