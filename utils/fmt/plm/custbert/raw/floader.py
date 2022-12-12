@@ -20,7 +20,7 @@ from utils.fmt.vocab.plm.custbert import map_batch
 from utils.h5serial import h5File
 from utils.process import process_keeper, start_process
 
-from cnfg.ihyp import h5_libver, h5modelwargs, max_pad_tokens_sentence, max_sentences_gpu, max_tokens_gpu, normal_tokens_vs_pad_tokens
+from cnfg.ihyp import h5_libver, h5datawargs, max_pad_tokens_sentence, max_sentences_gpu, max_tokens_gpu, normal_tokens_vs_pad_tokens
 from cnfg.vocab.plm.custbert import init_normal_token_id, init_vocab, pad_id, vocab_size
 
 cache_file_prefix = "train"
@@ -89,7 +89,7 @@ class Loader:
 					src_grp = rsf.create_group("src")
 					curd = 0
 					for i_d in batch_padder(_raw, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=sort_list_file_reader, map_batch=map_batch, pad_id=pad_id):
-						src_grp.create_dataset(str(curd), data=np_array(i_d, dtype=np_int32), **h5modelwargs)
+						src_grp.create_dataset(str(curd), data=np_array(i_d, dtype=np_int32), **h5datawargs)
 						curd += 1
 					rsf["ndata"] = np_array([curd], dtype=np_int32)
 				self.out.append(_cache_file)
