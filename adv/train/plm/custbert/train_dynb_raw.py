@@ -16,7 +16,7 @@ from utils.dynbatch import GradientMonitor
 from utils.fmt.base import iter_to_str
 from utils.fmt.base4torch import load_emb, parse_cuda
 from utils.fmt.parser import parse_double_value_tuple
-from utils.fmt.plm.custbert.raw.ploader import Loader as DataLoader
+from utils.fmt.plm.custbert.raw.floader import Loader as DataLoader
 #from utils.h5serial import h5File
 from utils.init.base import init_model_params
 from utils.io import load_model_cpu, save_model, save_states
@@ -51,8 +51,8 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 	model.train()
 	cur_b, _ls = 1, {} if save_loss else None
 	#src_grp = td["src"]
-	for seq_batch_raw in tqdm(td(), mininterval=tqdm_mininterval):
-		seq_batch = seq_batch_raw#torch.from_numpy(src_grp[i_d][()])
+	for seq_batch in tqdm(td(), mininterval=tqdm_mininterval):
+		#torch.from_numpy(src_grp[i_d][()])
 		if mv_device:
 			seq_batch = seq_batch.to(mv_device, non_blocking=True)
 		seq_batch = seq_batch.long()
@@ -72,7 +72,6 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 
 		wd_add = mlm_mask.int().sum().item()#seq_batch[mlm_mask].ne(pad_id)
 		loss = output = seq_batch = seq_i = mlm_mask = None
-		del seq_batch_raw
 		sum_loss += loss_add
 		#if save_loss:
 			#_ls[i_d] = loss_add / wd_add
@@ -160,8 +159,8 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 		if i >= nvalid:
 			break
 	with torch_inference_mode():
-		for seq_batch_raw in tqdm(_ed, mininterval=tqdm_mininterval):
-			seq_batch = seq_batch_raw#torch.from_numpy(src_grp[i][()])
+		for seq_batch in tqdm(_ed, mininterval=tqdm_mininterval):
+			#torch.from_numpy(src_grp[i][()])
 			if mv_device:
 				seq_batch = seq_batch.to(mv_device, non_blocking=True)
 			seq_batch = seq_batch.long()
@@ -179,7 +178,6 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 			w += ot.numel()
 			r += trans.eq(ot).int().sum().item()
 			trans = loss = output = ot = seq_batch = mlm_mask = None
-			del seq_batch_raw
 	w = float(w)
 	return sum_loss / w, (w - r) / w * 100.0
 

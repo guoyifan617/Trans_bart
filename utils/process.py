@@ -1,9 +1,6 @@
 #encoding: utf-8
 
-try:
-	from torch.multiprocessing import Process
-except:
-	from multiprocessing import Process
+from multiprocessing import Process
 from time import sleep
 
 def start_process(*args, **kwargs):
