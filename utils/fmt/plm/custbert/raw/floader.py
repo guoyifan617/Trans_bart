@@ -7,7 +7,7 @@ from os import remove
 from os.path import exists as fs_check
 from random import shuffle
 from time import sleep
-from uuid import uuid1 as uuid_func
+from uuid import uuid4 as uuid_func
 
 from utils.base import mkdir
 from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_list_file_reader
@@ -30,8 +30,11 @@ def get_cache_path(*fnames):
 		if _ > 0:
 			_cache_path = _t[:_]
 			break
+	_uuid = uuid_func().hex
 	if _cache_path is None:
-		_cache_path = "cache/floader/%s/" % uuid_func().hex
+		_cache_path = "cache/floader/%s/" % _uuid
+	else:
+		_cache_path = "%sfloader/%s/" % (_cache_path, _uuid,)
 	mkdir(_cache_path)
 
 	return _cache_path

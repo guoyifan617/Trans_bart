@@ -43,7 +43,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 	cur_b, _ls = 1, {} if save_loss else None
 	#src_grp = td["src"]
 	for seq_batch in tqdm(td(), mininterval=tqdm_mininterval):
-		#torch.from_numpy(src_grp[i_d][()])
+		#seq_batch = torch.from_numpy(src_grp[i_d][()])
 		if mv_device:
 			seq_batch = seq_batch.to(mv_device, non_blocking=True)
 		seq_batch = seq_batch.long()
@@ -140,7 +140,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 			break
 	with torch_inference_mode():
 		for seq_batch in tqdm(_ed, mininterval=tqdm_mininterval):
-			#torch.from_numpy(src_grp[i][()])
+			#seq_batch = torch.from_numpy(src_grp[i][()])
 			if mv_device:
 				seq_batch = seq_batch.to(mv_device, non_blocking=True)
 			seq_batch = seq_batch.long()
