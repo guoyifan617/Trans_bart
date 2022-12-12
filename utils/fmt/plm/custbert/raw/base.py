@@ -39,7 +39,7 @@ def inf_file_loader(sfiles, dfiles, max_len=510, sent_file_reader=sent_file_read
 					if print_func is not None:
 						print_func("%s closed" % _fnames.pop(_))
 
-def sort_list_file_reader(x, *args, **kwargs):
+def sort_list_file_reader(x, *args, clear_input=True, **kwargs):
 
 	_d = {}
 	for _ in x:
@@ -49,7 +49,9 @@ def sort_list_file_reader(x, *args, **kwargs):
 				_d[_k].add(_)
 		else:
 			_d[_k] = set([_])
+	if clear_input:
+		x.clear()
 	for _k in sorted(_d.keys()):
-		_v = list(_d[_k])
+		_v = list(_d.pop(_k))
 		shuffle(_v)
 		yield from _v

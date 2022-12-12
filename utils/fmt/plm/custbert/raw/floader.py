@@ -92,7 +92,6 @@ class Loader:
 						src_grp.create_dataset(str(curd), data=np_array(i_d, dtype=np_int32), **h5datawargs)
 						curd += 1
 					rsf["ndata"] = np_array([curd], dtype=np_int32)
-				_raw.clear()
 				self.out.append(_cache_file)
 
 	def __call__(self, *args, **kwargs):
@@ -108,12 +107,16 @@ class Loader:
 						if self.print_func is not None:
 							self.print_func(e)
 					if td is not None:
+						if self.print_func is not None:
+							self.print_func("open %s" % _fname)
 						tl = [str(i) for i in range(td["ndata"][()].item())]
 						shuffle(tl)
 						src_grp = td["src"]
 						for i_d in tl:
 							yield torch.from_numpy(src_grp[i_d][()])
 						td.close()
+						if self.print_func is not None:
+							self.print_func("close %s" % _fname)
 					if fs_check(_fname):
 						try:
 							remove(_fname)
