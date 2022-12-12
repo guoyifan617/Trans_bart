@@ -5,7 +5,7 @@ from multiprocessing import Manager, Value
 from numpy import array as np_array, int32 as np_int32
 from os import remove
 from os.path import exists as fs_check
-from random import shuffle
+from random import seed as rpyseed, shuffle
 from time import sleep
 from uuid import uuid4 as uuid_func
 
@@ -17,6 +17,7 @@ from utils.fmt.vocab.plm.custbert import map_batch
 from utils.h5serial import h5File
 from utils.process import process_keeper, start_process
 
+from cnfg.base import seed as rand_seed
 from cnfg.ihyp import h5_libver, h5datawargs, max_pad_tokens_sentence, max_sentences_gpu, max_tokens_gpu, normal_tokens_vs_pad_tokens
 from cnfg.vocab.plm.custbert import init_normal_token_id, init_vocab, pad_id, vocab_size
 
@@ -43,6 +44,18 @@ def get_cache_fname(fpath, i=0, fprefix=cache_file_prefix):
 
 	return "%s%s.%d.h5" % (fpath, fprefix, i,)
 
+def remove_file(fname, print_func=print, ntry=5):
+
+	for i in range(ntry):
+		if fs_check(fname):
+			try:
+				remove(fname)
+			except Exception as e:
+				if print_func is not None:
+					print_func(e)
+		else:
+			break
+
 class Loader:
 
 	def __init__(self, sfiles, dfiles, vcbf, max_len=510, num_cache=8, raw_cache_size=4194304, nbatch=256, minfreq=False, vsize=vocab_size, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, file_loader=inf_file_loader, ldvocab=ldvocab, print_func=print):
@@ -61,15 +74,11 @@ class Loader:
 
 		for i in range(self.num_cache):
 			_cache_file = get_cache_fname(self.cache_path, i=i, fprefix=cache_file_prefix)
-			if fs_check(_cache_file):
-				try:
-					remove(_cache_file)
-				except Exception as e:
-					if self.print_func is not None:
-						self.print_func(e)
+			remove_file(_cache_file, print_func=self.print_func)
 
 	def loader(self):
 
+		rpyseed(rand_seed)
 		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len, print_func=self.print_func)
 		_cpu = torch.device("cpu")
 		while self.running.value:
@@ -117,12 +126,7 @@ class Loader:
 						td.close()
 						if self.print_func is not None:
 							self.print_func("close %s" % _fname)
-					if fs_check(_fname):
-						try:
-							remove(_fname)
-						except Exception as e:
-							if self.print_func is not None:
-								self.print_func(e)
+					remove_file(_fname, print_func=self.print_func)
 			else:
 				sleep(self.sleep_secs)
 
@@ -135,10 +139,5 @@ class Loader:
 		self.running.value = 0
 		if self.out:
 			for _fname in self.out:
-				if fs_check(_fname):
-					try:
-						remove(_fname)
-					except Exception as e:
-						if self.print_func is not None:
-							self.print_func(e)
+				remove_file(_fname, print_func=self.print_func)
 			self.out.clear()

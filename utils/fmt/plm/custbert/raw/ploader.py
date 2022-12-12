@@ -2,7 +2,7 @@
 
 import torch
 from multiprocessing import Queue, Value
-from random import shuffle
+from random import seed as rpyseed, shuffle
 from threading import Lock
 from time import sleep
 
@@ -14,6 +14,7 @@ from utils.fmt.vocab.plm.custbert import map_batch
 from utils.process import process_keeper, start_process
 from utils.thread import start_thread, thread_keeper
 
+from cnfg.base import seed as rand_seed
 from cnfg.ihyp import max_pad_tokens_sentence, max_sentences_gpu, max_tokens_gpu, normal_tokens_vs_pad_tokens
 from cnfg.vocab.plm.custbert import init_normal_token_id, init_vocab, pad_id, vocab_size
 
@@ -76,6 +77,7 @@ class Loader:
 
 	def loader(self):
 
+		rpyseed(rand_seed)
 		self.cache = []
 		self.cache_lck = Lock()
 		self.t_builder = start_thread(target=thread_keeper, args=((self.is_running,), all, self.sleep_secs,), kwargs={"target": self.builder})
