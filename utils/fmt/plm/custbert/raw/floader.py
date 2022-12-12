@@ -11,7 +11,7 @@ from time import sleep
 from uuid import uuid4 as uuid_func
 
 from utils.base import mkdir
-from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_list_file_reader
+from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_lines_reader
 from utils.fmt.single import batch_padder
 from utils.fmt.vocab.char import ldvocab
 from utils.fmt.vocab.plm.custbert import map_batch
@@ -65,6 +65,7 @@ class Loader:
 		self.clean_cache_file()
 		self.manager = Manager()
 		self.out = self.manager.list()
+		self.todo = self.manager.list([get_cache_fname(self.cache_path, i=_, fprefix=cache_file_prefix) for _ in range(self.num_cache)])
 		self.running = Value("d", 1)
 		self.p_loader = start_process(target=process_keeper, args=(self.running, self.sleep_secs,), kwargs={"target": self.loader})
 
@@ -78,33 +79,20 @@ class Loader:
 
 		rpyseed(rand_seed)
 		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len, print_func=self.print_func)
-		_cpu = torch.device("cpu")
+		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
 		while self.running.value:
-			for i in range(self.num_cache):
-				_cache_file = get_cache_fname(self.cache_path, i=i, fprefix=cache_file_prefix)
-				while fs_check(_cache_file):
-					for _ in range(self.num_cache):
-						if _ != i:
-							_tmp = get_cache_fname(self.cache_path, i=_, fprefix=cache_file_prefix)
-							if not fs_check(_tmp):
-								remove_file(_cache_file, print_func=self.print_func)
-					sleep(self.sleep_secs)
-				_raw = []
-				for _ in range(self.raw_cache_size):
-					_data = next(dloader, None)
-					if _data is None:
-						if self.print_func is not None:
-							self.print_func("end of file stream")
-					else:
-						_raw.append(_data)
+			if self.todo:
+				_cache_file = self.todo.pop(0)
 				with h5File(_cache_file, "w", libver=h5_libver) as rsf:
 					src_grp = rsf.create_group("src")
 					curd = 0
-					for i_d in batch_padder(_raw, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=sort_list_file_reader, map_batch=map_batch, pad_id=pad_id):
+					for i_d in batch_padder(dloader, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader, map_batch=map_batch, pad_id=pad_id):
 						src_grp.create_dataset(str(curd), data=np_array(i_d, dtype=np_int32), **h5datawargs)
 						curd += 1
 					rsf["ndata"] = np_array([curd], dtype=np_int32)
 				self.out.append(_cache_file)
+			else:
+				sleep(self.sleep_secs)
 
 	def __call__(self, *args, **kwargs):
 
@@ -129,7 +117,7 @@ class Loader:
 						td.close()
 						if self.print_func is not None:
 							self.print_func("close %s" % _fname)
-					remove_file(_fname, print_func=self.print_func)
+				self.todo.append(_cache_file)
 			else:
 				sleep(self.sleep_secs)
 

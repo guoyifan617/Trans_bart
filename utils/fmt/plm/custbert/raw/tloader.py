@@ -6,7 +6,7 @@ from threading import Lock
 from time import sleep
 
 from utils.fmt.base import seperate_list
-from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_list_file_reader
+from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_lines_reader
 from utils.fmt.single import batch_padder
 from utils.fmt.vocab.char import ldvocab
 from utils.fmt.vocab.plm.custbert import map_batch
@@ -30,24 +30,18 @@ class Loader:
 	def loader(self):
 
 		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len, print_func=self.print_func)
+		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
 		_cpu = torch.device("cpu")
 		while self.running():
 			with self.out_lck:
 				_num_out = len(self.out)
 			if self.num_cache > _num_out:
-				_cache = []
-				for _ in range(self.raw_cache_size):
-					_data = next(dloader, None)
-					if _data is None:
-						if self.print_func is not None:
-							self.print_func("end of file stream")
-					else:
-						_cache.append(_data)
-				_cache = [torch.as_tensor(_, dtype=torch.int32, device=_cpu) for _ in batch_padder(_cache, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=sort_list_file_reader, map_batch=map_batch, pad_id=pad_id)]
+				_cache = [torch.as_tensor(_, dtype=torch.int32, device=_cpu) for _ in batch_padder(dloader, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader, map_batch=map_batch, pad_id=pad_id)]
 				shuffle(_cache)
 				_cache = seperate_list(_cache, self.nbatch)
 				with self.out_lck:
 					self.out.extend(_cache)
+				_cache = None
 			else:
 				sleep(self.sleep_secs)
 

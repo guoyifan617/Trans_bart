@@ -7,7 +7,7 @@ from threading import Lock
 from time import sleep
 
 from utils.fmt.base import seperate_list
-from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_list_file_reader
+from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_lines_reader
 from utils.fmt.single import batch_padder
 from utils.fmt.vocab.char import ldvocab
 from utils.fmt.vocab.plm.custbert import map_batch
@@ -33,21 +33,14 @@ class Loader:
 	def builder(self):
 
 		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len, print_func=self.print_func)
+		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
 		_cpu = torch.device("cpu")
 		while self.running.value:
 			with self.cache_lck:
 				_num_cache = len(self.cache)
 			if _num_cache < self.num_cache:
-				_raw = []
-				for _ in range(self.raw_cache_size):
-					_data = next(dloader, None)
-					if _data is None:
-						if self.print_func is not None:
-							self.print_func("end of file stream")
-					else:
-						_raw.append(_data)
 				# as the reference to the tensor will be released after put into the queue, we cannot move it to the shared memory with .share_memory_()
-				_raw = [torch.as_tensor(_, dtype=torch.int32, device=_cpu) for _ in batch_padder(_raw, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=sort_list_file_reader, map_batch=map_batch, pad_id=pad_id)]
+				_raw = [torch.as_tensor(_, dtype=torch.int32, device=_cpu) for _ in batch_padder(dloader, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader, map_batch=map_batch, pad_id=pad_id)]
 				shuffle(_raw)
 				_raw = seperate_list(_raw, self.nbatch)
 				with self.cache_lck:

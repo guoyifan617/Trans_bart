@@ -55,3 +55,29 @@ def sort_list_file_reader(x, *args, clear_input=True, **kwargs):
 		_v = list(_d.pop(_k))
 		shuffle(_v)
 		yield from _v
+
+class sort_lines_reader:
+
+	def __init__(self, line_read=1048576):
+
+		self.line_read = line_read
+
+	def __call__(self, x, *args, line_read=None, **kwargs):
+
+		_line_read = (self.line_read if line_read is None else line_read) - 1
+		_d = {}
+		_ind = 0
+		for _ in x:
+			_k = len(_)
+			if _k in _d:
+				if _ not in _d[_k]:
+					_d[_k].add(_)
+			else:
+				_d[_k] = set([_])
+			_ind += 1
+			if _ind > _line_read:
+				break
+		for _k in sorted(_d.keys()):
+			_v = list(_d.pop(_k))
+			shuffle(_v)
+			yield from _v
