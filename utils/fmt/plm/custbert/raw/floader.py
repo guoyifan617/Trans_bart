@@ -51,10 +51,22 @@ class Loader:
 		self.bsize, self.maxtoken = (bsize, maxtoken,) if self.minbsize == 1 else (bsize * self.minbsize, maxtoken * self.minbsize,)
 		self.cache_path = get_cache_path(*self.sent_files, *self.doc_files)
 		self.vcb = ldvocab(vcbf, minf=minfreq, omit_vsize=vsize, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id)[0]
+		self.clean_cache_file()
 		self.manager = Manager()
 		self.out = self.manager.list()
 		self.running = Value("d", 1)
 		self.p_loader = start_process(target=process_keeper, args=(self.running, self.sleep_secs,), kwargs={"target": self.loader})
+
+	def clean_cache_file(self):
+
+		for i in range(self.num_cache):
+			_cache_file = get_cache_fname(self.cache_path, i=i, fprefix=cache_file_prefix)
+			if fs_check(_cache_file):
+				try:
+					remove(_cache_file)
+				except Exception as e:
+					if self.print_func is not None:
+						self.print_func(e)
 
 	def loader(self):
 
