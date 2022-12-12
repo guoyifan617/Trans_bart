@@ -1,18 +1,15 @@
 #encoding: utf-8
 
 import torch
-from math import ceil
 from multiprocessing import Manager, Value
 from numpy import array as np_array, int32 as np_int32
 from os import remove
 from os.path import exists as fs_check
 from random import shuffle
-from threading import Lock
 from time import sleep
 from uuid import uuid1 as uuid_func
 
 from utils.base import mkdir
-from utils.fmt.base import seperate_list
 from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_list_file_reader
 from utils.fmt.single import batch_padder
 from utils.fmt.vocab.char import ldvocab
@@ -74,6 +71,9 @@ class Loader:
 		_cpu = torch.device("cpu")
 		while self.running.value:
 			for i in range(self.num_cache):
+				_cache_file = get_cache_fname(self.cache_path, i=i, fprefix=cache_file_prefix)
+				while fs_check(_cache_file):
+					sleep(self.sleep_secs)
 				_raw = []
 				for _ in range(self.raw_cache_size):
 					_data = next(dloader, None)
@@ -82,9 +82,6 @@ class Loader:
 							self.print_func("end of file stream")
 					else:
 						_raw.append(_data)
-				_cache_file = get_cache_fname(self.cache_path, i=i, fprefix=cache_file_prefix)
-				while fs_check(_cache_file):
-					sleep(self.sleep_secs)
 				with h5File(_cache_file, "w", libver=h5_libver) as rsf:
 					src_grp = rsf.create_group("src")
 					curd = 0
@@ -92,6 +89,7 @@ class Loader:
 						src_grp.create_dataset(str(curd), data=np_array(i_d, dtype=np_int32), **h5datawargs)
 						curd += 1
 					rsf["ndata"] = np_array([curd], dtype=np_int32)
+				_raw.clear()
 				self.out.append(_cache_file)
 
 	def __call__(self, *args, **kwargs):

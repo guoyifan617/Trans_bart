@@ -1,7 +1,6 @@
 #encoding: utf-8
 
 import torch
-from math import ceil
 from random import shuffle
 from threading import Lock
 from time import sleep

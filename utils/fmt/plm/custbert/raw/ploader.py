@@ -1,10 +1,10 @@
 #encoding: utf-8
 
 import torch
-from math import ceil
 from multiprocessing import Queue, Value
 from random import shuffle
 from threading import Lock
+from time import sleep
 
 from utils.fmt.base import seperate_list
 from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_list_file_reader
@@ -52,6 +52,8 @@ class Loader:
 				with self.cache_lck:
 					self.cache.extend(_raw)
 				_raw = None
+			else:
+				sleep(self.sleep_secs)
 
 	def sender(self):
 
@@ -69,6 +71,8 @@ class Loader:
 						for _nbatch in _:
 							self.out.put(_nbatch)
 							_ = None
+			else:
+				sleep(self.sleep_secs)
 
 	def loader(self):
 
