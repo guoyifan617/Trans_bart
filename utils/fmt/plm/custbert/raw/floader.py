@@ -68,8 +68,8 @@ class Loader:
 					if _data is None:
 						if self.print_func is not None:
 							self.print_func("end of file stream")
-						else:
-							_raw.append(_data)
+					else:
+						_raw.append(_data)
 				_cache_file = get_cache_fname(self.cache_path, i=i, fprefix=cache_file_prefix)
 				while fs_check(_cache_file):
 					sleep(self.sleep_secs)
@@ -77,8 +77,7 @@ class Loader:
 					src_grp = rsf.create_group("src")
 					curd = 0
 					for i_d in batch_padder(_raw, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=sort_list_file_reader, map_batch=map_batch, pad_id=pad_id):
-						rid = np_array(i_d, dtype=np_int32)
-						src_grp.create_dataset(str(curd), data=rid, **h5modelwargs)
+						src_grp.create_dataset(str(curd), data=np_array(i_d, dtype=np_int32), **h5modelwargs)
 						curd += 1
 					rsf["ndata"] = np_array([curd], dtype=np_int32)
 				self.out.append(_cache_file)
