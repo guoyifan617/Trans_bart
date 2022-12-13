@@ -92,7 +92,7 @@ class Loader:
 							self.print_func(e)
 					if td is not None:
 						if self.print_func is not None:
-							self.print_func("open %s" % _cache_file)
+							self.print_func("load from %s" % _cache_file)
 						tl = [str(i) for i in range(td["ndata"][()].item())]
 						shuffle(tl)
 						src_grp = td["src"]
@@ -100,7 +100,7 @@ class Loader:
 							yield torch.from_numpy(src_grp[i_d][()])
 						td.close()
 						if self.print_func is not None:
-							self.print_func("close %s" % _cache_file)
+							self.print_func("%s closed" % _cache_file)
 				self.todo.append(_cache_file)
 			else:
 				sleep(self.sleep_secs)
@@ -123,4 +123,4 @@ class Loader:
 			self.todo.clear()
 		if self.out:
 			self.out.clear()
-		rmtree(self.cache_path)
+		rmtree(self.cache_path, ignore_errors=True)
