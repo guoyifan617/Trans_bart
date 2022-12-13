@@ -3,7 +3,6 @@
 import torch
 from multiprocessing import Manager, Value
 from numpy import array as np_array, int32 as np_int32
-from os import remove
 from os.path import exists as fs_check
 from random import seed as rpyseed, shuffle
 from shutil import rmtree
@@ -45,15 +44,6 @@ def get_cache_fname(fpath, i=0, fprefix=cache_file_prefix):
 
 	return "%s%s.%d.h5" % (fpath, fprefix, i,)
 
-def remove_file(fname, print_func=print):
-
-	if fs_check(fname):
-		try:
-			remove(fname)
-		except Exception as e:
-			if print_func is not None:
-				print_func(e)
-
 class Loader:
 
 	def __init__(self, sfiles, dfiles, vcbf, max_len=510, num_cache=8, raw_cache_size=4194304, nbatch=256, minfreq=False, vsize=vocab_size, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, file_loader=inf_file_loader, ldvocab=ldvocab, print_func=print):
@@ -62,19 +52,12 @@ class Loader:
 		self.bsize, self.maxtoken = (bsize, maxtoken,) if self.minbsize == 1 else (bsize * self.minbsize, maxtoken * self.minbsize,)
 		self.cache_path = get_cache_path(*self.sent_files, *self.doc_files)
 		self.vcb = ldvocab(vcbf, minf=minfreq, omit_vsize=vsize, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id)[0]
-		self.clean_cache_file()
 		self.manager = Manager()
 		self.out = self.manager.list()
 		self.todo = self.manager.list([get_cache_fname(self.cache_path, i=_, fprefix=cache_file_prefix) for _ in range(self.num_cache)])
 		self.running = Value("d", 1)
 		self.p_loader = start_process(target=process_keeper, args=(self.running, self.sleep_secs,), kwargs={"target": self.loader})
 		self.iter = None
-
-	def clean_cache_file(self):
-
-		for i in range(self.num_cache):
-			_cache_file = get_cache_fname(self.cache_path, i=i, fprefix=cache_file_prefix)
-			remove_file(_cache_file, print_func=self.print_func)
 
 	def loader(self):
 
@@ -99,17 +82,17 @@ class Loader:
 
 		while self.running.value:
 			if self.out:
-				_fname = self.out.pop(0)
-				if fs_check(_fname):
+				_cache_file = self.out.pop(0)
+				if fs_check(_cache_file):
 					try:
-						td = h5File(_fname, "r")
+						td = h5File(_cache_file, "r")
 					except Exception as e:
 						td = None
 						if self.print_func is not None:
 							self.print_func(e)
 					if td is not None:
 						if self.print_func is not None:
-							self.print_func("open %s" % _fname)
+							self.print_func("open %s" % _cache_file)
 						tl = [str(i) for i in range(td["ndata"][()].item())]
 						shuffle(tl)
 						src_grp = td["src"]
@@ -117,7 +100,7 @@ class Loader:
 							yield torch.from_numpy(src_grp[i_d][()])
 						td.close()
 						if self.print_func is not None:
-							self.print_func("close %s" % _fname)
+							self.print_func("close %s" % _cache_file)
 				self.todo.append(_cache_file)
 			else:
 				sleep(self.sleep_secs)
@@ -136,8 +119,8 @@ class Loader:
 	def close(self):
 
 		self.running.value = 0
+		if self.todo:
+			self.todo.clear()
 		if self.out:
-			for _fname in self.out:
-				remove_file(_fname, print_func=self.print_func)
 			self.out.clear()
 		rmtree(self.cache_path)
