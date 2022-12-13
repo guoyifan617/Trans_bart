@@ -66,15 +66,13 @@ class sort_lines_reader:
 
 		_line_read = (self.line_read if line_read is None else line_read) - 1
 		_d = {}
-		_ind = 0
-		for _ in x:
+		for _ind, _ in enumerate(x, 1):
 			_k = len(_)
 			if _k in _d:
 				if _ not in _d[_k]:
 					_d[_k].add(_)
 			else:
 				_d[_k] = set([_])
-			_ind += 1
 			if _ind > _line_read:
 				break
 		for _k in sorted(_d.keys()):
