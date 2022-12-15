@@ -36,6 +36,8 @@ def pos_norm(lin, alpha=1.0):
 	if alpha != 1.0:
 		tmp = [tmpu ** alpha for tmpu in tmp]
 	_mv = sum(tmp)
+	if _mv == 0.0:
+		_mv = 1.0
 
 	return [tmpu / _mv for tmpu in tmp]
 
@@ -160,6 +162,8 @@ def get_delta(lin):
 def get_delta_norm(lin):
 
 	_mv = max(*lin)
+	if _mv == 0.0:
+		_mv = 1.0
 
 	return (_mv - min(*lin)) / _mv
 
