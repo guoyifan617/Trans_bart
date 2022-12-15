@@ -55,7 +55,7 @@ class Loader:
 		self.manager = Manager()
 		self.out = self.manager.list()
 		self.todo = self.manager.list([get_cache_fname(self.cache_path, i=_, fprefix=cache_file_prefix) for _ in range(self.num_cache)])
-		self.running = Value("d", 1)
+		self.running = Value("B", 1, lock=True)
 		self.p_loader = start_process(target=self.loader)
 		self.iter = None
 
@@ -114,7 +114,8 @@ class Loader:
 
 	def status(self, mode=True):
 
-		self.running.value = 1 if mode else 0
+		with self.running.get_lock():
+			self.running.value = 1 if mode else 0
 
 	def close(self):
 

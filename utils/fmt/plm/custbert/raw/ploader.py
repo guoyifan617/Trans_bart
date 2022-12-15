@@ -26,7 +26,7 @@ class Loader:
 		self.bsize, self.maxtoken = (bsize, maxtoken,) if self.minbsize == 1 else (bsize * self.minbsize, maxtoken * self.minbsize,)
 		self.vcb = ldvocab(vcbf, minf=minfreq, omit_vsize=vsize, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id)[0]
 		self.out = Queue()
-		self.running = Value("d", 1)
+		self.running = Value("B", 1, lock=True)
 		self.p_loader = start_process(target=self.loader)
 		self.t_builder = self.t_sender = None
 		self.iter = None
@@ -100,7 +100,8 @@ class Loader:
 
 	def status(self, mode=True):
 
-		self.running.value = 1 if mode else 0
+		with self.running.get_lock():
+			self.running.value = 1 if mode else 0
 
 	def close(self):
 
