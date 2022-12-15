@@ -33,7 +33,7 @@ class Loader:
 
 	def builder(self):
 
-		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len)
+		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len, print_func=None)
 		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
 		_cpu = torch.device("cpu")
 		while self.running.value:
@@ -94,7 +94,7 @@ class Loader:
 	def __call__(self, *args, **kwargs):
 
 		if self.iter is None:
-			self.iter = self.iter_func()
+			self.iter = self.iter_func(*args, **kwargs)
 		for _ in self.iter:
 			yield _
 

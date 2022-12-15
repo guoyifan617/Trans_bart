@@ -62,7 +62,7 @@ class Loader:
 	def loader(self):
 
 		rpyseed(rand_seed)
-		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len)
+		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len, print_func=None)
 		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
 		while self.running.value:
 			if self.todo:
@@ -108,7 +108,7 @@ class Loader:
 	def __call__(self, *args, **kwargs):
 
 		if self.iter is None:
-			self.iter = self.iter_func()
+			self.iter = self.iter_func(*args, **kwargs)
 		for _ in self.iter:
 			yield _
 
