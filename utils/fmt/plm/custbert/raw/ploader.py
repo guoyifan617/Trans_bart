@@ -11,8 +11,8 @@ from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_lines_reader
 from utils.fmt.single import batch_padder
 from utils.fmt.vocab.char import ldvocab
 from utils.fmt.vocab.plm.custbert import map_batch
-from utils.process import process_keeper, start_process
-from utils.thread import start_thread, thread_keeper
+from utils.process import start_process
+from utils.thread import start_thread
 
 from cnfg.base import seed as rand_seed
 from cnfg.ihyp import max_pad_tokens_sentence, max_sentences_gpu, max_tokens_gpu, normal_tokens_vs_pad_tokens
@@ -27,13 +27,13 @@ class Loader:
 		self.vcb = ldvocab(vcbf, minf=minfreq, omit_vsize=vsize, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id)[0]
 		self.out = Queue()
 		self.running = Value("d", 1)
-		self.p_loader = start_process(target=process_keeper, args=(self.running, self.sleep_secs,), kwargs={"target": self.loader})
+		self.p_loader = start_process(target=self.loader)
 		self.t_builder = self.t_sender = None
 		self.iter = None
 
 	def builder(self):
 
-		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len, print_func=self.print_func)
+		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len)
 		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
 		_cpu = torch.device("cpu")
 		while self.running.value:
@@ -74,8 +74,8 @@ class Loader:
 		rpyseed(rand_seed)
 		self.cache = []
 		self.cache_lck = Lock()
-		self.t_builder = start_thread(target=thread_keeper, args=((self.is_running,), all, self.sleep_secs,), kwargs={"target": self.builder})
-		self.t_sender = start_thread(target=thread_keeper, args=((self.is_running,), all, self.sleep_secs,), kwargs={"target": self.sender})
+		self.t_builder = start_thread(target=self.builder)
+		self.t_sender = start_thread(target=self.sender)
 
 	def is_running(self):
 

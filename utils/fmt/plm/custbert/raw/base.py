@@ -37,7 +37,7 @@ def inf_file_loader(sfiles, dfiles, max_len=510, sent_file_reader=sent_file_read
 				for _ in reversed(_cl):
 					del _files[_]
 					if print_func is not None:
-						print_func("%s closed" % _fnames.pop(_))
+						print_func("close %s" % _fnames.pop(_))
 
 def sort_list_file_reader(x, *args, clear_input=True, **kwargs):
 

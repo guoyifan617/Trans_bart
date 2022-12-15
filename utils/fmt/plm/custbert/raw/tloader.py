@@ -10,7 +10,7 @@ from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_lines_reader
 from utils.fmt.single import batch_padder
 from utils.fmt.vocab.char import ldvocab
 from utils.fmt.vocab.plm.custbert import map_batch
-from utils.thread import LockHolder, start_thread, thread_keeper
+from utils.thread import LockHolder, start_thread
 
 from cnfg.ihyp import max_pad_tokens_sentence, max_sentences_gpu, max_tokens_gpu, normal_tokens_vs_pad_tokens
 from cnfg.vocab.plm.custbert import init_normal_token_id, init_vocab, pad_id, vocab_size
@@ -25,7 +25,7 @@ class Loader:
 		self.out = []
 		self.out_lck = Lock()
 		self.running = LockHolder(True)
-		self.t = start_thread(target=thread_keeper, args=((self.running,), all, self.sleep_secs,), kwargs={"target": self.loader})
+		self.t = start_thread(target=self.loader)
 		self.iter = None
 
 	def loader(self):

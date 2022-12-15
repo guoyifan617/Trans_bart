@@ -15,7 +15,7 @@ from utils.fmt.single import batch_padder
 from utils.fmt.vocab.char import ldvocab
 from utils.fmt.vocab.plm.custbert import map_batch
 from utils.h5serial import h5File
-from utils.process import process_keeper, start_process
+from utils.process import start_process
 
 from cnfg.base import seed as rand_seed
 from cnfg.ihyp import h5_libver, h5datawargs, max_pad_tokens_sentence, max_sentences_gpu, max_tokens_gpu, normal_tokens_vs_pad_tokens
@@ -56,13 +56,13 @@ class Loader:
 		self.out = self.manager.list()
 		self.todo = self.manager.list([get_cache_fname(self.cache_path, i=_, fprefix=cache_file_prefix) for _ in range(self.num_cache)])
 		self.running = Value("d", 1)
-		self.p_loader = start_process(target=process_keeper, args=(self.running, self.sleep_secs,), kwargs={"target": self.loader})
+		self.p_loader = start_process(target=self.loader)
 		self.iter = None
 
 	def loader(self):
 
 		rpyseed(rand_seed)
-		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len, print_func=self.print_func)
+		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len)
 		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
 		while self.running.value:
 			if self.todo:
@@ -92,7 +92,7 @@ class Loader:
 							self.print_func(e)
 					if td is not None:
 						if self.print_func is not None:
-							self.print_func("load from %s" % _cache_file)
+							self.print_func("load %s" % _cache_file)
 						tl = [str(i) for i in range(td["ndata"][()].item())]
 						shuffle(tl)
 						src_grp = td["src"]
@@ -100,7 +100,7 @@ class Loader:
 							yield torch.from_numpy(src_grp[i_d][()])
 						td.close()
 						if self.print_func is not None:
-							self.print_func("%s closed" % _cache_file)
+							self.print_func("close %s" % _cache_file)
 				self.todo.append(_cache_file)
 			else:
 				sleep(self.sleep_secs)
