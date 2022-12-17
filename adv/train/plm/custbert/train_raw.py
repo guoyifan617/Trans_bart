@@ -2,7 +2,7 @@
 
 import torch
 #from random import sample, shuffle
-from torch.optim import Adam as Optimizer
+from torch.optim import RAdam as Optimizer
 
 from loss.bert import LabelSmoothingLoss
 from lrsch import GoogleLR as LRScheduler
@@ -159,7 +159,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 			w += ot.numel()
 			r += trans.eq(ot).int().sum().item()
 			trans = loss = output = ot = seq_batch = mlm_mask = None
-	w = float(1 if w == 0 else w)
+	w = float(w) if w > 0 else 1.0
 	return sum_loss / w, (w - r) / w * 100.0
 
 def hook_lr_update(optm, flags=None):
