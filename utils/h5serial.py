@@ -37,10 +37,8 @@ def h5write_dict(gwrt, dtw, h5args=h5modelwargs):
 			gwrt.create_group(k)
 			h5write_list(gwrt[k], _v, h5args=h5args)
 		else:
-			if _v.device.type == "cpu":
-				gwrt.create_dataset(k, data=_v.numpy(), **h5args)
-			else:
-				gwrt.create_dataset(k, data=_v.cpu().numpy(), **h5args)
+			_ = _v if _v.device.type == "cpu" else _v.cpu()
+			gwrt.create_dataset(k, data=_.numpy(), **h5args)
 
 def h5write_list(gwrt, ltw, h5args=h5modelwargs):
 

@@ -7,21 +7,31 @@ from threading import Thread
 from utils.h5serial import h5load, h5save
 from utils.torch.comp import torch_no_grad
 
-from cnfg.ihyp import h5modelwargs, n_keep_best
+from cnfg.ihyp import h5modelwargs, hdf5_load_parameter_name, hdf5_save_parameter_name, n_keep_best
 
-def load_model_cpu(modf, base_model):
+def load_model_cpu_p(modf, base_model, **kwargs):
 
 	with torch_no_grad():
-		for para, mp in zip(base_model.parameters(), h5load(modf)):
+		for para, mp in zip(base_model.parameters(), h5load(modf, restore_list=True)):
 			para.copy_(mp)
 
 	return base_model
 
-def load_model_cpu_old(modf, base_model):
+def load_model_cpu_np(modf, base_model, strict=False, print_func=print, **kwargs):
 
-	base_model.load_state_dict(h5load(modf))
+	_ = base_model.load_state_dict(h5load(modf, restore_list=False), strict=strict, **kwargs)
+	if (print_func is not None) and (_ is not None):
+		for _msg in _:
+			if _msg:
+				print_func(_msg)
 
 	return base_model
+
+mp_func_p = lambda m: [_t.data for _t in m.parameters()]
+mp_func_np = lambda m: {_k: _t.data for _k, _t in m.named_parameters()}
+
+load_model_cpu = load_model_cpu_np if hdf5_load_parameter_name else load_model_cpu_p
+mp_func = mp_func_np if hdf5_save_parameter_name else mp_func_p
 
 class bestfkeeper:
 
@@ -67,7 +77,7 @@ def save_model(model, fname, sub_module=False, print_func=print, mtyp=None, h5ar
 
 	_msave = model.module if sub_module else model
 	try:
-		h5save([t.data for t in _msave.parameters()], fname, h5args=h5args)
+		h5save(mp_func(_msave), fname, h5args=h5args)
 		if mtyp is not None:
 			save_model_cleaner(fname, mtyp)
 	except Exception as e:
@@ -82,12 +92,12 @@ def async_save_model(model, fname, sub_module=False, print_func=print, mtyp=None
 		_msave = model.module if sub_module else model
 		try:
 			if para_lock is None:
-				h5save([t.data for t in _msave.parameters()], fname, h5args=h5args)
+				h5save(mp_func(_msave), fname, h5args=h5args)
 				if mtyp is not None:
 					save_model_cleaner(fname, mtyp)
 			else:
 				with para_lock:
-					h5save([t.data for t in _msave.parameters()], fname, h5args=h5args)
+					h5save(mp_func(_msave), fname, h5args=h5args)
 					if mtyp is not None:
 						save_model_cleaner(fname, mtyp)
 		except Exception as e:

@@ -1,6 +1,8 @@
 #encoding: utf-8
 
 from transformer.PLM.BERT.Encoder import Encoder as EncoderBase
+from utils.plm.base import copy_plm_parameter
+from utils.torch.comp import torch_all, torch_no_grad
 
 from cnfg.plm.roberta.base import num_type
 from cnfg.plm.roberta.ihyp import *
@@ -33,3 +35,23 @@ class Encoder(EncoderBase):
 			out = net(out, _mask)
 
 		return out
+
+	def load_plm(self, plm_parameters, model_name=None, layer_idx=None):
+
+		_model_name = self.model_name if model_name is None else model_name
+		with torch_no_grad():
+			copy_plm_parameter(self.wemb.weight, plm_parameters, "%s.embeddings.word_embeddings.weight" % _model_name)
+			copy_plm_parameter(self.pemb, plm_parameters, "%s.embeddings.position_embeddings.weight" % _model_name)
+			_temb_key = "%s.embeddings.token_type_embeddings.weight" % _model_name
+			if num_type == 1:
+				_temb_w = plm_parameters[_temb_key]
+				if not torch_all(_temb_w.eq(0.0)).item():
+					self.wemb.weight.add_(_temb_w)
+					self.wemb.weight[pad_id].sub_(_temb_w)
+				self.temb = None
+			else:
+				copy_plm_parameter(self.temb.weight, plm_parameters, _temb_key)
+			copy_plm_parameter(self.out_normer.weight, plm_parameters, "%s.embeddings.LayerNorm.weight" % _model_name)
+			copy_plm_parameter(self.out_normer.bias, plm_parameters, "%s.embeddings.LayerNorm.bias" % _model_name)
+			for i, net in enumerate(self.nets):
+				net.load_plm(plm_parameters, model_name=_model_name, layer_idx=i)

@@ -184,6 +184,8 @@ hdf5_model_compression_level = 0
 hdf5_perf_over_camp = True
 # whether to track creation order.
 hdf5_track_order = False
+# the existence of the names of model parameters. (save `named_parameters` or `parameters`)
+hdf5_load_parameter_name = hdf5_save_parameter_name = False
 
 # prune with length penalty in each beam decoding step
 clip_beam_with_lp = True
