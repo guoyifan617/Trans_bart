@@ -9,7 +9,7 @@ import sys
 from utils.h5serial import h5load, h5save
 from utils.torch.comp import secure_type_map
 
-from cnfg.ihyp import *
+from cnfg.ihyp import h5zipargs
 
 def handle(srcfl, rsf):
 
