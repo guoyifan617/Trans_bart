@@ -20,9 +20,9 @@ from cnfg.vocab.plm.custbert import init_normal_token_id, init_vocab, pad_id, vo
 
 class Loader:
 
-	def __init__(self, sfiles, dfiles, vcbf, max_len=510, num_cache=128, raw_cache_size=1048576, nbatch=256, minfreq=False, vsize=vocab_size, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, file_loader=inf_file_loader, ldvocab=ldvocab, print_func=print):
+	def __init__(self, sfiles, dfiles, vcbf, max_len=510, num_cache=128, raw_cache_size=1048576, skip_lines=0, nbatch=256, minfreq=False, vsize=vocab_size, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, file_loader=inf_file_loader, ldvocab=ldvocab, print_func=print):
 
-		self.sent_files, self.doc_files, self.max_len, self.num_cache, self.raw_cache_size, self.nbatch, self.minbsize, self.maxpad, self.maxpart, self.sleep_secs, self.file_loader, self.print_func = sfiles, dfiles, max_len, num_cache, raw_cache_size, nbatch, ngpu, maxpad, maxpart, sleep_secs, file_loader, print_func
+		self.sent_files, self.doc_files, self.max_len, self.num_cache, self.raw_cache_size, self.skip_lines, self.nbatch, self.minbsize, self.maxpad, self.maxpart, self.sleep_secs, self.file_loader, self.print_func = sfiles, dfiles, max_len, num_cache, raw_cache_size, skip_lines, nbatch, ngpu, maxpad, maxpart, sleep_secs, file_loader, print_func
 		self.bsize, self.maxtoken = (bsize, maxtoken,) if self.minbsize == 1 else (bsize * self.minbsize, maxtoken * self.minbsize,)
 		self.vcb = ldvocab(vcbf, minf=minfreq, omit_vsize=vsize, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id)[0]
 		self.out = Queue()
@@ -35,6 +35,11 @@ class Loader:
 
 		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len, print_func=None)
 		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
+		if self.skip_lines > 0:
+			_line_read = self.skip_lines - 1
+			for _ind, _ in enumerate(x, 1):
+				if _ind > _line_read:
+					break
 		_cpu = torch.device("cpu")
 		while self.running.value:
 			with self.cache_lck:
