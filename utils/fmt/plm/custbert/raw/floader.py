@@ -66,7 +66,7 @@ class Loader:
 		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
 		if self.skip_lines > 0:
 			_line_read = self.skip_lines - 1
-			for _ind, _ in enumerate(x, 1):
+			for _ind, _ in enumerate(file_reader, 1):
 				if _ind > _line_read:
 					break
 		while self.running.value:
