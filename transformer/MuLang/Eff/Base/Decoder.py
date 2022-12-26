@@ -103,7 +103,7 @@ class Decoder(DecoderBase):
 		out = self.get_sos_emb(inpute)
 		_task_emb = self.task_emb.weight[taskid]
 
-		out = sos_emb + _task_emb
+		out = out + _task_emb
 		if self.pemb is not None:
 			sqrt_isize = sqrt(out.size(-1))
 			out = self.pemb.get_pos(0).add(out, alpha=sqrt_isize)
@@ -167,7 +167,7 @@ class Decoder(DecoderBase):
 			lpv = out.new_ones(real_bsize, 1)
 			lpv_base = 6.0 ** length_penalty
 
-		out = sos_emb + _task_emb
+		out = out + _task_emb
 		if self.pemb is not None:
 			sqrt_isize = sqrt(isize)
 			out = self.pemb.get_pos(0).add(out, alpha=sqrt_isize)

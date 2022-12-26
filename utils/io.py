@@ -9,17 +9,17 @@ from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import h5modelwargs, hdf5_load_parameter_name, hdf5_save_parameter_name, n_keep_best
 
-def load_model_cpu_p(modf, base_model, **kwargs):
+def load_model_cpu_p(modf, base_model, mp=None, **kwargs):
 
 	with torch_no_grad():
-		for para, mp in zip(base_model.parameters(), h5load(modf, restore_list=True)):
+		for para, mp in zip(base_model.parameters(), h5load(modf, restore_list=True) if mp is None else mp):
 			para.copy_(mp)
 
 	return base_model
 
-def load_model_cpu_np(modf, base_model, strict=False, print_func=print, **kwargs):
+def load_model_cpu_np(modf, base_model, mp=None, strict=False, print_func=print, **kwargs):
 
-	_ = base_model.load_state_dict(h5load(modf, restore_list=False), strict=strict, **kwargs)
+	_ = base_model.load_state_dict(h5load(modf, restore_list=False) if mp is None else mp, strict=strict, **kwargs)
 	if (print_func is not None) and (_ is not None):
 		for _msg in _:
 			if _msg:
@@ -27,10 +27,17 @@ def load_model_cpu_np(modf, base_model, strict=False, print_func=print, **kwargs
 
 	return base_model
 
+def load_model_cpu_auto(modf, base_model, mp=None, **kwargs):
+
+	_mp = h5load(modf, restore_list=True) if mp is None else mp
+	_load_model_func = load_model_cpu_p if isinstance(_mp, list) else load_model_cpu_np
+
+	return _load_model_func(modf, base_model, mp=_mp, **kwargs)
+
 mp_func_p = lambda m: [_t.data for _t in m.parameters()]
 mp_func_np = lambda m: {_k: _t.data for _k, _t in m.named_parameters()}
 
-load_model_cpu = load_model_cpu_np if hdf5_load_parameter_name else load_model_cpu_p
+load_model_cpu = load_model_cpu_auto#load_model_cpu_np if hdf5_load_parameter_name else load_model_cpu_p
 mp_func = mp_func_np if hdf5_save_parameter_name else mp_func_p
 
 class bestfkeeper:

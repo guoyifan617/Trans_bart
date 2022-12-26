@@ -56,9 +56,9 @@ class Decoder(DecoderBase):
 		out = self.get_sos_emb(inpute)
 		sqrt_isize = sqrt(out.size(-1))
 
-		sent_emb = self.semb(sos_emb.new_empty((bsize // nsent, nsent), dtype=sos_emb.dtype, device=sos_emb.device)).contiguous().view(bsize, 1, isize)
+		sent_emb = self.semb(out.new_empty((bsize // nsent, nsent), dtype=out.dtype, device=out.device)).contiguous().view(bsize, 1, isize)
 
-		out = self.pemb.get_pos(0) + sent_emb + sos_emb * sqrt_isize
+		out = self.pemb.get_pos(0) + sent_emb + out * sqrt_isize
 
 		if self.drop is not None:
 			out = self.drop(out)
@@ -122,9 +122,9 @@ class Decoder(DecoderBase):
 			lpv = out.new_ones(real_bsize, 1)
 			lpv_base = 6.0 ** length_penalty
 
-		sent_emb = self.semb(sos_emb.new_empty((bsize // nsent, nsent), dtype=sos_emb.dtype, device=sos_emb.device)).contiguous().view(bsize, 1, isize)
+		sent_emb = self.semb(out.new_empty((bsize // nsent, nsent), dtype=out.dtype, device=out.device)).contiguous().view(bsize, 1, isize)
 
-		out = self.pemb.get_pos(0) + sent_emb + sos_emb * sqrt_isize
+		out = self.pemb.get_pos(0) + sent_emb + out * sqrt_isize
 
 		if self.drop is not None:
 			out = self.drop(out)
