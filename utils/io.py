@@ -7,7 +7,7 @@ from threading import Thread
 from utils.h5serial import h5load, h5save
 from utils.torch.comp import torch_no_grad
 
-from cnfg.ihyp import h5modelwargs, hdf5_load_parameter_name, hdf5_save_parameter_name, n_keep_best
+from cnfg.ihyp import h5modelwargs, hdf5_save_parameter_name, n_keep_best#, hdf5_load_parameter_name
 
 def load_model_cpu_p(modf, base_model, mp=None, **kwargs):
 

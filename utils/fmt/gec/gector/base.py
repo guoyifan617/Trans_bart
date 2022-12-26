@@ -59,18 +59,26 @@ def generate_iter_data(src, tgt, mask_token="<mask>"):
 		if any(_na):
 			_s, _e, _t = [], [], []
 			for _su, _eu, _tu, _au in zip(_src, _edit, _tgt, _na):
-				_fill_mask = _su == mask_token
-				_s.append(_tu if _fill_mask else _su)
-				_e.append("i" if _fill_mask else _eu)
-				_t.append("a" if _au else ("k" if _fill_mask else _tu))
+				if _su == mask_token:
+					_s.append(_tu)
+					_e.append("i")
+					_t.append("a" if _au else "k")
+				else:
+					_s.append(_su)
+					_e.append(_eu)
+					_t.append("a" if _au else _tu)
 			_src, _edit, _tgt = _s, _e, _t
 			yield _src, _edit, _tgt
 	if _handle_mask:
 		_s, _e, _t = [], [], []
 		for _su, _eu, _tu in zip(_src, _edit, _tgt):
-			_fill_mask = _su == mask_token
-			_s.append(_tu if _fill_mask else _su)
-			_e.append("i" if _fill_mask else _eu)
-			_t.append("k" if _fill_mask else _tu)
+			if _su == mask_token:
+				_s.append(_tu)
+				_e.append("i")
+				_t.append("k")
+			else:
+				_s.append(_su)
+				_e.append(_eu)
+				_t.append(_tu)
 		_src, _edit, _tgt = _s, _e, _t
 		yield _src, _edit, _tgt
