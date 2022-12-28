@@ -19,9 +19,8 @@ class Encoder(EncoderBase):
 	def forward(self, inputs, mask=None, lang_id=0, **kwargs):
 
 		out = self.wemb(inputs) + self.lang_emb[lang_id]
-		out = out * sqrt(out.size(-1))
 		if self.pemb is not None:
-			out = out + self.pemb(inputs, expand=False)
+			out = self.pemb(inputs, expand=False).add(out, alpha=sqrt(out.size(-1)))
 
 		if self.drop is not None:
 			out = self.drop(out)

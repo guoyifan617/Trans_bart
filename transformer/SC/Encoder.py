@@ -41,9 +41,8 @@ class Encoder(EncoderBase):
 
 		bsize, seql = inputs.size()
 		out = self.wemb(inputs)
-		out = out * sqrt(out.size(-1))
 		if self.pemb is not None:
-			out = out + self.pemb(inputs, expand=False)
+			out = self.pemb(inputs, expand=False).add(out, alpha=sqrt(out.size(-1)))
 
 		if self.drop is not None:
 			out = self.drop(out)

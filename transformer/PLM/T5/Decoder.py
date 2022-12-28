@@ -50,7 +50,7 @@ class DecoderLayer(DecoderLayerBase):
 		else:
 			return context, states_return
 
-	def load_plm(self, plm_parameters, model_name=None, layer_idx=None):
+	def load_plm(self, plm_parameters, model_name=None, layer_idx=None, **kwargs):
 
 		_model_name = self.model_name if model_name is None else model_name
 		with torch_no_grad():
@@ -354,7 +354,7 @@ class Decoder(DecoderBase):
 			#self.wemb.weight[pad_id].zero_()
 			self.classifier.weight[pad_id].zero_()
 
-	def load_plm(self, plm_parameters, model_name=None, layer_idx=None):
+	def load_plm(self, plm_parameters, model_name=None, **kwargs):
 
 		_model_name = self.model_name if model_name is None else model_name
 		with torch_no_grad():
@@ -367,7 +367,7 @@ class Decoder(DecoderBase):
 			if (self.out_normer.bias is not None) and (_bias_key in plm_parameters):
 				copy_plm_parameter(self.out_normer.bias, plm_parameters, _bias_key)
 			for i, net in enumerate(self.nets):
-				net.load_plm(plm_parameters, model_name=_model_name, layer_idx=i)
+				net.load_plm(plm_parameters, model_name=_model_name, layer_idx=i, **kwargs)
 		# T5 does NOT have the bias vector in the classifier
 		if remove_classifier_bias:
 			self.classifier.bias = None

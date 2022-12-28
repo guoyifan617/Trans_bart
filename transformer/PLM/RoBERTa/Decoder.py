@@ -18,7 +18,7 @@ class Decoder(DecoderBase):
 
 		self.rel_classifier = None
 
-	def load_plm(self, plm_parameters, model_name=None, layer_idx=None):
+	def load_plm(self, plm_parameters, model_name=None, **kwargs):
 
 		_model_name = self.model_name if model_name is None else model_name
 		with torch_no_grad():

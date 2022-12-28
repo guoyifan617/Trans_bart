@@ -39,9 +39,9 @@ class NMT(NMTBase):
 
 		return self.dec(self.enc(inpute, token_types=token_types, mask=_mask), word_prediction=word_prediction)
 
-	def load_plm(self, plm_parameters, model_name=None, layer_idx=None):
+	def load_plm(self, plm_parameters, model_name=None, **kwargs):
 
 		_model_name = self.model_name if model_name is None else model_name
 		enc_model_name, dec_model_name = parse_double_value_tuple(_model_name)
-		self.enc.load_plm(plm_parameters, model_name=enc_model_name, layer_idx=layer_idx)
-		self.dec.load_plm(plm_parameters, model_name=dec_model_name, layer_idx=layer_idx)
+		self.enc.load_plm(plm_parameters, model_name=enc_model_name, **kwargs)
+		self.dec.load_plm(plm_parameters, model_name=dec_model_name, **kwargs)

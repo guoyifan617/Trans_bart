@@ -11,7 +11,6 @@ class NMT(NMTBase):
 		_mask = inputs.eq(0).unsqueeze(1) if mask is None else mask
 
 		out = self.wemb(inputs)
-		out = out * sqrt(out.size(-1))
 
 		if eva_mask is not None:
 			out.masked_fill_(eva_mask.unsqueeze(-1), 0.0)
@@ -19,7 +18,7 @@ class NMT(NMTBase):
 				out = out * (1.0 / (1.0 - emask_p))
 
 		if self.pemb is not None:
-			out = out + self.pemb(inputs, expand=False)
+			out = self.pemb(inputs, expand=False).add(out, alpha=sqrt(out.size(-1)))
 
 		if self.drop is not None:
 			out = self.drop(out)

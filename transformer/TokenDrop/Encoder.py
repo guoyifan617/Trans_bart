@@ -27,9 +27,8 @@ class Encoder(EncoderBase):
 		if self.drop is not None:
 			out = self.drop(out)
 
-		out = out * sqrt(out.size(-1))
 		if self.pemb is not None:
-			out = out + self.pemb(inputs, expand=False)
+			out = self.pemb(inputs, expand=False).add(out, alpha=sqrt(out.size(-1)))
 
 		for net in self.nets:
 			out = net(out, mask)

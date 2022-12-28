@@ -43,11 +43,8 @@ def seq_diff(a, b, op_mapper=op_mapper):
 	_mapper = TokenMapper()
 	_ma, _mb = _mapper.map(a, b)
 	_map_c = _mapper.map_c
-	rs = []
 	for _ in diff_func(_ma, _mb):
-		rs.append((op_mapper[_[0]], _map_c[_[-1]],))
-
-	return rs
+		yield op_mapper[_[0]], _map_c[_[-1]]
 
 def reorder_insert(seqin):
 
@@ -59,14 +56,11 @@ def reorder_insert(seqin):
 			_d_cache.append(_du)
 		else:
 			if (_op == "k") and _d_cache:
-				rs.extend(_d_cache)
+				yield from _d_cache
 				_d_cache = []
-			rs.append(_du)
+			yield _du
 	if _d_cache:
-		rs.extend(_d_cache)
-		_d_cache = []
-
-	return rs
+		yield from _d_cache
 
 def seq_diff_reorder_insert(a, b, op_mapper=op_mapper):
 

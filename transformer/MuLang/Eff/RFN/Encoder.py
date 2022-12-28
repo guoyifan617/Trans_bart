@@ -48,10 +48,9 @@ class Encoder(EncoderBase):
 
 	def forward(self, inputs, taskid=None, mask=None, **kwargs):
 
-		out = self.wemb(inputs)
-		out = out * sqrt(out.size(-1)) + self.task_emb.weight[taskid]
+		out = self.wemb(inputs) + self.task_emb.weight[taskid]
 		if self.pemb is not None:
-			out = out + self.pemb(inputs, expand=False)
+			out = self.pemb(inputs, expand=False).add(out, alpha=sqrt(out.size(-1)))
 
 		if self.drop is not None:
 			out = self.drop(out)

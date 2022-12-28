@@ -79,10 +79,9 @@ class Encoder(EncoderBase):
 
 	def forward(self, inputs, taskid=None, mask=None, **kwargs):
 
-		out = self.wemb(inputs)
-		out = out * sqrt(out.size(-1)) + self.task_emb(taskid).unsqueeze(1)
+		out = self.wemb(inputs) + self.task_emb(taskid).unsqueeze(1)
 		if self.pemb is not None:
-			out = out + self.pemb(inputs, expand=False)
+			out = self.pemb(inputs, expand=False).add(out, alpha=sqrt(out.size(-1)))
 
 		_gwf, _gw = self.group_weight_flayer.index_select(0, taskid).softmax(-2), self.group_weight.index_select(0, taskid).softmax(-2)
 

@@ -26,9 +26,9 @@ class Encoder(EncoderBase):
 		bsize, seql, _ = out.size()
 		isize = _ // self.num_emb
 		eseql = seql * self.num_emb
-		out = out.view(bsize, eseql, isize) * sqrt(isize)
+		out = out.view(bsize, eseql, isize)
 		if self.pemb is not None:
-			out = out + self.pemb(inputs, expand=False).repeat(1, 1, self.num_emb).view(1, eseql, isize)
+			out = self.pemb(inputs, expand=False).repeat(1, 1, self.num_emb).view(1, eseql, isize).add(out, alpha=sqrt(isize))
 
 		if self.drop is not None:
 			out = self.drop(out)

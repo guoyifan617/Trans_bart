@@ -18,9 +18,8 @@ class Encoder(EncoderBase):
 	def forward(self, inputs, mask=None, **kwargs):
 
 		out = self.emb_p(self.wemb(inputs))
-		out = out * sqrt(out.size(-1))
 		if self.pemb is not None:
-			out = out + self.pemb(inputs, expand=False)
+			out = self.pemb(inputs, expand=False).add(out, alpha=sqrt(out.size(-1)))
 
 		if self.drop is not None:
 			out = self.drop(out)

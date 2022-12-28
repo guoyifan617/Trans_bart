@@ -4,6 +4,7 @@ from transformer.Encoder import Encoder
 from transformer.NMT import NMT as NMTBase
 from transformer.PLM.CustBERT.Decoder import Decoder
 from utils.fmt.parser import parse_double_value_tuple
+from utils.io import load_model_cpu
 from utils.relpos.base import share_rel_pos_cache
 
 from cnfg.ihyp import *
@@ -36,3 +37,7 @@ class NMT(NMTBase):
 		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 
 		return self.dec(self.enc(inpute, mask=_mask), mlm_mask=mlm_mask, word_prediction=word_prediction)
+
+	def load_plm(self, plm_parameters, *args, **kwargs):
+
+		load_model_cpu(None, self, mp=plm_parameters)

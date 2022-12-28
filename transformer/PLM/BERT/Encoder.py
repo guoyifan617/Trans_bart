@@ -27,7 +27,7 @@ class EncoderLayer(EncoderLayerBase):
 		self.model_name = model_name
 		self.ff = PositionwiseFF(isize, hsize=_fhsize, dropout=dropout, norm_residual=norm_residual, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, use_glu=use_glu_ffn)
 
-	def load_plm(self, plm_parameters, model_name=None, layer_idx=None):
+	def load_plm(self, plm_parameters, model_name=None, layer_idx=None, **kwargs):
 
 		_model_name = self.model_name if model_name is None else model_name
 		with torch_no_grad():
@@ -97,7 +97,7 @@ class Encoder(EncoderBase):
 
 		return out
 
-	def load_plm(self, plm_parameters, model_name=None, layer_idx=None):
+	def load_plm(self, plm_parameters, model_name=None, **kwargs):
 
 		_model_name = self.model_name if model_name is None else model_name
 		with torch_no_grad():
@@ -107,7 +107,7 @@ class Encoder(EncoderBase):
 			copy_plm_parameter(self.out_normer.weight, plm_parameters, "%s.embeddings.LayerNorm.weight" % _model_name)
 			copy_plm_parameter(self.out_normer.bias, plm_parameters, "%s.embeddings.LayerNorm.bias" % _model_name)
 			for i, net in enumerate(self.nets):
-				net.load_plm(plm_parameters, model_name=_model_name, layer_idx=i)
+				net.load_plm(plm_parameters, model_name=_model_name, layer_idx=i, **kwargs)
 
 	def fix_init(self):
 
