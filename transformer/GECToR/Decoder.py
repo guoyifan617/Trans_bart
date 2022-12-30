@@ -1,27 +1,47 @@
 #encoding: utf-8
 
+from math import sqrt
 from torch import nn
 
-from modules.act import Custom_Act, GELU
+from loss.base import CrossEntropyLoss, LabelSmoothingLoss
 from modules.base import Linear
-from modules.dropout import Dropout
 from transformer.PLM.BERT.Decoder import Decoder as DecoderBase
+from utils.torch.comp import torch_no_grad
 
-from cnfg.ihyp import enable_ln_parameters, ieps_ln_default, use_adv_act_default
-from cnfg.vocab.gector.op import vocab_size as num_op
+from cnfg.base import forbidden_indexes, label_smoothing
+from cnfg.vocab.gector.op import pad_id as op_pad_id, vocab_size as num_op
+from cnfg.vocab.plm.custbert import pad_id as mlm_pad_id, vocab_size as mlm_vocab_size
 
 class Decoder(DecoderBase):
 
-	def forward(self, inpute, mlm_mask=None, word_prediction=False, **kwargs):
+	def forward(self, inpute, mlm_mask=None, tgt=None, prediction=False, **kwargs):
 
 		out = self.ff(inpute)
-		if mlm_mask is not None:
-			out = out[mlm_mask.unsqueeze(-1).expand_as(out)].view(-1, out.size(-1))
-		if word_prediction:
-			out = self.lsm(self.classifier(out))
+		out_op = self.op_classifier(out)
+		out_mlm = None if mlm_mask is None else self.classifier(out[mlm_mask])
+		if prediction:
+			tag_out = out_op.argmax(-1)
+			if mlm_mask is not None:
+				tag_out[mlm_mask] = out_mlm.argmax(-1)
+		else:
+			tag_out = None
+		loss = None if tgt is None else (self.op_loss(out_op, tgt) if mlm_mask is None else (self.op_loss(out_op, tgt.masked_fill(mlm_mask, op_pad_id)) + self.mlm_loss(self.lsm(out_mlm, tgt[mlm_mask]))))
 
-		return out
+		return loss, tag_out
 
 	def build_task_model(self, *args, **kwargs):
 
-		self.edit_emb = nn.Sequential(Linear(isize, isize), Custom_Act() if use_adv_act_default else GELU(), nn.LayerNorm(isize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Linear(isize, num_op))
+		self.op_classifier = Linear(self.classifier.weight.size(-1), num_op)
+		self.op_loss = CrossEntropyLoss(ignore_index=op_pad_id, reduction="sum")
+		self.mlm_loss = LabelSmoothingLoss(mlm_vocab_size, label_smoothing, ignore_index=mlm_pad_id, reduction="sum", forbidden_index=forbidden_indexes)
+		self.fix_task_init()
+
+	def fix_task_init(self):
+
+		if hasattr(self, "op_classifier"):
+			with torch_no_grad():
+				_ = 1.0 / sqrt(self.op_classifier.weight.size(-1))
+				self.op_classifier.weight.uniform_(-_, _)
+				self.op_classifier.weight[op_pad_id].zero_()
+				if self.op_classifier.bias is not None:
+					self.op_classifier.bias.zero_()

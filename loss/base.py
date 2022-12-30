@@ -1,8 +1,8 @@
 #encoding: utf-8
 
 import torch
-from torch.nn.functional import kl_div, nll_loss
-from torch.nn.modules.loss import NLLLoss as NLLLossBase, _Loss
+from torch.nn.functional import cross_entropy, kl_div, nll_loss
+from torch.nn.modules.loss import CrossEntropyLoss as CrossEntropyLossBase, NLLLoss as NLLLossBase, _Loss
 
 from utils.base import clear_pad_mask, eq_indexes
 
@@ -124,6 +124,14 @@ class NLLLoss(NLLLossBase):
 	def forward(self, input, target, **kwargs):
 
 		rs = nll_loss(input.view(-1, input.size(-1)), target.view(-1), weight=self.weight, ignore_index=self.ignore_index, reduction=self.reduction)
+
+		return rs.view(input.size()) if self.reduction == "none" and target.dim() > 1 else rs
+
+class CrossEntropyLoss(CrossEntropyLossBase):
+
+	def forward(self, input, target, **kwargs):
+
+		rs = cross_entropy(input.view(-1, input.size(-1)), target.view(-1), weight=self.weight, ignore_index=self.ignore_index, reduction=self.reduction)#, label_smoothing=self.label_smoothing
 
 		return rs.view(input.size()) if self.reduction == "none" and target.dim() > 1 else rs
 
