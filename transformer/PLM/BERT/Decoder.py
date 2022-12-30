@@ -28,9 +28,9 @@ class Decoder(nn.Module):
 		self.rel_classifier = Linear(isize, 2)
 		self.pooler = nn.Sequential(Linear(isize, isize), nn.Tanh())
 
-	def forward(self, inpute, *args, word_prediction=False, **kwargs):
+	def forward(self, inpute, *args, mlm_mask=None, word_prediction=False, **kwargs):
 
-		out = self.ff(inpute)
+		out = self.ff(inpute if mlm_mask is None else inpute[mlm_mask])
 		if word_prediction:
 			out = self.lsm(self.classifier(out))
 

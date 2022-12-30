@@ -9,13 +9,3 @@ class Decoder(DecoderBase):
 		super(Decoder, self).__init__(isize, nwd, num_layer=num_layer, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, emb_w=emb_w, num_head=num_head, model_name=model_name, **kwargs)
 
 		self.rel_classifier = self.pooler = None
-
-	def forward(self, inpute, mlm_mask=None, word_prediction=False, **kwargs):
-
-		out = self.ff(inpute)
-		if mlm_mask is not None:
-			out = out[mlm_mask.unsqueeze(-1).expand_as(out)].view(-1, out.size(-1))
-		if word_prediction:
-			out = self.lsm(self.classifier(out))
-
-		return out
