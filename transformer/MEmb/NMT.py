@@ -37,7 +37,7 @@ class NMT(NMTBase):
 
 	def forward(self, inpute, inputo, mask=None, **kwargs):
 
-		_mask = inpute.eq(0).unsqueeze(1) if mask is None else mask
+		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 		bsize, seql = inpute.size()
 		_mask = _mask.unsqueeze(-1).repeat(1, 1, 1, self.num_emb).view(bsize, 1, seql * self.num_emb)
 
@@ -46,7 +46,7 @@ class NMT(NMTBase):
 	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0):
 
 		bsize, seql = inpute.size()
-		mask = inpute.eq(0).unsqueeze(1).unsqueeze(-1).repeat(1, 1, 1, self.num_emb).view(bsize, 1, seql * self.num_emb)
+		mask = inpute.eq(pad_id).unsqueeze(1).unsqueeze(-1).repeat(1, 1, 1, self.num_emb).view(bsize, 1, seql * self.num_emb)
 
 		_max_len = (seql + max(64, seql // 4)) if max_len is None else max_len
 

@@ -38,7 +38,7 @@ class DecoderLayer(nn.Module):
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# inputo: embedding of decoded translation (bsize, nquery, isize)
 	# src_pad_mask: mask for given encoding source sentence (bsize, nquery, seql), see Encoder, expanded after generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# tgt_pad_mask: mask to hide the future input
 	# query_unit: single query to decode, used to support decoding for given step
 
@@ -169,7 +169,7 @@ class Decoder(nn.Module):
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# inputo: decoded translation (bsize, nquery)
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 
 	def forward(self, inpute, inputo, src_pad_mask=None, **kwargs):
 
@@ -186,7 +186,7 @@ class Decoder(nn.Module):
 
 		# the following line of code is to mask <pad> for the decoder,
 		# which I think is useless, since only <pad> may pay attention to previous <pad> tokens, whos loss will be omitted by the loss function.
-		#_mask = torch.gt(_mask + inputo.eq(0).unsqueeze(1), 0)
+		#_mask = torch.gt(_mask + inputo.eq(pad_id).unsqueeze(1), 0)
 
 		for net in self.nets:
 			out = net(inpute, out, src_pad_mask, _mask)
@@ -230,7 +230,7 @@ class Decoder(nn.Module):
 
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# src_pad_mask: mask for given encoding source sentence (bsize, seql), see Encoder, get by:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# beam_size: the beam size for beam search
 	# max_len: maximum length to generate
 
@@ -240,7 +240,7 @@ class Decoder(nn.Module):
 
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# max_len: maximum length to generate
 	# sample: for back translation
 
@@ -307,7 +307,7 @@ class Decoder(nn.Module):
 
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# beam_size: beam size
 	# max_len: maximum length to generate
 
@@ -552,7 +552,7 @@ class Decoder(nn.Module):
 
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# src_pad_mask: mask for given encoding source sentence (bsize, seql), see Encoder, get by:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# beam_size: the beam size for beam search
 	# max_len: maximum length to generate
 
@@ -562,7 +562,7 @@ class Decoder(nn.Module):
 
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# max_len: maximum length to generate
 
 	def greedy_decode_clip(self, inpute, src_pad_mask=None, max_len=512, return_mat=True):
@@ -655,7 +655,7 @@ class Decoder(nn.Module):
 
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# beam_size: beam size
 	# max_len: maximum length to generate
 

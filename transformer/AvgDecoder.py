@@ -13,7 +13,7 @@ from utils.sampler import SampleMax
 from utils.torch.comp import all_done
 
 from cnfg.ihyp import *
-from cnfg.vocab.base import pad_id
+from cnfg.vocab.base import eos_id, pad_id
 
 # Average Decoder is proposed in Accelerating Neural Transformer via an Average Attention Network (https://www.aclweb.org/anthology/P18-1166/)
 
@@ -38,7 +38,7 @@ class DecoderLayer(DecoderLayerBase):
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# inputo: embedding of decoded translation (bsize, nquery, isize) during training, layer normed summed previous states for decoding
 	# src_pad_mask: mask for given encoding source sentence (bsize, nquery, seql), see Encoder, expanded after generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# query_unit: single query to decode, used to support decoding for given step
 	# step: current decoding step, used to average over the sum.
 
@@ -114,7 +114,7 @@ class Decoder(DecoderBase):
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# inputo: decoded translation (bsize, nquery)
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 
 	def forward(self, inpute, inputo, src_pad_mask=None, **kwargs):
 
@@ -158,7 +158,7 @@ class Decoder(DecoderBase):
 
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# max_len: maximum length to generate
 
 	def greedy_decode(self, inpute, src_pad_mask=None, max_len=512, fill_pad=False, sample=False):
@@ -192,7 +192,7 @@ class Decoder(DecoderBase):
 
 		# done_trans: (bsize, 1)
 
-		done_trans = wds.eq(2)
+		done_trans = wds.eq(eos_id)
 
 		for i in range(2, max_len + 1):
 
@@ -217,7 +217,7 @@ class Decoder(DecoderBase):
 
 			trans.append(wds.masked_fill(done_trans, pad_id) if fill_pad else wds)
 
-			done_trans = done_trans | wds.eq(2)
+			done_trans = done_trans | wds.eq(eos_id)
 			if all_done(done_trans, bsize):
 				break
 
@@ -225,7 +225,7 @@ class Decoder(DecoderBase):
 
 	# inpute: encoded representation from encoder (bsize, seql, isize)
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# beam_size: beam size
 	# max_len: maximum length to generate
 
@@ -278,7 +278,7 @@ class Decoder(DecoderBase):
 
 		# done_trans: (bsize, beam_size)
 
-		done_trans = wds.view(bsize, beam_size).eq(2)
+		done_trans = wds.view(bsize, beam_size).eq(eos_id)
 
 		# inpute: (bsize, seql, isize) => (bsize * beam_size, seql, isize)
 
@@ -355,7 +355,7 @@ class Decoder(DecoderBase):
 
 			trans = torch.cat((trans.index_select(0, _inds), wds.masked_fill(done_trans.view(real_bsize, 1), pad_id) if fill_pad else wds), 1)
 
-			done_trans = (done_trans.view(real_bsize).index_select(0, _inds) | wds.eq(2).squeeze(1)).view(bsize, beam_size)
+			done_trans = (done_trans.view(real_bsize).index_select(0, _inds) | wds.eq(eos_id).squeeze(1)).view(bsize, beam_size)
 
 			# check early stop for beam search
 			# done_trans: (bsize, beam_size)

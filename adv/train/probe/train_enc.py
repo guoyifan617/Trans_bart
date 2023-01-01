@@ -45,7 +45,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 			seq_batch = seq_batch.to(mv_device, non_blocking=True)
 		seq_batch = seq_batch.long()
 		with torch_autocast(enabled=_use_amp):
-			output = model(seq_batch, seq_batch.eq(0).unsqueeze(1))
+			output = model(seq_batch, seq_batch.eq(pad_id).unsqueeze(1))
 			loss = lossf(output, seq_batch)
 			if multi_gpu:
 				loss = loss.sum()
@@ -136,7 +136,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 				seq_batch = seq_batch.to(mv_device, non_blocking=True)
 			seq_batch = seq_batch.long()
 			with torch_autocast(enabled=use_amp):
-				output = model(seq_batch, seq_batch.eq(0).unsqueeze(1))
+				output = model(seq_batch, seq_batch.eq(pad_id).unsqueeze(1))
 				loss = lossf(output, seq_batch)
 				if multi_gpu:
 					loss = loss.sum()

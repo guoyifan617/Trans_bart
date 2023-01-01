@@ -4,8 +4,8 @@ import sys
 from os import walk
 from os.path import isfile, join as pjoin
 
-depl = ["torch_inference_mode"]
-indep = "from utils.base import "
+depl = ["eos_id", "pad_id"]
+indep = "from cnfg.vocab.base import "
 
 def check_file_type(fname):
 
@@ -16,6 +16,7 @@ def insert_dep(lin, depl, depc):
 	do_ins = False
 	do_ins_d = [False for dep in depl]
 	has_package = False
+	deps = set()
 	for lu in lin:
 		if lu.find(depc) >= 0:
 			has_package = True
@@ -24,12 +25,21 @@ def insert_dep(lin, depl, depc):
 				break
 			else:
 				_ = lu.replace(depc, "")
-				if all(_.find(_d) >= 0 for _d in depl):
+				_tmp = True
+				for _d in depl:
+					_c = _.find(_d) >= 0
+					if _c and (_d not in deps):
+						deps.add(_d)
+					if not _c:
+						_tmp = False
+				if _tmp:
 					do_ins = False
 					break
 		else:
+			_ind = lu.find("#")
+			_lu = lu[:_ind] if _ind >= 0 else lu
 			for ind, dep in enumerate(depl):
-				if lu.find(dep) >= 0:
+				if (dep not in deps) and (_lu.find(dep) >= 0):
 					do_ins = True
 					do_ins_d[ind] = True
 	if do_ins:

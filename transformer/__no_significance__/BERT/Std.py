@@ -4,11 +4,13 @@ from math import sqrt
 
 from transformer.BERT.Eff import NMT as NMTBase
 
+from cnfg.vocab.base import pad_id
+
 class NMT(NMTBase):
 
 	def forward(self, inputs, mask=None, eva_mask=None, emask_p=0.0, **kwargs):
 
-		_mask = inputs.eq(0).unsqueeze(1) if mask is None else mask
+		_mask = inputs.eq(pad_id).unsqueeze(1) if mask is None else mask
 
 		out = self.wemb(inputs)
 

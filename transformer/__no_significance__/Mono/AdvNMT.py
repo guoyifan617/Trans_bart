@@ -10,6 +10,7 @@ from utils.torch.comp import torch_no_grad
 from utils.train.base import freeze_module, unfreeze_module
 
 from cnfg.ihyp import *
+from cnfg.vocab.mono import pad_id
 
 class NMT(NMTBase):
 
@@ -35,7 +36,7 @@ class NMT(NMTBase):
 
 	def forward(self, inpute, inputo, mask=None, lang_id=0, psind=None, **kwargs):
 
-		_mask = inpute.eq(0).unsqueeze(1) if mask is None else mask
+		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 
 		ence = self.enc(inpute, _mask)
 
@@ -59,7 +60,7 @@ class NMT(NMTBase):
 
 	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, lang_id=0):
 
-		mask = inpute.eq(0).unsqueeze(1)
+		mask = inpute.eq(pad_id).unsqueeze(1)
 
 		_max_len = (inpute.size(1) + max(64, inpute.size(1) // 4)) if max_len is None else max_len
 

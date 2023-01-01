@@ -11,6 +11,7 @@ from utils.base import select_zero_
 from utils.torch.comp import all_done
 
 from cnfg.ihyp import *
+from cnfg.vocab.base import eos_id, pad_id
 
 class NMT(nn.Module):
 
@@ -24,11 +25,11 @@ class NMT(nn.Module):
 	# inpute: source sentences from encoder (bsize, seql)
 	# inputo: decoded translation (bsize, nquery)
 	# mask: user specified mask, otherwise it will be:
-	#	inpute.eq(0).unsqueeze(1)
+	#	inpute.eq(pad_id).unsqueeze(1)
 
 	def forward(self, inpute, inputo, mask=None, **kwargs):
 
-		_mask = inpute.eq(0).unsqueeze(1) if mask is None else mask
+		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 
 		return self.dec(self.enc(inpute, _mask), inputo, _mask)
 
@@ -38,7 +39,7 @@ class NMT(nn.Module):
 
 	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0):
 
-		mask = inpute.eq(0).unsqueeze(1)
+		mask = inpute.eq(pad_id).unsqueeze(1)
 
 		_max_len = (inpute.size(1) + max(64, inpute.size(1) // 4)) if max_len is None else max_len
 
@@ -46,7 +47,7 @@ class NMT(nn.Module):
 
 	def train_decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, mask=None):
 
-		_mask = inpute.eq(0).unsqueeze(1) if mask is None else mask
+		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 
 		_max_len = (inpute.size(1) + max(64, inpute.size(1) // 4)) if max_len is None else max_len
 
@@ -75,7 +76,7 @@ class NMT(nn.Module):
 			out = torch.cat((out, wds), -1)
 
 			# done_trans: (bsize)
-			done_trans = wds.squeeze(1).eq(2) if done_trans is None else (done_trans | wds.squeeze(1).eq(2))
+			done_trans = wds.squeeze(1).eq(eos_id) if done_trans is None else (done_trans | wds.squeeze(1).eq(eos_id))
 
 			if all_done(done_trans, bsize):
 				break
@@ -145,7 +146,7 @@ class NMT(nn.Module):
 			out = torch.cat((out.index_select(0, _inds), wds), -1)
 
 			# done_trans: (bsize, beam_size)
-			done_trans = wds.view(bsize, beam_size).eq(2) if done_trans is None else (done_trans.view(real_bsize).index_select(0, _inds) | wds.view(real_bsize).eq(2)).view(bsize, beam_size)
+			done_trans = wds.view(bsize, beam_size).eq(eos_id) if done_trans is None else (done_trans.view(real_bsize).index_select(0, _inds) | wds.view(real_bsize).eq(eos_id)).view(bsize, beam_size)
 
 			# check early stop for beam search
 			# done_trans: (bsize, beam_size)

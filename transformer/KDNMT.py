@@ -7,6 +7,8 @@ from modules.kd.base import TLogSoftMax, TSoftMax
 from utils.torch.comp import torch_no_grad
 from utils.train.base import freeze_module
 
+from cnfg.vocab.base import pad_id
+
 class NMT(nn.Module):
 
 	def __init__(self, teacher=None, student=None, T=None, **kwargs):
@@ -22,7 +24,7 @@ class NMT(nn.Module):
 
 	def forward(self, inpute, inputo, mask=None, target_mask=None, **kwargs):
 
-		_mask = inpute.eq(0).unsqueeze(1) if mask is None else mask
+		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 		if self.training:
 			with torch_no_grad():
 				teacher_out = self.teacher(inpute, inputo, mask=_mask)

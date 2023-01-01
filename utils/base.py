@@ -10,6 +10,8 @@ from random import seed as rpyseed
 from torch import Tensor
 from torch.nn import ModuleDict
 
+from cnfg.vocab.base import pad_id
+
 def pad_tensors(tensor_list, dim=-1):
 
 	def get_pad_size(tsize, stdlen, dim=-1):
@@ -27,9 +29,9 @@ def pad_tensors(tensor_list, dim=-1):
 
 	return [tensor if tensor.size(dim) == maxlen else torch.cat((tensor, tensor.new_zeros(get_pad_size(tensor.size(), maxlen))), dim) for tensor in tensor_list]
 
-def clear_pad(batch_in, mask=None, dim=-1):
+def clear_pad(batch_in, mask=None, dim=-1, pad_id=pad_id):
 
-	_mask = batch_in.eq(0) if mask is None else mask
+	_mask = batch_in.eq(pad_id) if mask is None else mask
 	npad = _mask.int().sum(dim).min().item()
 	if npad > 0:
 		return batch_in.narrow(dim, 0, batch_in.size(dim) - npad)

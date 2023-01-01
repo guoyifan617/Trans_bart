@@ -12,7 +12,7 @@ from utils.sampler import SampleMax
 from utils.torch.comp import all_done
 
 from cnfg.ihyp import *
-from cnfg.vocab.base import pad_id
+from cnfg.vocab.base import eos_id, pad_id
 
 class Decoder(DecoderBase):
 
@@ -93,7 +93,7 @@ class Decoder(DecoderBase):
 
 		trans = [wds]
 
-		done_trans = wds.eq(2)
+		done_trans = wds.eq(eos_id)
 
 		for i in range(1, max_len):
 
@@ -122,7 +122,7 @@ class Decoder(DecoderBase):
 
 			trans.append(wds.masked_fill(done_trans, pad_id) if fill_pad else wds)
 
-			done_trans = done_trans | wds.eq(2)
+			done_trans = done_trans | wds.eq(eos_id)
 			if all_done(done_trans, bsize):
 				break
 
@@ -175,7 +175,7 @@ class Decoder(DecoderBase):
 		_inds_add_beam2 = torch.arange(0, bsizeb2, beam_size2, dtype=wds.dtype, device=wds.device).unsqueeze(1).expand(bsize, beam_size)
 		_inds_add_beam = torch.arange(0, real_bsize, beam_size, dtype=wds.dtype, device=wds.device).unsqueeze(1).expand(bsize, beam_size)
 
-		done_trans = wds.view(bsize, beam_size).eq(2)
+		done_trans = wds.view(bsize, beam_size).eq(eos_id)
 
 		#enc_context = enc_context.repeat(1, beam_size, 1).view(real_bsize, seql, isize)
 		self.repeat_cross_attn_buffer(beam_size)
@@ -233,7 +233,7 @@ class Decoder(DecoderBase):
 
 			trans = torch.cat((trans.index_select(0, _inds), wds.masked_fill(done_trans.view(real_bsize, 1), pad_id) if fill_pad else wds), 1)
 
-			done_trans = (done_trans.view(real_bsize).index_select(0, _inds) | wds.eq(2).squeeze(1)).view(bsize, beam_size)
+			done_trans = (done_trans.view(real_bsize).index_select(0, _inds) | wds.eq(eos_id).squeeze(1)).view(bsize, beam_size)
 
 			_done = False
 			if length_penalty > 0.0:

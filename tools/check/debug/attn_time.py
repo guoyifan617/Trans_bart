@@ -13,6 +13,7 @@ from utils.torch.comp import torch_inference_mode
 from utils.tqdm import tqdm
 
 from cnfg.ihyp import tqdm_mininterval
+from cnfg.vocab.base import pad_id
 
 device = torch.device("cuda:7")
 isize, nheads, adim = 512, 8, 64
@@ -32,7 +33,7 @@ with h5File(sys.argv[1], "r") as td:
 			tgt_size = list(seq_o.size())
 			tgt_size[-1] -= 1
 			tgt_size.append(isize)
-			tl.append((torch.randn(src_size).to(device, non_blocking=True), torch.randn(tgt_size).to(device, non_blocking=True), seq_batch.eq(0).to(device, non_blocking=True),))
+			tl.append((torch.randn(src_size).to(device, non_blocking=True), torch.randn(tgt_size).to(device, non_blocking=True), seq_batch.eq(pad_id).to(device, non_blocking=True),))
 
 query_adaptor = nn.Linear(isize, isize, bias=False)
 kv_adaptor = nn.Linear(isize, isize * 2, bias=False)

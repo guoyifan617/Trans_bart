@@ -55,7 +55,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 		oi = seq_o.narrow(-1, 0, lo).contiguous()
 		ot = seq_o.narrow(-1, 1, lo)
 		with torch_autocast(enabled=_use_amp):
-			output = model(seq_batch, oi, mask_rand_token(ot.clone().detach(), mask_token_p, mask_sent_p, init_token_id, nwordt), tgt_mask=ot.eq(0).unsqueeze(1))
+			output = model(seq_batch, oi, mask_rand_token(ot.clone().detach(), mask_token_p, mask_sent_p, init_token_id, nwordt), tgt_mask=ot.eq(pad_id).unsqueeze(1))
 			ot = ot.narrow(1, 1, ot.size(1) - 1)
 			loss = lossf(output, ot)
 			if multi_gpu:

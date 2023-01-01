@@ -7,6 +7,7 @@ from torch.nn.modules.loss import CrossEntropyLoss as CrossEntropyLossBase, NLLL
 from utils.base import clear_pad_mask, eq_indexes
 
 from cnfg.ihyp import *
+from cnfg.vocab.base import pad_id
 
 # ignores forbidden_index
 class FastLabelSmoothingLoss(_Loss):
@@ -221,16 +222,16 @@ class MultiLabelSmoothingLoss(_Loss):
 
 class ReducedLabelSmoothingLoss(StdLabelSmoothingLoss):
 
-	def __init__(self, nclass, label_smoothing=0.1, ignore_index=-1, reduction="mean", forbidden_index=-1, reduce_dim=None, **kwargs):
+	def __init__(self, nclass, label_smoothing=0.1, ignore_index=-1, reduction="mean", forbidden_index=-1, reduce_dim=None, pad_id=pad_id, **kwargs):
 
 		super(ReducedLabelSmoothingLoss, self).__init__(nclass, label_smoothing=label_smoothing, ignore_index=ignore_index, reduction=reduction, forbidden_index=forbidden_index)
 
-		self.reduce_dim = reduce_dim
+		self.reduce_dim, self.pad_id = reduce_dim, pad_id
 
-	def forward(self, input, target, mask=None, **kwargs):
+	def forward(self, input, target, mask=None, pad_id=None, **kwargs):
 
 		if self.reduce_dim is not None:
-			input, target = clear_pad_mask([input, target], target.eq(0), [self.reduce_dim - 1, self.reduce_dim], mask_dim=self.reduce_dim, return_contiguous=True)[0]
+			input, target = clear_pad_mask([input, target], target.eq(self.pad_id if pad_id is None else pad_id), [self.reduce_dim - 1, self.reduce_dim], mask_dim=self.reduce_dim, return_contiguous=True)[0]
 
 		_input = input.view(-1, input.size(-1)) if input.dim() > 2 else input
 		_target = target.view(-1, 1)

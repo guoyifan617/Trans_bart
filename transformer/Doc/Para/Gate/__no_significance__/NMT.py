@@ -7,6 +7,7 @@ from transformer.Doc.Para.Gate.Encoder import Encoder
 from utils.fmt.parser import parse_double_value_tuple
 
 from cnfg.ihyp import *
+from cnfg.vocab.base import pad_id
 
 class NMT(nn.Module):
 
@@ -24,14 +25,14 @@ class NMT(nn.Module):
 
 	def forward(self, inpute, inputo, mask=None, **kwargs):
 
-		_mask = inpute.eq(0).unsqueeze(1) if mask is None else mask
+		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 		enc_out, enc_context, context, _mask, context_mask = self.enc(inpute, _mask)
 
 		return self.dec(enc_out, inputo, enc_context, context, _mask, context_mask)
 
 	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0):
 
-		mask = inpute.eq(0).unsqueeze(1)
+		mask = inpute.eq(pad_id).unsqueeze(1)
 
 		bsize, nsent, seql = inpute.size()
 		_max_len = (seql + max(64, seql // 4)) if max_len is None else max_len

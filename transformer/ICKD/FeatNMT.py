@@ -7,6 +7,7 @@ from utils.fmt.parser import parse_double_value_tuple
 from utils.relpos.base import share_rel_pos_cache
 
 from cnfg.ihyp import *
+from cnfg.vocab.base import pad_id
 
 class NMT(NMTBase):
 
@@ -26,7 +27,7 @@ class NMT(NMTBase):
 
 	def forward(self, inpute, inputo, mask=None, gold=None, gold_pad_mask=None, **kwargs):
 
-		_mask = inpute.eq(0).unsqueeze(1) if mask is None else mask
+		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 		_ = self.enc(inpute, _mask)
 
 		if self.training:

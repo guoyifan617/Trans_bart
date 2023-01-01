@@ -115,7 +115,7 @@ class Encoder(nn.Module):
 	# inputs: (bsize, _nsent, seql), nprev_context, ... , nsent - 1
 	# inputc: (bsize, _nsentc, seql), 0, 1, ... , nsent - 2
 	# mask: (bsize, 1, _nsent, seql), generated with:
-	#	mask = inputs.eq(0).unsqueeze(1)
+	#	mask = inputs.eq(pad_id).unsqueeze(1)
 	# where _nsent = nsent - self.nprev_context, _nsentc = nsent - 1
 	def forward(self, inputs, inputc, mask=None, context_mask=None, **kwargs):
 

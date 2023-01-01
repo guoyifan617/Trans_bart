@@ -91,9 +91,8 @@ class Encoder(EncoderBase):
 		if self.drop is not None:
 			out = self.drop(out)
 
-		_mask = inputs.eq(pad_id).unsqueeze(1) if mask is None else mask
 		for net in self.nets:
-			out = net(out, _mask)
+			out = net(out, mask)
 
 		return out
 

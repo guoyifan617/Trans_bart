@@ -11,7 +11,7 @@ class Encoder(nn.Module):
 
 	# inputs: (bsize, seql)
 	# mask: (bsize, 1, seql), generated with:
-	#	mask = inputs.eq(0).unsqueeze(1)
+	#	mask = inputs.eq(pad_id).unsqueeze(1)
 
 	def forward(self, *inputs, **kwargs):
 

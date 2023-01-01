@@ -7,6 +7,7 @@ from utils.fmt.parser import parse_double_value_tuple
 from utils.relpos.base import share_rel_pos_cache
 
 from cnfg.ihyp import *
+from cnfg.vocab.base import pad_id
 
 class NMT(NMTBase):
 
@@ -27,7 +28,7 @@ class NMT(NMTBase):
 
 	def forward(self, inpute, inputo, mask=None, **kwargs):
 
-		_mask = inpute.eq(0).unsqueeze(1) if mask is None else mask
+		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 
 		return self.dec(*self.enc(inpute, _mask), inputo, _mask)
 
@@ -37,7 +38,7 @@ class NMT(NMTBase):
 
 	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0):
 
-		mask = inpute.eq(0).unsqueeze(1)
+		mask = inpute.eq(pad_id).unsqueeze(1)
 
 		_max_len = (inpute.size(1) + max(64, inpute.size(1) // 4)) if max_len is None else max_len
 

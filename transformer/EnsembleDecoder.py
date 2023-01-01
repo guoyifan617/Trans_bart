@@ -10,7 +10,7 @@ from utils.sampler import SampleMax
 from utils.torch.comp import all_done
 
 from cnfg.ihyp import *
-from cnfg.vocab.base import pad_id
+from cnfg.vocab.base import eos_id, pad_id
 
 class Decoder(nn.Module):
 
@@ -25,7 +25,7 @@ class Decoder(nn.Module):
 	# inpute: encoded representation from encoders [(bsize, seql, isize)...]
 	# inputo: decoded translation (bsize, nquery)
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 
 	def forward(self, inpute, inputo, src_pad_mask=None, **kwargs):
 
@@ -37,7 +37,7 @@ class Decoder(nn.Module):
 
 		# the following line of code is to mask <pad> for the decoder,
 		# which I think is useless, since only <pad> may pay attention to previous <pad> tokens, whos loss will be omitted by the loss function.
-		#_mask = torch.gt(_mask + inputo.eq(0).unsqueeze(1), 0)
+		#_mask = torch.gt(_mask + inputo.eq(pad_id).unsqueeze(1), 0)
 
 		for model, inputu in zip(self.nets, inpute):
 
@@ -60,7 +60,7 @@ class Decoder(nn.Module):
 
 	# inpute: encoded representation from encoders [(bsize, seql, isize)...]
 	# src_pad_mask: mask for given encoding source sentence (bsize, seql), see Encoder, get by:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# beam_size: the beam size for beam search
 	# max_len: maximum length to generate
 
@@ -70,7 +70,7 @@ class Decoder(nn.Module):
 
 	# inpute: encoded representation from encoders [(bsize, seql, isize)...]
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# max_len: maximum length to generate
 
 	def greedy_decode(self, inpute, src_pad_mask=None, max_len=512, fill_pad=False, sample=False):
@@ -112,7 +112,7 @@ class Decoder(nn.Module):
 
 		# done_trans: (bsize, 1)
 
-		done_trans = wds.eq(2)
+		done_trans = wds.eq(eos_id)
 
 		for i in range(1, max_len):
 
@@ -141,7 +141,7 @@ class Decoder(nn.Module):
 
 			trans.append(wds.masked_fill(done_trans, pad_id) if fill_pad else wds)
 
-			done_trans = done_trans | wds.eq(2)
+			done_trans = done_trans | wds.eq(eos_id)
 			if all_done(done_trans, bsize):
 				break
 
@@ -149,7 +149,7 @@ class Decoder(nn.Module):
 
 	# inpute: encoded representation from encoders [(bsize, seql, isize)...]
 	# src_pad_mask: mask for given encoding source sentence (bsize, 1, seql), see Encoder, generated with:
-	#	src_pad_mask = input.eq(0).unsqueeze(1)
+	#	src_pad_mask = input.eq(pad_id).unsqueeze(1)
 	# beam_size: beam size
 	# max_len: maximum length to generate
 
@@ -209,7 +209,7 @@ class Decoder(nn.Module):
 
 		# done_trans: (bsize, beam_size)
 
-		done_trans = wds.view(bsize, beam_size).eq(2)
+		done_trans = wds.view(bsize, beam_size).eq(eos_id)
 
 		# inpute: (bsize, seql, isize) => (bsize * beam_size, seql, isize)
 
@@ -291,7 +291,7 @@ class Decoder(nn.Module):
 
 			trans = torch.cat((trans.index_select(0, _inds), wds.masked_fill(done_trans.view(real_bsize, 1), pad_id) if fill_pad else wds), 1)
 
-			done_trans = (done_trans.view(real_bsize).index_select(0, _inds) | wds.eq(2).squeeze(1)).view(bsize, beam_size)
+			done_trans = (done_trans.view(real_bsize).index_select(0, _inds) | wds.eq(eos_id).squeeze(1)).view(bsize, beam_size)
 
 			# check early stop for beam search
 			# done_trans: (bsize, beam_size)

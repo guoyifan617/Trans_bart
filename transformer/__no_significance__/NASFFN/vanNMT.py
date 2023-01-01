@@ -4,6 +4,7 @@ from transformer.NMT import NMT as NMTBase
 from utils.nasffn import is_nas, patch_stdffn, share_cell
 
 from cnfg.ihyp import *
+from cnfg.vocab.base import pad_id
 
 class NMT(NMTBase):
 
@@ -23,7 +24,7 @@ class NMT(NMTBase):
 
 	def forward(self, inpute, inputo, mask=None, **kwargs):
 
-		_mask = inpute.eq(0).unsqueeze(1) if mask is None else mask
+		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 
 		return self.dec(self.enc(inpute, _mask), inputo, _mask)
 

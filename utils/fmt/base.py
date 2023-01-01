@@ -340,3 +340,11 @@ def multi_line_reader(fname, *inputs, num_line=1, **kwargs):
 				_i = 0
 	if rs:
 		yield ens.join(rs)
+
+def read_lines(fin, num_lines):
+
+	_last_ind = num_lines - 1
+	for i, _ in enumerate(fin, 1):
+		yield _
+		if i > _last_ind:
+			break

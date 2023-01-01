@@ -29,6 +29,7 @@ from utils.train.dss import dynamic_sample
 
 import cnfg.mono as cnfg
 from cnfg.ihyp import *
+from cnfg.vocab.mono import pad_id
 
 def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tokens, multi_gpu, tokens_optm=32768, nreport=None, save_every=None, chkpf=None, state_holder=None, statesf=None, num_checkpoint=1, cur_checkid=0, report_eva=True, remain_steps=None, save_loss=False, save_checkp_epoch=False, use_amp=False):
 
@@ -49,7 +50,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 	_td = (td[0]["src"], td[1]["src"],)
 	for i_d, t_d in tqdm(tl, mininterval=tqdm_mininterval):
 		seq_batch = torch.from_numpy(_td[t_d][i_d][()])
-		_src_mask = seq_batch.eq(0).unsqueeze(1)
+		_src_mask = seq_batch.eq(pad_id).unsqueeze(1)
 		seq_batch, seq_o, _sind_o = get_batch(seq_batch, len_ratio, mask_ratio, random_ratio, mask_id, init_token_id, nwordi if t_d == 0 else nwordt)
 		lo = seq_o.size(1) - 1
 		if mv_device:

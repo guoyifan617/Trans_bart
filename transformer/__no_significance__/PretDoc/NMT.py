@@ -9,6 +9,7 @@ from utils.fmt.parser import parse_double_value_tuple
 from utils.relpos.base import share_rel_pos_cache
 
 from cnfg.ihyp import *
+from cnfg.vocab.mono import pad_id
 
 class NMT(NMTBase):
 
@@ -29,16 +30,16 @@ class NMT(NMTBase):
 
 	def forward(self, inpute, inputo, inputc, mask=None, context_mask=None, start_sent_id=0, **kwargs):
 
-		_mask = inpute.eq(0).unsqueeze(1) if mask is None else mask
-		_context_mask = inputc.eq(0).unsqueeze(1) if context_mask is None else context_mask
+		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
+		_context_mask = inputc.eq(pad_id).unsqueeze(1) if context_mask is None else context_mask
 		ence, contexts = self.enc(inpute, inputc, _mask, _context_mask, start_sent_id=start_sent_id)
 
 		return self.dec(ence, inputo, contexts, _mask, None, start_sent_id=start_sent_id)
 
 	def decode(self, inpute, inputc, beam_size=1, max_len=None, length_penalty=0.0):
 
-		mask = inpute.eq(0).unsqueeze(1)
-		context_mask = inputc.eq(0).unsqueeze(1)
+		mask = inpute.eq(pad_id).unsqueeze(1)
+		context_mask = inputc.eq(pad_id).unsqueeze(1)
 
 		bsize, nsent, seql = inpute.size()
 		_max_len = (seql + max(64, seql // 4)) if max_len is None else max_len

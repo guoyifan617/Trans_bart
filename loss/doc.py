@@ -6,11 +6,19 @@ from loss.base import StdLabelSmoothingLoss
 from utils.base import eq_indexes
 from utils.doc.paragate.base4torch import clear_pad_mask as clear_pad_mask_doc
 
+from cnfg.vocab.base import pad_id
+
 class ReducedDocLabelSmoothingLoss(StdLabelSmoothingLoss):
 
-	def forward(self, input, target, mask=None, **kwargs):
+	def __init__(self, nclass, label_smoothing=0.1, ignore_index=-1, reduction="mean", forbidden_index=-1, pad_id=pad_id, **kwargs):
 
-		_target = clear_pad_mask_doc(target, target.eq(0), dim=-1, mask_dim=-1)[0].contiguous()
+		super(ReducedDocLabelSmoothingLoss, self).__init__(nclass, label_smoothing=label_smoothing, ignore_index=ignore_index, reduction=reduction, forbidden_index=forbidden_index)
+
+		self.pad_id = pad_id
+
+	def forward(self, input, target, mask=None, pad_id=None, **kwargs):
+
+		_target = clear_pad_mask_doc(target, target.eq(self.pad_id if pad_id is None else pad_id), dim=-1, mask_dim=-1)[0].contiguous()
 
 		_input = input.view(-1, input.size(-1)) if input.dim() > 2 else input
 		_target = _target.view(-1, 1)

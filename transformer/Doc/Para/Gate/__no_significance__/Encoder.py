@@ -70,7 +70,7 @@ class Encoder(nn.Module):
 
 	# inputs: (bsize, nsent, seql), 0, ... , nsent - 1
 	# mask: (bsize, 1, nsent, seql), generated with:
-	#	mask = inputs.eq(0).unsqueeze(1)
+	#	mask = inputs.eq(pad_id).unsqueeze(1)
 	def forward(self, inputs, mask=None, **kwargs):
 
 		# forward the whole document

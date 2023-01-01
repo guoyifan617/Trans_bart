@@ -7,6 +7,7 @@ from modules.noise import Noiser, PositionwiseFF, ResCrossAttn, ResSelfAttn
 from transformer.Decoder import Decoder as DecoderBase, DecoderLayer as DecoderLayerBase
 
 from cnfg.ihyp import *
+from cnfg.vocab.base import pad_id
 
 class DecoderLayer(DecoderLayerBase):
 
@@ -66,7 +67,7 @@ class Decoder(DecoderBase):
 			out = self.drop(out)
 
 		_mask = self._get_subsequent_mask(nquery)
-		_noise_mask = inputo.eq(0).unsqueeze(-1) if self.training else None
+		_noise_mask = inputo.eq(pad_id).unsqueeze(-1) if self.training else None
 
 		for net in self.nets:
 			out = net(inpute, out, src_pad_mask, _mask, noise_mask=_noise_mask)

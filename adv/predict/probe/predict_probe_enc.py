@@ -4,7 +4,6 @@
 
 import sys
 import torch
-
 from transformer.Probe.NMT import NMT
 from utils.base import set_random_seed
 from utils.fmt.base4torch import parse_cuda_decode
@@ -17,7 +16,7 @@ from utils.tqdm import tqdm
 
 import cnfg.probe as cnfg
 from cnfg.ihyp import *
-from cnfg.vocab.base import eos_id, sos_id
+from cnfg.vocab.base import eos_id, pad_id, sos_id
 
 def load_fixing(module):
 
@@ -63,7 +62,7 @@ with open(sys.argv[4], "wb") as fwrt, torch_inference_mode():
 		if cuda_device:
 			seq_batch = seq_batch.to(cuda_device, non_blocking=True)
 		seq_batch = seq_batch.long()
-		_mask = seq_batch.eq(0)
+		_mask = seq_batch.eq(pad_id)
 		with torch_autocast(enabled=use_amp):
 			# mask pad/sos/eos_id in output
 			output = classifier(trans(enc(seq_batch, mask=_mask.unsqueeze(1), no_std_out=True))).argmax(-1).masked_fill(_mask | seq_batch.eq(sos_id) | seq_batch.eq(eos_id), 0).tolist()

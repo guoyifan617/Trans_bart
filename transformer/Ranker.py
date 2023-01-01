@@ -8,6 +8,7 @@ from transformer.Encoder import Encoder
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
+from cnfg.vocab.base import pad_id
 
 class NMT(nn.Module):
 
@@ -38,12 +39,12 @@ class NMT(nn.Module):
 	# inpute: source sentences from encoder (bsize, seql)
 	# inputo: decoded translation (bsize, nquery)
 	# mask: user specified mask, otherwise it will be:
-	#	inpute.eq(0).unsqueeze(1)
+	#	inpute.eq(pad_id).unsqueeze(1)
 
 	def forward(self, inpute, inputo, mask1=None, mask2=None, **kwargs):
 
-		_mask1 = inpute.eq(0) if mask1 is None else mask1
-		_mask2 = inpute.eq(0) if mask2 is None else mask2
+		_mask1 = inpute.eq(pad_id) if mask1 is None else mask1
+		_mask2 = inpute.eq(pad_id) if mask2 is None else mask2
 
 		enc1, enc2 = self.enc1(inpute, _mask1.unsqueeze(1)), self.enc2(inpute, _mask2.unsqueeze(1))
 

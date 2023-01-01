@@ -22,7 +22,7 @@ class Encoder(EncoderBase):
 
 	# inputs: (bsize, nsent, seql)
 	# mask: (bsize, 1, nsent, seql), generated with:
-	#	mask = inputs.eq(0).unsqueeze(1)
+	#	mask = inputs.eq(pad_id).unsqueeze(1)
 	# rsentind: the index of sentence which is removed
 
 	def forward(self, inputs, mask=None, rsentind=None, **kwargs):
