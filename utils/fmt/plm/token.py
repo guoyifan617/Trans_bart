@@ -14,7 +14,7 @@ def map_line_with_token_type(lin, processor):
 
 	return " ".join(iter_to_str(_.input_ids)), " ".join(iter_to_str(_.token_type_ids))
 
-def loop_file_so(fsrc, vcb, frs, process_func=None, processor=None):
+def loop_file_so(fsrc, frs, process_func=None, processor=None):
 
 	ens = "\n".encode("utf-8")
 	with sys.stdin.buffer if fsrc == "-" else open(fsrc, "rb") as frd, sys.stdout.buffer if frs == "-" else open(frs, "wb") as fwrt:
@@ -26,11 +26,11 @@ def loop_file_so(fsrc, vcb, frs, process_func=None, processor=None):
 
 def tokenize_file(fsrc, vcb, frs, Tokenizer=None):
 
-	return loop_file_so(fsrc, vcb, frs, process_func=tokenize_line, processor=Tokenizer(tokenizer_file=vcb))
+	return loop_file_so(fsrc, frs, process_func=tokenize_line, processor=Tokenizer(tokenizer_file=vcb))
 
 def map_file(fsrc, vcb, frs, Tokenizer=None):
 
-	return loop_file_so(fsrc, vcb, frs, process_func=map_line, processor=Tokenizer(tokenizer_file=vcb))
+	return loop_file_so(fsrc, frs, process_func=map_line, processor=Tokenizer(tokenizer_file=vcb))
 
 def map_file_with_token_type(fsrc, vcb, frsi, frst, Tokenizer=None):
 
@@ -51,4 +51,4 @@ def map_file_with_token_type(fsrc, vcb, frsi, frst, Tokenizer=None):
 
 def map_back_file(fsrc, vcb, frs, Tokenizer=None):
 
-	return loop_file_so(fsrc, vcb, frs, process_func=detokenize_line, processor=Tokenizer(tokenizer_file=vcb).decode)
+	return loop_file_so(fsrc, frs, process_func=detokenize_line, processor=Tokenizer(tokenizer_file=vcb).decode)

@@ -13,7 +13,7 @@ def ldvocab(vfile, minf=False, omit_vsize=False, vanilla=False, init_vocab=init_
 	if vanilla:
 		rs, cwd = {}, 0
 	else:
-		rs, cwd = init_vocab.copy(), init_normal_token_id
+		rs, cwd = init_vocab.copy(), len(init_vocab) if init_normal_token_id is None else init_normal_token_id
 	if omit_vsize:
 		vsize = omit_vsize
 	else:
