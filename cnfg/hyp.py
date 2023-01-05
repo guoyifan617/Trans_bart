@@ -32,6 +32,9 @@ normal_tokens_vs_pad_tokens = 4
 # For BPE (using full vocabulary), the special <unk> token will never appear and thus can be removed from the vocabulary. Otherwise, it should be set to True.
 use_unk = False
 
+# learning rate, override by the GoogleLR in most cases
+init_lr = 1e-4
+
 # enable tqdm progress bar.
 enable_tqdm = False
 

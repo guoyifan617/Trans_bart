@@ -11,9 +11,9 @@ iter_to_str = lambda lin: map(str, lin)
 iter_to_int = lambda lin: map(int, lin)
 iter_to_float = lambda lin: map(float, lin)
 
-def sys_open(fname, mode="r", buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
+def sys_open(fname, mode="r", **kwargs):
 
-	return ((sys.stdin.buffer if "r" in mode else sys.stdout.buffer) if "b" in mode else (sys.stdin if "r" in mode else sys.stdout)) if fname == "-" else open(fname, mode=mode, buffering=buffering, encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener)
+	return ((sys.stdin.buffer if "r" in mode else sys.stdout.buffer) if "b" in mode else (sys.stdin if "r" in mode else sys.stdout)) if fname == "-" else open(fname, mode=mode, **kwargs)
 
 def save_objects(fname, *inputs):
 

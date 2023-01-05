@@ -46,7 +46,7 @@ class NMT(NMTBase):
 
 		return self.dec(self.enc(inpute, edit=edit, mask=_mask), mlm_mask=_mlm_mask, tgt=tgt, prediction=prediction)
 
-	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, **kwargs):
+	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, pad_id=pad_id, edit_pad_id=edit_pad_id, delete_id=delete_id, **kwargs):
 
 		_max_len = max(32, inpute.size(1) // 4) if max_len is None else max_len
 
@@ -79,11 +79,10 @@ class NMT(NMTBase):
 					break
 				_ = ~done_trans
 				_inpute = _inpute[_]
+				_tag_out = _tag_out[_]
 				if step < _last_step:
 					_edit = _edit[_]
-					_tag_out = _tag_out[_]
 				else:
-					_keep_mask = _keep_mask[_]
 					break
 			if step < _last_step:
 				_next_i, _next_e, _mlen = [], [], 0
@@ -94,9 +93,12 @@ class NMT(NMTBase):
 					_l = len(_iu)
 					if _l > _mlen:
 						_mlen = _l
-				_inpute, _edit = _inpute.new_tensor(pad_batch(_next_i, _mlen, pad_id=pad_id)), _inpute.new_tensor(pad_batch(_next_e, _mlen, pad_id=pad_id))
+				_inpute, _edit = _inpute.new_tensor(pad_batch(_next_i, _mlen, pad_id=pad_id)), _inpute.new_tensor(pad_batch(_next_e, _mlen, pad_id=edit_pad_id))
 		if _rids:
-			for _ind, _i, _k in zip(_rids, _inpute.unbind(0), _keep_mask.unbind(0)):
+			_mlm_mask = _inpute.eq(mask_id)
+			if torch_any_wodim(_mlm_mask).item():
+				_inpute[_mlm_mask] = _tag_out[_mlm_mask]
+			for _ind, _i, _k in zip(_rids, _inpute.unbind(0), _inpute.ne(delete_id).unbind(0)):
 				rs[_ind] = _i[_k]
 
 		return [rs[_] for _ in range(bsize)]

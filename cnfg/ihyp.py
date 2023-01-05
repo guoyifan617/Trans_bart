@@ -42,9 +42,6 @@ relative_position_max_bucket_distance_encoder, relative_position_max_bucket_dist
 disable_std_pemb_encoder, disable_std_pemb_decoder = parse_double_value_tuple(disable_std_pemb)
 relpos_reduction_with_zeros = True
 
-# learning rate, override by the GoogleLR in most case
-init_lr = 1e-4
-
 # hyper-parameters
 inf_default = inf
 
