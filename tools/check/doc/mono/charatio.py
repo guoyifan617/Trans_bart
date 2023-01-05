@@ -2,13 +2,14 @@
 
 import sys
 
+from utils.fmt.base import sys_open
 from utils.fmt.doc.base import get_char_ratio
 
 def handle(srcfs):
 
 	def getfratio(fname):
 
-		with open(fname, "rb") as fs:
+		with sys_open(fname, "rb") as fs:
 
 			maxratioc = 0.0
 			maxratiob = 0.0

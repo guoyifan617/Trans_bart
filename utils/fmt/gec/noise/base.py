@@ -2,6 +2,7 @@
 
 from random import choices, randint, sample, shuffle
 
+from utils.fmt.base import sys_open
 from utils.fmt.vocab.char import ldvocab_list
 from utils.math import cumsum, pos_norm
 
@@ -10,7 +11,7 @@ from cnfg.vocab.plm.custbert import init_token_id, vocab_size
 def load_replace_data(fname):
 
 	rsd = {}
-	with open(fname, "rb") as f:
+	with sys_open(fname, "rb") as f:
 		for _ in f:
 			tmp = _.strip()
 			if tmp:

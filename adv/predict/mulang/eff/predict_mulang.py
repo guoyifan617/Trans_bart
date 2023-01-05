@@ -7,6 +7,7 @@ from parallel.parallelMT import DataParallelMT
 from transformer.EnsembleNMT import NMT as Ensemble
 from transformer.MuLang.NMT import NMT
 from utils.base import set_random_seed
+from utils.fmt.base import sys_open
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.fmt.vocab.base import reverse_dict
 from utils.fmt.vocab.token import ldvocab
@@ -67,7 +68,7 @@ ens = "\n".encode("utf-8")
 
 ntest = [(str(i), _task,) for _nd, _task in zip(ntest, td["taskorder"][()].tolist()) for i in range(_nd)]
 
-with open(sys.argv[1], "wb") as f, torch_inference_mode():
+with sys_open(sys.argv[1], "wb") as f, torch_inference_mode():
 	for i_d, taskid in tqdm(ntest, mininterval=tqdm_mininterval):
 		seq_batch = torch.from_numpy(td[str(taskid)]["src"][i_d][()])
 		if cuda_device:

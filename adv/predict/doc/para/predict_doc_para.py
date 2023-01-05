@@ -7,6 +7,7 @@ from parallel.parallelMT import DataParallelMT
 from transformer.Doc.Para.Base.NMT import NMT
 from transformer.EnsembleNMT import NMT as Ensemble
 from utils.base import set_random_seed
+from utils.fmt.base import sys_open
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.fmt.vocab.base import reverse_dict
 from utils.fmt.vocab.token import ldvocab
@@ -69,7 +70,7 @@ ens = "\n".encode("utf-8")
 ens_skip = "\n".encode("utf-8")#.join(["\n" for i in range(num_prev_sent)])
 
 src_grp = td["src"]
-with open(sys.argv[1], "wb") as f, torch_inference_mode():
+with sys_open(sys.argv[1], "wb") as f, torch_inference_mode():
 	for nsent, i_d in tqdm(tl, mininterval=tqdm_mininterval):
 		seq_batch = torch.from_numpy(src_grp[nsent][i_d][()])
 		if cuda_device:

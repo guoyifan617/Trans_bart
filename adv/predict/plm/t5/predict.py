@@ -8,6 +8,7 @@ from parallel.parallelMT import DataParallelMT
 from transformer.EnsembleNMT import NMT as Ensemble
 from transformer.PLM.T5.NMT import NMT
 from utils.base import set_random_seed
+from utils.fmt.base import sys_open
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.fmt.plm.base import fix_parameter_name
 from utils.h5serial import h5File
@@ -78,7 +79,7 @@ beam_size = cnfg.beam_size
 length_penalty = cnfg.length_penalty
 
 ens = "\n".encode("utf-8")
-with open(sys.argv[1], "wb") as f, h5File(cnfg.test_data, "r") as td, torch_inference_mode():
+with sys_open(sys.argv[1], "wb") as f, h5File(cnfg.test_data, "r") as td, torch_inference_mode():
 	src_grp = td["src"]
 	for i in tqdm(range(td["ndata"][()].item()), mininterval=tqdm_mininterval):
 		seq_batch = torch.from_numpy(src_grp[str(i)][()])

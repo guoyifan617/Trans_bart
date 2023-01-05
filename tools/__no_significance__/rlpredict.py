@@ -8,6 +8,7 @@ from parallel.parallelMT import DataParallelMT
 from transformer.EnsembleNMT import NMT as Ensemble
 from transformer.NMT import NMT
 from utils.base import set_random_seed
+from utils.fmt.base import sys_open
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.fmt.vocab.base import reverse_dict
 from utils.fmt.vocab.token import ldvocab
@@ -78,7 +79,7 @@ for _cur_r_layer in range(cnfg.nlayer):
 
 	mymodel.enc.nets = ModuleList(encl[:_cur_r_layer] + encl[_cur_r_layer + 1:])
 	mymodel.dec.nets = ModuleList(decl)
-	with open(fpe % (_cur_r_layer), "wb") as f:
+	with sys_open(fpe % (_cur_r_layer), "wb") as f:
 		with torch_inference_mode():
 			for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 				seq_batch = torch.from_numpy(src_grp[str(i)][()])
@@ -106,7 +107,7 @@ for _cur_r_layer in range(cnfg.nlayer):
 
 	mymodel.enc.nets = ModuleList(encl)
 	mymodel.dec.nets = ModuleList(decl[:_cur_r_layer] + decl[_cur_r_layer + 1:])
-	with open(fpd % (_cur_r_layer), "wb") as f:
+	with sys_open(fpd % (_cur_r_layer), "wb") as f:
 		with torch_inference_mode():
 			for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 				seq_batch = torch.from_numpy(src_grp[str(i)][()])

@@ -2,7 +2,7 @@
 
 import sys
 
-from utils.fmt.base import clean_list
+from utils.fmt.base import clean_list, sys_open
 from utils.fmt.vocab.token import ldvocab_list
 
 def handle(srcfs, tgtfs, vcbfs):
@@ -20,7 +20,7 @@ def handle(srcfs, tgtfs, vcbfs):
 	vcbs, _ = ldvocab_list(vcbfs)
 	vcbs = set(vcbs)
 
-	with open(srcfs, "rb") as fs, open(tgtfs, "wb") as fsw:
+	with sys_open(srcfs, "rb") as fs, sys_open(tgtfs, "wb") as fsw:
 		total = keep = 0
 		for ls in fs:
 			ls = ls.strip()

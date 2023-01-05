@@ -6,12 +6,14 @@
 
 import sys
 
+from utils.fmt.base import sys_open
+
 def handle(srcf, rsf, token):
 
 	_et = token.encode("utf-8") if token.endswith(" ") else (token + " ").encode("utf-8")
 	_ens = "\n".encode("utf-8")
 
-	with open(srcf, "rb") as frd, open(rsf, "wb") as fwrt:
+	with sys_open(srcf, "rb") as frd, sys_open(rsf, "wb") as fwrt:
 		for line in frd:
 			tmp = line.strip()
 			if tmp:

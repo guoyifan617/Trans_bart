@@ -2,7 +2,7 @@
 
 import sys
 
-from utils.fmt.base import clean_list
+from utils.fmt.base import clean_list, sys_open
 from utils.fmt.vocab.token import ldvocab_list
 
 def covered(srcl, mtl, pel, srcvcb, mtvcb, tgtvcb):
@@ -21,7 +21,7 @@ def handle(srcfs, srcfm, srcft, tgtfs, tgtfm, tgtft, vcbfs, vcbfm, vcbft, max_le
 
 	vcbs, vcbm, vcbt = set(ldvocab_list(vcbfs)[0]), set(ldvocab_list(vcbfm)[0]), set(ldvocab_list(vcbft)[0])
 
-	with open(srcfs, "rb") as fs, open(srcfm, "rb") as fm, open(srcft, "rb") as ft, open(tgtfs, "wb") as fsw, open(tgtfm, "wb") as fmw, open(tgtft, "wb") as ftw:
+	with sys_open(srcfs, "rb") as fs, sys_open(srcfm, "rb") as fm, sys_open(srcft, "rb") as ft, sys_open(tgtfs, "wb") as fsw, sys_open(tgtfm, "wb") as fmw, sys_open(tgtft, "wb") as ftw:
 		total = keep = 0
 		for ls, lm, lt in zip(fs, fm, ft):
 			ls, lm, lt = ls.strip(), lm.strip(), lt.strip()

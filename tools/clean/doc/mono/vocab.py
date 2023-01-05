@@ -8,6 +8,8 @@ from utils.fmt.vocab.token import ldvocab_list
 # vratio: percentages of vocabulary size of retrieved words of least frequencies
 # dratio: a datum will be dropped who contains high frequency words less than this ratio
 
+from utils.fmt.base import sys_open
+
 def handle(srcfs, tgtfs, vcbfs, vratio, dratio=None):
 
 	_dratio = vratio if dratio is None else dratio
@@ -17,7 +19,7 @@ def handle(srcfs, tgtfs, vcbfs, vratio, dratio=None):
 	vcbs, nvs = ldvocab_list(vcbfs)
 	ilgs = set(vcbs[int(float(nvs) * (1.0 - vratio)):])
 
-	with open(srcfs, "rb") as fs, open(tgtfs, "wb") as fsw:
+	with sys_open(srcfs, "rb") as fs, sys_open(tgtfs, "wb") as fsw:
 		total = keep = 0
 		cache = []
 		for ls in fs:

@@ -3,6 +3,8 @@
 import sys
 from math import ceil
 
+from utils.fmt.base import sys_open
+
 def adv_strip(strin):
 
 	ct = 0
@@ -166,7 +168,7 @@ def handle(srcf, bpef, rsf, max_phrase_size=8, min_phrases=8):
 
 	ens = "\n".encode("utf-8")
 	cache = []
-	with open(srcf, "rb") as frd, open(bpef, "rb") as frb, open(rsf, "wb") as fwrt:
+	with sys_open(srcf, "rb") as frd, sys_open(bpef, "rb") as frb, sys_open(rsf, "wb") as fwrt:
 		for line in frd:
 			tmp = line.rstrip()
 			if tmp:

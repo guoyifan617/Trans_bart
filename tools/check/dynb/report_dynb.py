@@ -14,7 +14,7 @@ from transformer.NMT import NMT
 from utils.base import free_cache, get_logger, mkdir, set_random_seed
 from utils.contpara import get_model_parameters
 from utils.dynbatch import GradientMonitor
-from utils.fmt.base import iter_to_str, parse_double_value_tuple
+from utils.fmt.base import iter_to_str, parse_double_value_tuple, sys_open
 from utils.fmt.base4torch import load_emb, parse_cuda
 from utils.h5serial import h5File
 from utils.init.base import init_model_params
@@ -54,7 +54,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 	cur_b, _ls = 1, {} if save_loss else None
 
 	global grad_mon, update_angle, enc_layer, log_dyn_p, log_dynb, wkdir
-	_log_f_dynbatch = open(wkdir+"dynbatch.log", "ab")
+	_log_f_dynbatch = sys_open(wkdir+"dynbatch.log", "ab")
 	_log_f_dynbatch.write("ES\n".encode("utf-8"))
 
 	src_grp, tgt_grp = td["src"], td["tgt"]

@@ -7,6 +7,8 @@ import sys
 # sratio: number of tokens seperated by bpe / number of tokens before bpe processing
 # num_rules_drop: choose from [1, 4], fewer data will be droped with larger value, none data would be droped if it was set to 4
 
+from utils.fmt.base import sys_open
+
 def handle(srcfs, tgtfs, cratio=0.8, bratio=5.0, sratio=0.8, num_rules_drop=1):
 
 	def legal_mono(docl, cratio, bratio, sratio):
@@ -41,7 +43,7 @@ def handle(srcfs, tgtfs, cratio=0.8, bratio=5.0, sratio=0.8, num_rules_drop=1):
 
 	ens = "\n\n".encode("utf-8")
 
-	with open(srcfs, "rb") as fs, open(tgtfs, "wb") as fsw:
+	with sys_open(srcfs, "rb") as fs, sys_open(tgtfs, "wb") as fsw:
 		total = keep = 0
 		cache = []
 		if num_rules_drop > 0:

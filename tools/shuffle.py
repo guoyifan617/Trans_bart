@@ -3,7 +3,7 @@
 import sys
 from random import seed as rpyseed, shuffle
 
-from utils.fmt.base import FileList, clean_str
+from utils.fmt.base import FileList, clean_str, sys_open
 
 def handle(srcfl, rsfl):
 
@@ -16,7 +16,7 @@ def handle(srcfl, rsfl):
 
 	ens = "\n".encode("utf-8")
 	for du, rsf in zip(zip(*data), rsfl):
-		with open(rsf, "wb") as fwrt:
+		with sys_open(rsf, "wb") as fwrt:
 			fwrt.write("\n".join(du).encode("utf-8"))
 			fwrt.write(ens)
 

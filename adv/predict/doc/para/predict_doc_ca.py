@@ -7,6 +7,7 @@ from parallel.parallelMT import DataParallelMT
 from transformer.Doc.Para.Gate.CANMT import NMT
 from transformer.EnsembleNMT import NMT as Ensemble
 from utils.base import set_random_seed
+from utils.fmt.base import sys_open
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.fmt.vocab.base import reverse_dict
 from utils.fmt.vocab.token import ldvocab
@@ -69,7 +70,7 @@ ens_skip = "\n".encode("utf-8")
 
 src_grp = td["src"]
 tgt_grp = td["tgt"]
-with open(sys.argv[1], "wb") as f, torch_inference_mode():
+with sys_open(sys.argv[1], "wb") as f, torch_inference_mode():
 	for nsent, i_d in tqdm(tl, mininterval=tqdm_mininterval):
 		seq_batch = torch.from_numpy(src_grp[nsent][i_d][()])
 		seq_o = torch.from_numpy(tgt_grp[nsent][i_d][()])

@@ -7,6 +7,7 @@ from parallel.parallelMT import DataParallelMT
 from transformer.APE.NMT import NMT
 from transformer.EnsembleNMT import NMT as Ensemble
 from utils.base import set_random_seed
+from utils.fmt.base import sys_open
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.fmt.vocab.base import reverse_dict
 from utils.fmt.vocab.token import ldvocab
@@ -68,7 +69,7 @@ ens = "\n".encode("utf-8")
 
 # using tgt instead of mt since data are processed by tools/mkiodata.py for the mt task
 src_grp, mt_grp = td["src"], td["tgt"]
-with open(sys.argv[1], "wb") as f, torch_inference_mode():
+with sys_open(sys.argv[1], "wb") as f, torch_inference_mode():
 	for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 		seq_batch = torch.from_numpy(src_grp[str(i)][()])
 		seq_mt = torch.from_numpy(mt_grp[str(i)][()])

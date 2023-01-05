@@ -11,6 +11,7 @@ from parallel.parallelMT import DataParallelMT
 from transformer.EnsembleNMT import NMT as Ensemble
 from transformer.NMT import NMT
 from utils.base import set_random_seed
+from utils.fmt.base import sys_open
 from utils.fmt.base4torch import parse_cuda
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
@@ -65,7 +66,7 @@ if cuda_device:
 ens = "\n".encode("utf-8")
 
 src_grp, tgt_grp = td["src"], td["tgt"]
-with open(sys.argv[1], "wb") as f, torch_inference_mode():
+with sys_open(sys.argv[1], "wb") as f, torch_inference_mode():
 	for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 		_curid = str(i)
 		seq_batch = torch.from_numpy(src_grp[_curid][()])

@@ -3,6 +3,7 @@
 import sys
 from numpy import array as np_array, int32 as np_int32, uint8 as np_uint8
 
+from utils.fmt.base import sys_open
 from utils.h5serial import h5File
 
 def parse_bpe_list(lin):
@@ -56,7 +57,7 @@ def build_ind_mask(lbpe, seql):
 
 def handle(h5src, bpeparsf, rsf):
 
-	with h5File(h5src, "r") as data, h5File(rsf, "w", libver=h5_libver) as frs, open(bpeparsf, "rb") as frd:
+	with h5File(h5src, "r") as data, h5File(rsf, "w", libver=h5_libver) as frs, sys_open(bpeparsf, "rb") as frd:
 		ndata = data["ndata"][()].item()
 		src_grp, ind_grp, mask_grp = data["src"], frs.create_group("ind"), frs.create_group("mask4phrase")
 		for i in range(ndata):

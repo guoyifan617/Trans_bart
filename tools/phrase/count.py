@@ -2,6 +2,8 @@
 
 import sys
 
+from utils.fmt.base import sys_open
+
 def normd(din):
 
 	_t = 0.0
@@ -38,7 +40,7 @@ def handle(tagf, wf, rsf):
 
 	rsd = {}
 	rst = {}
-	with open(tagf, "rb") as frd, open(wf, "rb") as frw:
+	with sys_open(tagf, "rb") as frd, sys_open(wf, "rb") as frw:
 		for lt, lw in zip(frd, frw):
 			tlt, tlw = lt.strip(), lw.strip()
 			if tlt and tlw:
@@ -56,7 +58,7 @@ def handle(tagf, wf, rsf):
 	rsd_ref = formatd(normd(rst))
 
 	ens = "\n".encode("utf-8")
-	with open(rsf, "wb") as fwrt:
+	with sys_open(rsf, "wb") as fwrt:
 		fwrt.write(", ".join(rsd_std).encode("utf-8"))
 		fwrt.write(ens)
 		fwrt.write(", ".join(rsd_ori).encode("utf-8"))

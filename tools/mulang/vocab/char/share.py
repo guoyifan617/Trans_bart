@@ -2,6 +2,7 @@
 
 import sys
 
+from utils.fmt.base import sys_open
 from utils.fmt.vocab.char import save_vocab
 
 def handle(srcfl, rsf, rslangf, vsize=65532):
@@ -13,7 +14,7 @@ def handle(srcfl, rsf, rslangf, vsize=65532):
 	for srcf in srcfl:
 		if srcf == "--target":
 			break
-		with open(srcf, "rb") as f:
+		with sys_open(srcf, "rb") as f:
 			for line in f:
 				tmp = line.strip()
 				if tmp:
@@ -26,7 +27,7 @@ def handle(srcfl, rsf, rslangf, vsize=65532):
 		curid += 1
 
 	for srcf in srcfl[curid+1:]:
-		with open(srcf, "rb") as f:
+		with sys_open(srcf, "rb") as f:
 			for line in f:
 				tmp = line.strip()
 				if tmp:

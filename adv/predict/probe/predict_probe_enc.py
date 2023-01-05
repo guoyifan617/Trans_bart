@@ -4,8 +4,10 @@
 
 import sys
 import torch
+
 from transformer.Probe.NMT import NMT
 from utils.base import set_random_seed
+from utils.fmt.base import sys_open
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.fmt.vocab.base import reverse_dict
 from utils.fmt.vocab.token import init_vocab, ldvocab
@@ -55,7 +57,7 @@ ignore_ids = set(init_vocab.values())
 
 src_grp = td["src"]
 ens = "\n".encode("utf-8")
-with open(sys.argv[4], "wb") as fwrt, torch_inference_mode():
+with sys_open(sys.argv[4], "wb") as fwrt, torch_inference_mode():
 	for i in tqdm(range(ntest), mininterval=tqdm_mininterval):
 		bid = str(i)
 		seq_batch = torch.from_numpy(src_grp[bid][()])

@@ -2,7 +2,7 @@
 
 import sys
 
-from utils.fmt.base import clean_list_iter
+from utils.fmt.base import clean_list_iter, sys_open
 from utils.fmt.vocab.token import save_vocab
 
 def handle(srcfl, rsf, vsize=65532):
@@ -10,7 +10,7 @@ def handle(srcfl, rsf, vsize=65532):
 	vocab = {}
 
 	for srcf in srcfl:
-		with open(srcf, "rb") as f:
+		with sys_open(srcf, "rb") as f:
 			for line in f:
 				tmp = line.strip()
 				if tmp:
