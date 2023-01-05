@@ -2,7 +2,7 @@
 
 import sys
 
-from utils.fmt.base import list_reader as file_reader
+from utils.fmt.base import list_reader as file_reader, sys_open
 
 from cnfg.vocab.base import init_normal_token_id, init_vocab
 
@@ -58,7 +58,7 @@ def save_vocab(vcb_dict, fname, omit_vsize=False, sep=sep_save):
 
 	ens = "\n".encode("utf-8")
 	remain = omit_vsize
-	with sys.stdout.buffer if fname == "-" else open(fname, "wb") as f:
+	with sys_open(fname, "wb") as f:
 		for freq in freqs:
 			cdata = r_vocab[freq]
 			ndata = len(cdata) - 1

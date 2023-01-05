@@ -2,7 +2,7 @@
 
 import sys
 
-from utils.fmt.base import iter_to_str
+from utils.fmt.base import iter_to_str, sys_open
 
 tokenize_line = lambda lin, processor: " ".join(processor.convert_ids_to_tokens(processor(lin, return_token_type_ids=True, return_attention_mask=False, return_offsets_mapping=True).input_ids))
 map_line = lambda lin, processor: " ".join(iter_to_str(processor(*lin.split("\t"), return_token_type_ids=True, return_attention_mask=False, return_offsets_mapping=True).input_ids))
@@ -17,7 +17,7 @@ def map_line_with_token_type(lin, processor):
 def loop_file_so(fsrc, frs, process_func=None, processor=None):
 
 	ens = "\n".encode("utf-8")
-	with sys.stdin.buffer if fsrc == "-" else open(fsrc, "rb") as frd, sys.stdout.buffer if frs == "-" else open(frs, "wb") as fwrt:
+	with sys_open(fsrc, "rb") as frd, sys_open(frs, "wb") as fwrt:
 		for line in frd:
 			tmp = line.strip()
 			if tmp:
@@ -36,7 +36,7 @@ def map_file_with_token_type(fsrc, vcb, frsi, frst, Tokenizer=None):
 
 	tokenizer = Tokenizer(tokenizer_file=vcb)
 	ens = "\n".encode("utf-8")
-	with sys.stdin.buffer if fsrc == "-" else open(fsrc, "rb") as frd, sys.stdout.buffer if frsi == "-" else open(frsi, "wb") as fwrti, sys.stdout.buffer if frst == "-" else open(frst, "wb") as fwrtt:
+	with sys_open(fsrc, "rb") as frd, sys_open(frsi, "wb") as fwrti, sys_open(frst, "wb") as fwrtt:
 		for line in frd:
 			tmp = line.strip()
 			if tmp:

@@ -2,11 +2,11 @@
 
 import sys
 
-from utils.fmt.base import clean_list
+from utils.fmt.base import clean_list, sys_open
 
 def doc_reader(fname, sep=None):
 
-	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as frd:
+	with sys_open(fname, "rb") as frd:
 		cache = []
 		max_tok = 0
 		for line in frd:

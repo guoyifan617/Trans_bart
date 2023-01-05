@@ -2,13 +2,14 @@
 
 import sys
 
+from utils.fmt.base import sys_open
 from utils.fmt.vocab.char import save_vocab
 
 def handle(srcf, rsf, vsize=65532):
 
 	vocab = {}
 
-	with sys.stdin.buffer if srcf == "-" else open(srcf, "rb") as f:
+	with sys_open(srcf, "rb") as f:
 		for line in f:
 			tmp = line.strip()
 			if tmp:

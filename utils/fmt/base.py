@@ -11,10 +11,14 @@ iter_to_str = lambda lin: map(str, lin)
 iter_to_int = lambda lin: map(int, lin)
 iter_to_float = lambda lin: map(float, lin)
 
+def sys_open(fname, mode="r", buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
+
+	return ((sys.stdin.buffer if "r" in mode else sys.stdout.buffer) if "b" in mode else (sys.stdin if "r" in mode else sys.stdout)) if fname == "-" else open(fname, mode=mode, buffering=buffering, encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener)
+
 def save_objects(fname, *inputs):
 
 	ens = "\n".encode("utf-8")
-	with sys.stdout.buffer if fname == "-" else open(fname, "wb") as f:
+	with sys_open(fname, "wb") as f:
 		for tmpu in inputs:
 			f.write(serial_func(tmpu).encode("utf-8"))
 			f.write(ens)
@@ -22,7 +26,7 @@ def save_objects(fname, *inputs):
 def load_objects(fname):
 
 	rs = []
-	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as f:
+	with sys_open(fname, "rb") as f:
 		for line in f:
 			tmp = line.strip()
 			if tmp:
@@ -33,7 +37,7 @@ def load_objects(fname):
 def load_states(fname):
 
 	rs = []
-	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as f:
+	with sys_open(fname, "rb") as f:
 		for line in f:
 			tmp = line.strip()
 			if tmp:
@@ -45,7 +49,7 @@ def load_states(fname):
 
 def list_reader(fname, keep_empty_line=True, sep=None, print_func=print):
 
-	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as frd:
+	with sys_open(fname, "rb") as frd:
 		for line in frd:
 			tmp = line.strip()
 			if tmp:
@@ -59,7 +63,7 @@ def list_reader(fname, keep_empty_line=True, sep=None, print_func=print):
 
 def line_reader(fname, keep_empty_line=True, print_func=print):
 
-	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as frd:
+	with sys_open(fname, "rb") as frd:
 		for line in frd:
 			tmp = line.strip()
 			if tmp:
@@ -72,7 +76,7 @@ def line_reader(fname, keep_empty_line=True, print_func=print):
 
 def line_char_reader(fname, keep_empty_line=True, print_func=print):
 
-	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as frd:
+	with sys_open(fname, "rb") as frd:
 		for line in frd:
 			tmp = line.strip()
 			if tmp:
@@ -85,7 +89,7 @@ def line_char_reader(fname, keep_empty_line=True, print_func=print):
 
 def list_reader_wst(fname, keep_empty_line=True, sep=None, print_func=print):
 
-	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as frd:
+	with sys_open(fname, "rb") as frd:
 		for line in frd:
 			tmp = line.strip(b"\r\n")
 			if tmp:
@@ -99,7 +103,7 @@ def list_reader_wst(fname, keep_empty_line=True, sep=None, print_func=print):
 
 def line_reader_wst(fname, keep_empty_line=True, print_func=print):
 
-	with sys.stdin.buffer if fname == "-" else open(fname, "rb") as frd:
+	with sys_open(fname, "rb") as frd:
 		for line in frd:
 			tmp = line.strip(b"\r\n")
 			if tmp:
@@ -327,9 +331,8 @@ def multi_line_reader(fname, *inputs, num_line=1, **kwargs):
 
 	_i = 0
 	rs = []
-	_enc = ("rb" in inputs) or ("rb" in kwargs.values())
-	ens = "\n".encode("utf-8") if _enc else "\n"
-	with (sys.stdin.buffer if _enc else sys.stdin) if fname == "-" else open(fname, *inputs, **kwargs) as frd:
+	ens = "\n".encode("utf-8") if ("rb" in inputs) or ("rb" in kwargs.values()) else "\n"
+	with sys_open(fname, *inputs, **kwargs) as frd:
 		for line in frd:
 			tmp = line.rstrip()
 			rs.append(tmp)

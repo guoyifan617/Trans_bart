@@ -2,8 +2,8 @@
 
 from random import choices, randint, sample, shuffle
 
+from utils.fmt.vocab.char import ldvocab_list
 from utils.math import cumsum, pos_norm
-from utils.vocab.char import ldvocab_list
 
 from cnfg.vocab.plm.custbert import init_token_id, vocab_size
 
@@ -59,7 +59,7 @@ class VocabReplacer(NoiserBase):
 
 	def __init__(self, df, vsize=vocab_size-init_token_id, sample_func=sample):
 
-		self.rpd = ldvocab_list(df)
+		self.rpd = ldvocab_list(df)[0]
 		self.sample_func = sample_func
 
 	def edit(self, x, sample_func=None, data=None):
@@ -78,7 +78,7 @@ class Shuffler(NoiserBase):
 		_ = list(x)
 		shuffle(_)
 
-	return "".join(_)
+		return "".join(_)
 
 class Repeater(NoiserBase):
 
@@ -86,13 +86,13 @@ class Repeater(NoiserBase):
 
 		return "%s%s" % (x, x,)
 
-def drop(self, x, sind, k, **kwargs):
+def drop(x, sind, k, **kwargs):
 
 	return "%s%s" % (x[:sind], x[sind + k:])
 
 class Noiser:
 
-	def __init__(self, char=None, vcb=None, min_span_len=1, max_span_len=5, p=0.15, w_char=0.3, w_vcb=0.1, w_shuf=0.2, w_repeat=0.1, w_drop=0.1):
+	def __init__(self, char=None, vcb=None, min_span_len=1, max_span_len=5, p=0.15, w_char=0.3, w_vcb=0.2, w_shuf=0.2, w_repeat=0.1, w_drop=0.1):
 
 		self.edits = []
 		w = []
@@ -104,7 +104,6 @@ class Noiser:
 			else:
 				self.edits.extend([CharReplacer(_) for _ in char])
 				w.extend(w_char if isinstance(w_char, list) else [w_char for _ in range(len(char))])
-				self.ind_shift.extend([0] for _ in range(len(char)))
 		if vcb is not None:
 			self.edits.append(VocabReplacer(vcb))
 			w.append(w_vcb)
@@ -126,9 +125,11 @@ class Noiser:
 
 	def __call__(self, x, **kwargs):
 
-		_min_span_len, _max_span_len, _sample_ind, _sample_cw, _inc_ind, _dec_ind, _shuf_ind = self.min_span_len, self.max_span_len, self.sample_ind, self.sample_cw, self.inc_ind, self.dec_ind, self.shuf_ind
 		_r_len = len(x)
+		if _r_len == 1:
+			return x
 		_last_ind = _r_len - 1
+		_min_span_len, _max_span_len, _sample_ind, _sample_cw, _inc_ind, _dec_ind, _shuf_ind = self.min_span_len, self.max_span_len, self.sample_ind, self.sample_cw, self.inc_ind, self.dec_ind, self.shuf_ind
 		_ = int(_r_len * self.p)
 		_min_span_len, _max_span_len = max(min(_min_span_len, _), 1), max(min(_max_span_len, _), 1)
 		_sind = 0

@@ -6,7 +6,7 @@ from cnfg.vocab.gector.edit import blank_id, delete_id, insert_id, keep_id, mask
 from cnfg.vocab.gector.op import append_id, pad_id as op_pad_id
 from cnfg.vocab.plm.custbert import eos_id, mask_id, pad_id
 
-def apply_op_ids(i, e, t, mask_id=mask_id, append_id=append_id, keep_id=keep_id, delete_id=delete_id, edit_mask_id=edit_mask_id, insert_id=insert_id, blank_id=blank_id, pad_id=pad_id):
+def apply_op_ids(i, e, t, mask_id=mask_id, append_id=append_id, keep_id=keep_id, delete_id=delete_id, edit_mask_id=edit_mask_id, insert_id=insert_id, blank_id=blank_id, pad_id=pad_id, eos_id=eos_id):
 
 	rsi, rse = [], []
 	for _iu, _eu, _tu in zip(i, e, t):
@@ -24,6 +24,8 @@ def apply_op_ids(i, e, t, mask_id=mask_id, append_id=append_id, keep_id=keep_id,
 			else:
 				rsi.append(_iu)
 				rse.append(_tu if _eu == blank_id else _eu)
+	if rsi[-1] == eos_id:
+		rse[-1] = keep_id
 
 	return rsi, rse
 
