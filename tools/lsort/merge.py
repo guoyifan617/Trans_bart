@@ -3,9 +3,9 @@
 import sys
 from os import walk
 from os.path import join as pjoin
-from random import seed as rpyseed
+from random import seed as rpyseed, shuffle
 
-from utils.fmt.base import FileList, clean_liststr_lentok, maxfreq_filter, shuffle_pair
+from utils.fmt.base import FileList, clean_liststr_lentok, maxfreq_filter
 
 # remove_same: reduce same data in the corpus
 # shuf: shuffle the data of same source/target length
@@ -62,13 +62,13 @@ def handle(cached, tgtfl, remove_same=False, shuf=True, max_remove=True):
 
 	def write_data(data, wfl, ens, shuf=True, max_remove=False):
 
-		lines = zip(*data)
-		if len(data) > 1:
+		lines = list(data)
+		if len(lines) > 1:
 			if max_remove:
-				lines = maxfreq_filter(*lines)
+				lines = maxfreq_filter(lines)
 			if shuf:
-				lines = shuffle_pair(*lines)
-		for du, f in zip(lines, wfl):
+				lines = shuffle(lines)
+		for du, f in zip(zip(*lines), wfl):
 			f.write(ens.join(du))
 			f.write(ens)
 

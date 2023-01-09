@@ -6,7 +6,8 @@ from threading import Lock
 from time import sleep
 
 from utils.fmt.base import seperate_list
-from utils.fmt.plm.custbert.raw.base import inf_file_loader, sort_lines_reader
+from utils.fmt.plm.custbert.raw.base import inf_file_loader
+from utils.fmt.raw.reader.sort.single import sort_lines_reader
 from utils.fmt.single import batch_padder
 from utils.fmt.vocab.char import ldvocab
 from utils.fmt.vocab.plm.custbert import map_batch
@@ -68,6 +69,7 @@ class Loader:
 			self.iter = self.iter_func()
 		for _ in self.iter:
 			yield _
+		self.iter = None
 
 	def status(self, mode=True):
 

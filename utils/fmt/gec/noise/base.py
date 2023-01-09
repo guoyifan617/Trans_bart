@@ -38,7 +38,7 @@ class NoiserBase:
 
 		_eind = sind + k
 
-		return "%s%s%s" % (x[:sind], self.edit(x[sind:_eind], **kwargs), x[_eind:])
+		return "%s%s%s" % (x[:sind], self.edit(x[sind:_eind], **kwargs), x[_eind:],)
 
 class CharReplacer(NoiserBase):
 
@@ -81,15 +81,16 @@ class Shuffler(NoiserBase):
 
 		return "".join(_)
 
-class Repeater(NoiserBase):
+def repeat(x, sind, k, **kwargs):
 
-	def edit(self, x, **kwargs):
+	_eind = sind + k
+	_ = x[sind:_eind]
 
-		return "%s%s" % (x, x,)
+	return "%s%s%s%s" % (x[:sind], _, _, x[_eind:],)
 
 def drop(x, sind, k, **kwargs):
 
-	return "%s%s" % (x[:sind], x[sind + k:])
+	return "%s%s" % (x[:sind], x[sind + k:],)
 
 class Noiser:
 
@@ -114,7 +115,7 @@ class Noiser:
 			w.append(w_shuf)
 		if w_repeat > 0.0:
 			self.inc_ind = len(self.edits)
-			self.edits.append(Repeater())
+			self.edits.append(repeat)
 			w.append(w_repeat)
 		if w_drop > 0.0:
 			self.dec_ind = len(self.edits)

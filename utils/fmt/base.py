@@ -134,7 +134,60 @@ def clean_liststr_lentok(lin):
 
 	return " ".join(rs), len(rs)
 
-def maxfreq_filter_core(ls, lt):
+def maxfreq_filter_many(inputs):
+
+	tmp = {}
+	for _ in inputs:
+		us, ut = tuple(_[:-1]), _[-1]
+		if us in tmp:
+			tmp[us][ut] = tmp[us].get(ut, 0) + 1
+		else:
+			tmp[us] = {ut: 1}
+
+	rs = []
+	for tus, tlt in tmp.items():
+		_rs = []
+		_maxf = 0
+		for key, value in tlt.items():
+			if value > _maxf:
+				_maxf = value
+				_rs = [key]
+			elif value == _maxf:
+				_rs.append(key)
+		for tut in _rs:
+			rs.append((*tus, tut,))
+
+	return rs
+
+def maxfreq_filter_bi(inputs):
+
+	tmp = {}
+	for us, ut in inputs:
+		if us in tmp:
+			tmp[us][ut] = tmp[us].get(ut, 0) + 1
+		else:
+			tmp[us] = {ut: 1}
+
+	rs = []
+	for tus, tlt in tmp.items():
+		_rs = []
+		_maxf = 0
+		for key, value in tlt.items():
+			if value > _maxf:
+				_maxf = value
+				_rs = [key]
+			elif value == _maxf:
+				_rs.append(key)
+		for tut in _rs:
+			rs.append((tus, tut,))
+
+	return rs
+
+def maxfreq_filter(inputs):
+
+	return maxfreq_filter_many(inputs) if len(inputs[0]) > 2 else maxfreq_filter_bi(inputs)
+
+def maxfreq_filter_core_pair(ls, lt):
 
 	tmp = {}
 	for us, ut in zip(ls, lt):
@@ -159,14 +212,14 @@ def maxfreq_filter_core(ls, lt):
 
 	return rls, rlt
 
-def maxfreq_filter(*inputs):
+def maxfreq_filter_pair(*inputs):
 
 	if len(inputs) > 2:
 		# here we assume that we only have one target and it is at the last position
-		rsh, rst = maxfreq_filter_core(tuple(zip(*inputs[0:-1])), inputs[-1])
+		rsh, rst = maxfreq_filter_core_pair(tuple(zip(*inputs[:-1])), inputs[-1])
 		return *zip(*rsh), rst
 	else:
-		return maxfreq_filter_core(*inputs)
+		return maxfreq_filter_core_pair(*inputs)
 
 def shuffle_pair(*inputs):
 

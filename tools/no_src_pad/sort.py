@@ -1,9 +1,9 @@
 #encoding: utf-8
 
 import sys
-from random import seed as rpyseed
+from random import seed as rpyseed, shuffle
 
-from utils.fmt.base import FileList, all_le, clean_liststr_lentok, dict_insert_list, dict_insert_set, iter_dict_sort, maxfreq_filter, shuffle_pair
+from utils.fmt.base import FileList, all_le, clean_liststr_lentok, dict_insert_list, dict_insert_set, iter_dict_sort, maxfreq_filter
 
 # remove_same: reduce same data in the corpus
 # shuf: shuffle the data of same source/target length
@@ -28,13 +28,13 @@ def handle(srcfl, tgtfl, max_len=256, remove_same=False, shuf=True, max_remove=F
 
 	with FileList(tgtfl, "wb") as fl:
 		for tmp in iter_dict_sort(data, free=True):
-			lines = zip(*tmp)
+			tmp = list(tmp)
 			if len(tmp) > 1:
 				if max_remove:
-					lines = maxfreq_filter(*lines)
+					tmp = maxfreq_filter(tmp)
 				if shuf:
-					lines = shuffle_pair(*lines)
-			for du, f in zip(lines, fl):
+					tmp = shuffle(tmp)
+			for du, f in zip(zip(*tmp), fl):
 				f.write(ens.join(du))
 				f.write(ens)
 

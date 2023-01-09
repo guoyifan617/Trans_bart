@@ -10,17 +10,16 @@ from time import sleep
 from uuid import uuid4 as uuid_func
 
 from utils.base import mkdir
-from utils.fmt.plm.custbert.raw.base import inf_file_loader
-from utils.fmt.raw.reader.sort.single import sort_lines_reader
-from utils.fmt.single import batch_padder
-from utils.fmt.vocab.char import ldvocab
-from utils.fmt.vocab.plm.custbert import map_batch
+from utils.fmt.gec.noise.base import Noiser
+from utils.fmt.gec.noise.freader import gec_noise_reader
+from utils.fmt.gec.noise.triple import batch_padder
+from utils.fmt.plm.custbert.token import Tokenizer
+from utils.fmt.raw.reader.sort.tag import sort_lines_reader
 from utils.h5serial import h5File
 from utils.process import start_process
 
-from cnfg.base import seed as rand_seed
-from cnfg.ihyp import h5_libver, h5datawargs, max_pad_tokens_sentence, max_sentences_gpu, max_tokens_gpu, normal_tokens_vs_pad_tokens
-from cnfg.vocab.plm.custbert import init_normal_token_id, init_vocab, pad_id, vocab_size
+from cnfg.gec.gector import noise_char, noise_vcb, plm_vcb, seed as rand_seed
+from cnfg.ihyp import cache_len_default, h5_libver, h5datawargs, max_pad_tokens_sentence, max_sentences_gpu, max_tokens_gpu, normal_tokens_vs_pad_tokens
 
 cache_file_prefix = "train"
 
@@ -47,12 +46,13 @@ def get_cache_fname(fpath, i=0, fprefix=cache_file_prefix):
 
 class Loader:
 
-	def __init__(self, sfiles, dfiles, vcbf, max_len=510, num_cache=8, raw_cache_size=4194304, skip_lines=0, nbatch=256, minfreq=False, vsize=vocab_size, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, file_loader=inf_file_loader, ldvocab=ldvocab, print_func=print):
+	def __init__(self, sfile, vcbf=plm_vcb, noise_char=noise_char, noise_vcb=noise_vcb, max_len=cache_len_default, num_cache=8, minfreq=False, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, norm_u8=False, file_loader=gec_noise_reader, print_func=print):
 
-		self.sent_files, self.doc_files, self.max_len, self.num_cache, self.raw_cache_size, self.skip_lines, self.nbatch, self.minbsize, self.maxpad, self.maxpart, self.sleep_secs, self.file_loader, self.print_func = sfiles, dfiles, max_len, num_cache, raw_cache_size, skip_lines, nbatch, ngpu, maxpad, maxpart, sleep_secs, file_loader, print_func
+		self.sfile, self.max_len, self.num_cache, self.minbsize, self.maxpad, self.maxpart, self.sleep_secs, self.file_loader, self.print_func = sfile, max_len, num_cache, ngpu, maxpad, maxpart, sleep_secs, file_loader, print_func
 		self.bsize, self.maxtoken = (bsize, maxtoken,) if self.minbsize == 1 else (bsize * self.minbsize, maxtoken * self.minbsize,)
 		self.cache_path = get_cache_path(*self.sent_files, *self.doc_files)
-		self.vcb = ldvocab(vcbf, minf=minfreq, omit_vsize=vsize, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id)[0]
+		self.tokenizer = Tokenizer(vcbf, norm_u8=norm_u8)
+		self.noiser = Noiser(char=noise_char, vcb=noise_vcb)
 		self.manager = Manager()
 		self.out = self.manager.list()
 		self.todo = self.manager.list([get_cache_fname(self.cache_path, i=_, fprefix=cache_file_prefix) for _ in range(self.num_cache)])
@@ -63,20 +63,14 @@ class Loader:
 	def loader(self):
 
 		rpyseed(rand_seed)
-		dloader = self.file_loader(self.sent_files, self.doc_files, max_len=self.max_len, print_func=None)
-		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
-		if self.skip_lines > 0:
-			_line_read = self.skip_lines - 1
-			for _ind, _ in enumerate(dloader, 1):
-				if _ind > _line_read:
-					break
+		file_reader = sort_lines_reader()
 		while self.running.value:
 			if self.todo:
 				_cache_file = self.todo.pop(0)
 				with h5File(_cache_file, "w", libver=h5_libver) as rsf:
 					src_grp = rsf.create_group("src")
 					curd = 0
-					for i_d in batch_padder(dloader, self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader, map_batch=map_batch, pad_id=pad_id):
+					for i_d in batch_padder(self.file_loader(self.sfile, self.noiser, self.tokenizer, max_len=self.max_len, print_func=None), self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader):
 						src_grp.create_dataset(str(curd), data=np_array(i_d, dtype=np_int32), **h5datawargs)
 						curd += 1
 					rsf["ndata"] = np_array([curd], dtype=np_int32)

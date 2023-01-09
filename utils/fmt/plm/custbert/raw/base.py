@@ -1,8 +1,6 @@
 #encoding: utf-8
 
-from random import shuffle
-
-from utils.fmt.base import FileList, read_lines
+from utils.fmt.base import FileList
 from utils.fmt.plm.custbert.raw.single.char import doc_file_reader, sent_file_reader
 
 def inf_file_loader(sfiles, dfiles, max_len=510, sent_file_reader=sent_file_reader, doc_file_reader=doc_file_reader, print_func=print):
@@ -32,43 +30,3 @@ def inf_file_loader(sfiles, dfiles, max_len=510, sent_file_reader=sent_file_read
 						del _files[_]
 						if print_func is not None:
 							print_func("close %s" % _fnames.pop(_))
-
-def sort_list_file_reader(x, *args, clear_input=True, **kwargs):
-
-	_d = {}
-	for _ in x:
-		_k = len(_)
-		if _k in _d:
-			if _ not in _d[_k]:
-				_d[_k].add(_)
-		else:
-			_d[_k] = set([_])
-	if clear_input:
-		x.clear()
-	for _k in sorted(_d.keys()):
-		_v = list(_d.pop(_k))
-		shuffle(_v)
-		yield from _v
-
-class sort_lines_reader:
-
-	def __init__(self, line_read=None):
-
-		self.line_read = line_read
-
-	def __call__(self, x, *args, line_read=None, **kwargs):
-
-		_line_read = self.line_read if line_read is None else line_read
-		_data_iter = x if _line_read is None else read_lines(x, _line_read)
-		_d = {}
-		for _ in _data_iter:
-			_k = len(_)
-			if _k in _d:
-				if _ not in _d[_k]:
-					_d[_k].add(_)
-			else:
-				_d[_k] = set([_])
-		for _k in sorted(_d.keys()):
-			_v = list(_d.pop(_k))
-			shuffle(_v)
-			yield from _v
