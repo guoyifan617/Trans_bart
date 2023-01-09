@@ -67,7 +67,7 @@ def handle(cached, tgtfl, remove_same=False, shuf=True, max_remove=True):
 			if max_remove:
 				lines = maxfreq_filter(lines)
 			if shuf:
-				lines = shuffle(lines)
+				shuffle(lines)
 		for du, f in zip(zip(*lines), wfl):
 			f.write(ens.join(du))
 			f.write(ens)

@@ -33,7 +33,7 @@ def handle(srcfl, tgtfl, max_len=256, remove_same=False, shuf=True, max_remove=F
 				if max_remove:
 					tmp = maxfreq_filter(tmp)
 				if shuf:
-					tmp = shuffle(tmp)
+					shuffle(tmp)
 			for du, f in zip(zip(*tmp), fl):
 				f.write(ens.join(du))
 				f.write(ens)
