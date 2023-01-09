@@ -6,6 +6,7 @@ from torch import nn
 
 from modules.NAS import Edge, GumbleNormDrop, Node, edge_discription, node_discription
 from transformer.Decoder import Decoder as DecoderBase
+from utils.fmt.parser import parse_none
 from utils.torch.comp import mask_tensor_type, torch_no_grad
 from utils.train.base import freeze_module, unfreeze_module
 
@@ -263,7 +264,7 @@ class Decoder(DecoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, emb_w=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindemb=False, forbidden_index=None, num_nod=8, max_prev_nodes=5, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(Decoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, emb_w=emb_w, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, bindemb=bindemb, forbidden_index=forbidden_index, **kwargs)

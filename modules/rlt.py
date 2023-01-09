@@ -8,12 +8,14 @@ from torch.nn import functional as nnFunc
 
 from modules.act import Custom_Act, LGLU, get_act
 from modules.base import CrossAttn as CrossAttnBase, Dropout, PositionwiseFF as PositionwiseFFBase, ResCrossAttn as ResCrossAttnBase, ResSelfAttn as ResSelfAttnBase, SelfAttn as SelfAttnBase
+from utils.fmt.parser import parse_none
 from utils.math import arcsigmoid
 from utils.torch.comp import mask_tensor_type, torch_no_grad
 
 from cnfg.ihyp import *
 
 # portal from modules.advdrop
+
 class MaskFunction(Function):
 
 	# output = inputs * bernoulli(1.0 - p)
@@ -101,7 +103,7 @@ class RLTLinear(nn.Module):
 
 	def get_weight_bias(self, training=None):
 
-		_training = self.training if training is None else training
+		_training = parse_none(training, self.training)
 		if _training:
 			_w, _b = MaskFunc(self.drop_i.sigmoid(), self.drop_o.sigmoid(), self.weight, self.bias)
 			_w = _w.sum(0)

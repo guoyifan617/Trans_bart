@@ -3,7 +3,7 @@
 from transformer.PLM.BART.Decoder import Decoder
 from transformer.PLM.BART.Encoder import Encoder
 from transformer.PLM.BERT.NMT import NMT as NMTBase
-from utils.fmt.parser import parse_double_value_tuple
+from utils.fmt.parser import parse_double_value_tuple, parse_none
 from utils.plm.base import set_ln_ieps
 from utils.relpos.base import share_rel_pos_cache
 
@@ -16,7 +16,7 @@ class NMT(NMTBase):
 
 		enc_layer, dec_layer = parse_double_value_tuple(num_layer)
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(NMT, self).__init__(isize, snwd, tnwd, (enc_layer, dec_layer,), fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, global_emb=global_emb, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, bindDecoderEmb=bindDecoderEmb, forbidden_index=forbidden_index, model_name=model_name)

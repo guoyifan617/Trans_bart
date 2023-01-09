@@ -7,6 +7,7 @@ from transfromer.Decoder import Decoder as DecoderBase
 from modules.base import MultiHeadAttn
 from modules.nas.ffn import PositionwiseFF, ResCrossAttn, ResSelfAttn, ResTaughtCrossAttn, ResTaughtSelfAttn
 from transformer.Decoder import DecoderLayer as DecoderLayerBase
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -14,7 +15,7 @@ class DecoderLayer(DecoderLayerBase):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, norm_residual=norm_residual_default, k_rel_pos=use_k_relative_position_decoder, max_bucket_distance=relative_position_max_bucket_distance_decoder, search_ffn=False, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(DecoderLayer, self).__init__(isize, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, norm_residual=norm_residual, k_rel_pos=k_rel_pos, max_bucket_distance=max_bucket_distance, **kwargs)
@@ -55,7 +56,7 @@ class StdDecoderLayer(DecoderLayerBase):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, norm_residual=norm_residual_default, k_rel_pos=use_k_relative_position_decoder, max_bucket_distance=relative_position_max_bucket_distance_decoder, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		super(StdDecoderLayer, self).__init__(isize, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, norm_residual=norm_residual, k_rel_pos=k_rel_pos, max_bucket_distance=max_bucket_distance)
 
@@ -89,7 +90,7 @@ class Decoder(DecoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, share_layer=False, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(Decoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, share_layer=False, **kwargs)

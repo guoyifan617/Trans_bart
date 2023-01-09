@@ -6,6 +6,7 @@ from torch import nn
 
 from modules.pshare import PositionwiseFF, ResSelfAttn
 from transformer.Encoder import Encoder as EncoderBase, EncoderLayer as EncoderLayerBase
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -13,7 +14,7 @@ class EncoderLayer(EncoderLayerBase):
 
 	def __init__(self, isize, attnwb1, attnwb2, ffnwb1, ffnwb2, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		super(EncoderLayer, self).__init__(isize, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, **kwargs)
 
@@ -25,7 +26,7 @@ class Encoder(EncoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, num_weight=None, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_ahsize = _ahsize // num_head * num_head
 
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize

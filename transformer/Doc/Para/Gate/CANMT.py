@@ -4,7 +4,7 @@ from torch import nn
 
 from transformer.Doc.Para.Gate.CEDecoder import Decoder
 from transformer.Doc.Para.Gate.TARSGEncoder import Encoder
-from utils.fmt.parser import parse_double_value_tuple
+from utils.fmt.parser import parse_double_value_tuple, parse_none
 
 from cnfg.ihyp import *
 from cnfg.vocab.base import pad_id
@@ -13,7 +13,7 @@ class NMT(nn.Module):
 
 	def __init__(self, isize, snwd, tnwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, global_emb=False, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindDecoderEmb=True, forbidden_index=None, nprev_context=2, num_layer_context=1, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(NMT, self).__init__()

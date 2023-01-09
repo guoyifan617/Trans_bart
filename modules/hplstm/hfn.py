@@ -9,6 +9,7 @@ from modules.group.base import GroupLinear
 from modules.hplstm.LGate import LGateFunc
 from modules.hplstm.base import BiHPLSTM as BiHPLSTMBase, HPLSTM as HPLSTMBase
 from utils.base import float2odd
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
@@ -20,7 +21,7 @@ class MHPLSTMCore(nn.Module):
 
 		super(MHPLSTMCore, self).__init__()
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 
 		i_head_dim = float2odd(float(isize) / num_head)
 		i_hsize = i_head_dim * num_head
@@ -96,7 +97,7 @@ class HPLSTM(HPLSTMBase):
 
 	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 
 		super(HPLSTM, self).__init__(isize, num_head=num_head, osize=_osize, dropout=dropout, **kwargs)
 
@@ -110,7 +111,7 @@ class BiHPLSTM(BiHPLSTMBase):
 
 	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 
 		super(BiHPLSTM, self).__init__(isize, num_head=num_head, osize=_osize, dropout=dropout, **kwargs)
 

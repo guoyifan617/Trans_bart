@@ -3,6 +3,7 @@
 from random import choices, randint, sample, shuffle
 
 from utils.fmt.base import sys_open
+from utils.fmt.parser import parse_none
 from utils.fmt.vocab.char import ldvocab_list
 from utils.math import cumsum, pos_norm
 
@@ -49,7 +50,7 @@ class CharReplacer(NoiserBase):
 
 	def edit(self, x, sample_func=None, data=None):
 
-		_sample_func, _rpd = self.sample_func if sample_func is None else sample_func, self.rpd if data is None else data
+		_sample_func, _rpd = parse_none(sample_func, self.sample_func), parse_none(data, self.rpd)
 		rs = []
 		for _ in x:
 			rs.append(filter_bi_same(_sample_func(_rpd[_], 2), _) if _ in _rpd else _)
@@ -65,10 +66,10 @@ class VocabReplacer(NoiserBase):
 
 	def edit(self, x, sample_func=None, data=None):
 
-		_sample_func = self.sample_func if sample_func is None else sample_func
+		_sample_func, _rpd = parse_none(sample_func, self.sample_func), parse_none(data, self.rpd)
 		_src_s = set(x)
 		_src_len = len(x)
-		rs = [_ for _ in _sample_func(self.rpd if data is None else data, _src_len + len(_src_s)) if _ not in _src_s]
+		rs = [_ for _ in _sample_func(_rpd, _src_len + len(_src_s)) if _ not in _src_s]
 
 		return "".join(rs[:_src_len])
 

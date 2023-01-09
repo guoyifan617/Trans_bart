@@ -7,6 +7,7 @@ from torch import nn
 from modules.base import CrossAttn
 from modules.paradoc import GateResidual
 from transformer.Encoder import Encoder as EncoderBase, EncoderLayer as EncoderLayerBase
+from utils.fmt.parser import parse_none
 from utils.torch.comp import mask_tensor_type, torch_no_grad
 
 from cnfg.ihyp import *
@@ -15,7 +16,7 @@ class CrossEncoderLayer(EncoderLayerBase):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, ncross=2, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		super(CrossEncoderLayer, self).__init__(isize, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize)
 
@@ -55,7 +56,7 @@ class CrossEncoder(EncoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, nprev_context=2, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
@@ -96,7 +97,7 @@ class Encoder(nn.Module):
 
 		super(Encoder, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 

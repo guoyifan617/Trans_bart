@@ -3,6 +3,7 @@
 from random import shuffle
 
 from utils.fmt.base import read_lines
+from utils.fmt.parser import parse_none
 
 def sort_list_reader(x, *args, clear_input=True, **kwargs):
 
@@ -29,7 +30,7 @@ class sort_lines_reader:
 
 	def __call__(self, x, *args, line_read=None, **kwargs):
 
-		_line_read = self.line_read if line_read is None else line_read
+		_line_read = parse_none(line_read, self.line_read)
 		_data_iter = x if _line_read is None else read_lines(x, _line_read)
 		_d = {}
 		for _ in _data_iter:

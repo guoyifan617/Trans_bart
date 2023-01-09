@@ -2,6 +2,7 @@
 
 import sys
 
+from utils.fmt.parser import parse_none
 from utils.fmt.vocab.base import legal_vocab
 from utils.fmt.vocab.token import ldvocab_list
 
@@ -12,7 +13,7 @@ from utils.fmt.base import sys_open
 
 def handle(srcfs, tgtfs, vcbfs, vratio, dratio=None):
 
-	_dratio = vratio if dratio is None else dratio
+	_dratio = parse_none(dratio, vratio)
 
 	ens = "\n".encode("utf-8")
 

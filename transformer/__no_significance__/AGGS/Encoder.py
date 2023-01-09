@@ -7,6 +7,7 @@ from torch import nn
 from modules.AGGNAS import Node, node_discription, num_node_operation
 from modules.NAS import GumbleNormDrop
 from transformer.Encoder import Encoder as EncoderBase
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 from utils.train.base import freeze_module, unfreeze_module
 
@@ -16,7 +17,7 @@ class Encoder(EncoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, num_nod=6, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 

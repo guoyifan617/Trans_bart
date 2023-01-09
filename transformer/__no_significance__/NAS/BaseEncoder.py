@@ -7,6 +7,7 @@ from torch import nn
 from modules.NAS import Edge, GumbleNormDrop, edge_discription
 from modules.base import ResSelfAttn
 from transformer.Encoder import Encoder as EncoderBase
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 from utils.train.base import freeze_module, unfreeze_module
 
@@ -27,7 +28,7 @@ class EncoderLayer(nn.Module):
 
 		super(EncoderLayer, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		num_edge = ((1 + num_nod) * num_nod // 2) if num_nod < (max_prev_nodes + 1) else ((1 + max_prev_nodes) * max_prev_nodes // 2 + max_prev_nodes * (num_nod - max_prev_nodes))
 		self.num_nod = num_nod
@@ -142,7 +143,7 @@ class Encoder(EncoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, num_nod=4, max_prev_nodes=4, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, **kwargs)

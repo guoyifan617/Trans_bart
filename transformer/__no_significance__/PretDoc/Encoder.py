@@ -6,6 +6,7 @@ from torch import nn
 from modules.mono import PositionalEmb
 from transformer.Doc.Para.Base.Encoder import CrossEncoder as CrossEncoderBase
 from transformer.MDoc.Encoder import Encoder as PretEncoder
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -62,7 +63,7 @@ class Encoder(nn.Module):
 
 		super(Encoder, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 

@@ -6,6 +6,7 @@ from torch import nn
 from modules.spreader.Spreader import SpreaderFunc
 from modules.spreader.SpreaderNocx import SpreaderNocxFunc
 from modules.spreader.manual.rnn import Spreader as SpreaderBase
+from utils.fmt.parser import parse_none
 from utils.init.spreader import build_spread_vector
 from utils.torch.comp import flip_mask, torch_no_grad
 from utils.torch.ext import arcsigmoid
@@ -16,7 +17,7 @@ class Spreader(SpreaderBase):
 
 	def __init__(self, isize, hsize=None, start=2, end=8, factor=0.5, dropout=0.0, norm_residual=norm_residual_default, **kwargs):
 
-		_hsize = isize if hsize is None else hsize
+		_hsize = parse_none(hsize, isize)
 
 		super(Spreader, self).__init__(isize, hsize=_hsize, start=start, end=end, factor=factor, dropout=dropout, norm_residual=norm_residual, **kwargs)
 

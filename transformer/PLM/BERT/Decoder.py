@@ -6,6 +6,7 @@ from torch import nn
 from modules.act import Custom_Act, GELU
 from modules.base import Linear
 from modules.dropout import Dropout
+from utils.fmt.parser import parse_none
 from utils.plm.base import copy_plm_parameter
 from utils.torch.comp import torch_no_grad
 
@@ -38,7 +39,7 @@ class Decoder(nn.Module):
 
 	def load_plm(self, plm_parameters, model_name=None, **kwargs):
 
-		_model_name = self.model_name if model_name is None else model_name
+		_model_name = parse_none(model_name, self.model_name)
 		with torch_no_grad():
 			copy_plm_parameter(self.ff[0].weight, plm_parameters, "cls.predictions.transform.dense.weight")
 			_bias_key = "cls.predictions.transform.dense.bias"

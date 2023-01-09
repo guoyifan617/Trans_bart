@@ -9,6 +9,7 @@ from modules.group.base import GroupLinear
 from modules.hplstm.LGate import LGateFunc
 from modules.hplstm.base import BiHPLSTM as BiHPLSTMBase, HPLSTM as HPLSTMBase, MHPLSTMCore as MHPLSTMCoreBase
 from utils.base import float2odd
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -16,7 +17,7 @@ class MHPLSTMCore(MHPLSTMCoreBase):
 
 	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, enable_proj_bias=enable_proj_bias_default, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 
 		i_hsize = float2odd(float(isize) / num_head) * num_head
 		o_hsize = float2odd(float(_osize) / num_head) * num_head
@@ -65,7 +66,7 @@ class HPLSTM(HPLSTMBase):
 
 	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_fhsize = float2odd(float(_osize * 4 if fhsize is None else fhsize) / num_head) * num_head
 
 		super(HPLSTM, self).__init__(isize, num_head=num_head, osize=_osize, dropout=dropout, **kwargs)
@@ -79,7 +80,7 @@ class BiHPLSTM(BiHPLSTMBase):
 
 	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_fhsize = float2odd(float(_osize * 4 if fhsize is None else fhsize) / num_head) * num_head
 
 		super(BiHPLSTM, self).__init__(isize, num_head=num_head, osize=_osize, dropout=dropout, **kwargs)

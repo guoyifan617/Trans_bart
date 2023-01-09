@@ -7,6 +7,7 @@ from torch import nn
 from modules.act import Custom_Act, LGLU, get_act
 from modules.base import Dropout, Linear, PositionwiseFF as PositionwiseFFBase, ResSelfAttn as ResSelfAttnBase, SelfAttn as SelfAttnBase
 from modules.rnncells import LSTMCell4RNMT
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -43,7 +44,7 @@ class LSTMCell4FFN(nn.Module):
 
 		super(LSTMCell4FFN, self).__init__()
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
 
 		if (use_glu is not None) and (_hsize % 2 == 1):
@@ -94,7 +95,7 @@ class LSTMCell4AFFN(LSTMCell4FFN):
 
 	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
 
 		super(LSTMCell4AFFN, self).__init__(isize, osize=_osize, hsize=_hsize, dropout=dropout, custom_act=custom_act, enable_bias=enable_bias)
@@ -163,7 +164,7 @@ class DualInputLSTMCell4FFN(LSTMCell4FFN):
 
 	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
 
 		super(DualInputLSTMCell4FFN, self).__init__(isize, osize=_osize, hsize=_hsize, dropout=dropout, custom_act=custom_act, enable_bias=enable_bias)
@@ -263,7 +264,7 @@ class RNN4FFN(nn.Sequential):
 
 	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
 
 		if dropout > 0.0:

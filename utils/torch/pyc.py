@@ -2,15 +2,17 @@
 
 import torch
 
+from utils.fmt.parser import parse_none
+
 non_tensor = torch.Tensor()
 
 def transfer_CNone_tuple(lin):
 
-	return tuple(non_tensor if lu is None else lu for lu in lin)
+	return tuple(parse_none(_, non_tensor) for _ in lin)
 
 def transfer_CNone_list(lin):
 
-	return [non_tensor if lu is None else lu for lu in lin]
+	return [parse_none(_, non_tensor) for _ in lin]
 
 def transfer_CNone(din):
 
@@ -21,4 +23,4 @@ def transfer_CNone(din):
 	elif isinstance(din, dict):
 		return {k: transfer_CNone(du) for k, du in din.items()}
 	else:
-		return non_tensor if din is None else din
+		return parse_none(din, non_tensor)

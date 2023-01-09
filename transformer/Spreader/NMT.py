@@ -3,7 +3,7 @@
 from transformer.NMT import NMT as NMTBase
 from transformer.Spreader.FNDecoder import Decoder
 from transformer.Spreader.FNEncoder import Encoder
-from utils.fmt.parser import parse_double_value_tuple
+from utils.fmt.parser import parse_double_value_tuple, parse_none
 from utils.spreader import share_spreader_cache
 
 from cnfg.ihyp import *
@@ -13,7 +13,7 @@ class NMT(NMTBase):
 
 	def __init__(self, isize, snwd, tnwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, global_emb=False, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindDecoderEmb=True, forbidden_index=None, s_start=2, s_end=8, e_start=4, e_end=16, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 		enc_layer, dec_layer = parse_double_value_tuple(num_layer)
 

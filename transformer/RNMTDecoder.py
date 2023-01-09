@@ -8,6 +8,7 @@ from torch import nn
 from modules.base import CrossAttn, Dropout, Linear
 from modules.rnncells import LSTMCell4RNMT, prepare_initState
 from transformer.Decoder import Decoder as DecoderBase
+from utils.fmt.parser import parse_none
 from utils.sampler import SampleMax
 from utils.torch.comp import all_done#, torch_no_grad
 
@@ -22,11 +23,11 @@ class FirstLayer(nn.Module):
 
 		super(FirstLayer, self).__init__()
 
-		osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 
-		self.net = LSTMCell4RNMT(isize, osize)
-		self.init_hx = nn.Parameter(torch.zeros(1, osize))
-		self.init_cx = nn.Parameter(torch.zeros(1, osize))
+		self.net = LSTMCell4RNMT(isize, _osize)
+		self.init_hx = nn.Parameter(torch.zeros(1, _osize))
+		self.init_cx = nn.Parameter(torch.zeros(1, _osize))
 
 		self.drop = Dropout(dropout, inplace=False) if dropout > 0.0 else None
 
@@ -64,11 +65,11 @@ class DecoderLayer(nn.Module):
 
 		super(DecoderLayer, self).__init__()
 
-		osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 
-		self.net = LSTMCell4RNMT(isize + osize, osize)
-		self.init_hx = nn.Parameter(torch.zeros(1, osize))
-		self.init_cx = nn.Parameter(torch.zeros(1, osize))
+		self.net = LSTMCell4RNMT(isize + _osize, _osize)
+		self.init_hx = nn.Parameter(torch.zeros(1, _osize))
+		self.init_cx = nn.Parameter(torch.zeros(1, _osize))
 
 		self.drop = Dropout(dropout, inplace=False) if dropout > 0.0 else None
 
@@ -117,7 +118,7 @@ class Decoder(DecoderBase):
 
 	def __init__(self, isize, nwd, num_layer, dropout=0.0, attn_drop=0.0, emb_w=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindemb=False, forbidden_index=None, projector=True, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		super(Decoder, self).__init__(isize, nwd, num_layer, fhsize=isize, dropout=dropout, attn_drop=attn_drop, emb_w=emb_w, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, bindemb=bindemb, forbidden_index=forbidden_index, **kwargs)
 

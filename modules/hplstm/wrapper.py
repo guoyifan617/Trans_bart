@@ -6,6 +6,7 @@ from torch import nn
 from modules.act import Custom_Act
 from modules.base import Dropout, Linear
 from modules.rnncells import ATRCell, LSTMCell4RNMT
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
@@ -16,7 +17,7 @@ class LSTM4RNMT(nn.Module):
 
 		super(LSTM4RNMT, self).__init__()
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		self.net = LSTMCell4RNMT(isize, osize=_osize, dropout=dropout)
 
 		self.init_cx = nn.Parameter(torch.zeros(1, _osize))
@@ -96,7 +97,7 @@ class RNN(ATR):
 
 	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
 
 		super(RNN, self).__init__(isize, num_head=num_head, osize=_osize, fhsize=_hsize, dropout=dropout)

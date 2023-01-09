@@ -5,6 +5,7 @@ import torch
 from modules.hplstm.LGate import LGateFunc
 from modules.hplstm.hfn import BiHPLSTM as BiHPLSTMBase, HPLSTM as HPLSTMBase, MHPLSTMCore as MHPLSTMCoreBase
 from utils.base import float2odd
+from utils.fmt.parser import parse_none
 from utils.torch.c import MovAvgFunc
 
 class MHPLSTMCore(MHPLSTMCoreBase):
@@ -48,7 +49,7 @@ class HPLSTM(HPLSTMBase):
 
 	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_fhsize = float2odd(float(_osize * 4 if fhsize is None else fhsize) / num_head) * num_head
 
 		super(HPLSTM, self).__init__(isize, num_head=num_head, osize=_osize, dropout=dropout, **kwargs)
@@ -62,7 +63,7 @@ class BiHPLSTM(BiHPLSTMBase):
 
 	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_fhsize = float2odd(float(_osize * 4 if fhsize is None else fhsize) / num_head) * num_head
 
 		super(BiHPLSTM, self).__init__(isize, num_head=num_head, osize=_osize, dropout=dropout, **kwargs)

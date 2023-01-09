@@ -5,6 +5,8 @@ from math import sqrt
 from torch import nn
 from torch.nn import functional as nnFunc
 
+from utils.fmt.parser import parse_none
+
 # portal from: https://github.com/kimiyoung/transformer-xl/blob/master/pytorch/mem_transformer.py
 
 class AdaptiveEmbedding(nn.Module):
@@ -13,7 +15,7 @@ class AdaptiveEmbedding(nn.Module):
 
 		super(AdaptiveEmbedding, self).__init__()
 
-		_d_proj = d_embed if d_proj is None else d_proj
+		_d_proj = parse_none(d_proj, d_embed)
 		self.n_token, self.d_embed, self.div_val, self.d_proj = n_token, d_embed, div_val, _d_proj
 
 		self.cutoffs = cutoffs + [n_token]
@@ -69,7 +71,7 @@ class ProjectedAdaptiveLogSoftmax(nn.Module):
 
 		super(ProjectedAdaptiveLogSoftmax, self).__init__()
 
-		_d_proj = d_embed if d_proj is None else d_proj
+		_d_proj = parse_none(d_proj, d_embed)
 		self.n_token, self.d_embed, self.d_proj, self.div_val, self.ignore_index, self.reduction = n_token, d_embed, _d_proj, div_val, ignore_index, reduction
 
 		self.cutoffs = cutoffs + [n_token]

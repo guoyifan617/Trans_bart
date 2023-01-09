@@ -4,6 +4,7 @@ from math import sqrt
 from torch import nn
 
 from modules.base import Dropout, PositionalEmb, PositionwiseFF, ResSelfAttn
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
@@ -31,7 +32,7 @@ class EncoderLayer(nn.Module):
 
 		super(EncoderLayer, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		self.attn = ResSelfAttn(isize, _ahsize, num_head=num_head, dropout=attn_drop, norm_residual=norm_residual, k_rel_pos=k_rel_pos, max_bucket_distance=max_bucket_distance)
@@ -53,7 +54,7 @@ class NAWEncoderLayer(EncoderLayer):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, norm_residual=norm_residual_default, k_rel_pos=use_k_relative_position_encoder, max_bucket_distance=relative_position_max_bucket_distance_encoder, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(NAWEncoderLayer, self).__init__(isize, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, norm_residual=norm_residual, k_rel_pos=k_rel_pos, max_bucket_distance=max_bucket_distance)
@@ -97,7 +98,7 @@ class Encoder(nn.Module):
 
 		super(Encoder, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		self.drop = Dropout(dropout, inplace=True) if dropout > 0.0 else None

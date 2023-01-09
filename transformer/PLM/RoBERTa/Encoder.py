@@ -1,6 +1,7 @@
 #encoding: utf-8
 
 from transformer.PLM.BERT.Encoder import Encoder as EncoderBase
+from utils.fmt.parser import parse_none
 from utils.plm.base import copy_plm_parameter
 from utils.torch.comp import torch_all, torch_no_grad
 
@@ -37,7 +38,7 @@ class Encoder(EncoderBase):
 
 	def load_plm(self, plm_parameters, model_name=None, **kwargs):
 
-		_model_name = self.model_name if model_name is None else model_name
+		_model_name = parse_none(model_name, self.model_name)
 		with torch_no_grad():
 			copy_plm_parameter(self.wemb.weight, plm_parameters, "%s.embeddings.word_embeddings.weight" % _model_name)
 			copy_plm_parameter(self.pemb, plm_parameters, "%s.embeddings.position_embeddings.weight" % _model_name)

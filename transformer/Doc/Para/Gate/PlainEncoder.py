@@ -6,6 +6,7 @@ from torch import nn
 
 from transformer.Encoder import Encoder as EncoderBase
 from utils.doc.paragate.base4torch import clear_pad_mask
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -15,7 +16,7 @@ class Encoder(nn.Module):
 
 		super(Encoder, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		self.enc = EncoderBase(isize, nwd, num_layer, _fhsize, dropout, attn_drop, num_head, xseql, _ahsize, norm_output)

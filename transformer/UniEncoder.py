@@ -5,6 +5,7 @@ from torch import nn
 
 from modules.base import ACT_Loss, CoordinateEmb, Dropout, Scorer
 from transformer.Encoder import EncoderLayer
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
@@ -16,7 +17,7 @@ class Encoder(nn.Module):
 
 		super(Encoder, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		self.num_layer = num_layer

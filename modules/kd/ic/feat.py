@@ -6,6 +6,7 @@ from torch import nn
 #from torch.nn.functional import mse_loss as loss_func
 
 from loss.kd import cosim_loss as loss_func
+from utils.fmt.parser import parse_none
 from utils.kd.base import identity_norm as norm_func#, rms_norm for mse_loss
 from utils.torch.comp import torch_no_grad
 
@@ -16,12 +17,12 @@ class Cache(nn.Module):
 	def __init__(self, vsize, isize, warm_cache_steps=None, mavg_beta=None, warm_mvavg_steps=None, **kwargs):
 
 		super(Cache, self).__init__()
-		self.mavg_beta = 0.0 if mavg_beta is None else mavg_beta
+		self.mavg_beta = parse_none(mavg_beta, 0.0)
 		self.register_buffer("cache_index", torch.zeros(vsize, dtype=torch.long))
 		self.register_buffer("cache_p", torch.zeros(vsize, isize))
 		self.cache_update_steps = 0
-		self.warm_cache_steps = 0 if warm_cache_steps is None else warm_cache_steps
-		self.warm_mvavg_steps = 0 if warm_mvavg_steps is None else warm_mvavg_steps
+		self.warm_cache_steps = parse_none(warm_cache_steps, 0)
+		self.warm_mvavg_steps = parse_none(warm_mvavg_steps, 0)
 
 	def forward(self, x, p, gold=None, gold_pad_mask=None, update_cache=True, **kwargs):
 

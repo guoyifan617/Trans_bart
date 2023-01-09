@@ -9,6 +9,7 @@ from modules.base import ResidueCombiner
 from transformer.Decoder import Decoder as DecoderBase, DecoderLayer as DecoderLayerBase
 from utils.base import index_tensors, select_zero_
 from utils.beam import expand_bsize_for_beam, repeat_bsize_for_beam_tensor
+from utils.fmt.parser import parse_none
 from utils.sampler import SampleMax
 from utils.torch.comp import all_done
 
@@ -19,7 +20,7 @@ class DecoderLayer(DecoderLayerBase):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(DecoderLayer, self).__init__(isize, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, **kwargs)
@@ -69,7 +70,7 @@ class Decoder(DecoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, emb_w=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindemb=False, forbidden_index=None, share_layer=False, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 

@@ -5,6 +5,7 @@ from torch import nn
 
 from modules.act import Custom_Act
 from modules.base import Dropout, Linear
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -24,7 +25,7 @@ class LSTMCell4RNMT(nn.Module):
 
 		super(LSTMCell4RNMT, self).__init__()
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 
 		# layer normalization is also applied for the computation of hidden for efficiency. bias might be disabled in case provided by LayerNorm
 		self.trans = Linear(isize + _osize, _osize * 4, bias=enable_bias)
@@ -62,7 +63,7 @@ class GRUCell4RNMT(nn.Module):
 
 		super(GRUCell4RNMT, self).__init__()
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 
 		self.trans = Linear(isize + _osize, _osize * 2, bias=enable_bias)
 		self.transi = Linear(isize, _osize, bias=enable_bias)

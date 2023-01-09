@@ -5,6 +5,7 @@ from torch import nn
 
 from modules.act import Custom_Act
 from modules.base import Dropout, Linear
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
@@ -15,7 +16,7 @@ class ResRNN(nn.Module):
 
 		super(ResRNN, self).__init__()
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
 
 		self.net = nn.Sequential(Linear(isize + _osize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Dropout(dropout, inplace=inplace_after_Custom_Act), Linear(_hsize, isize, bias=enable_bias)) if dropout > 0.0 else nn.Sequential(Linear(isize + _osize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize, bias=enable_bias))

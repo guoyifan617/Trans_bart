@@ -4,6 +4,7 @@ import torch
 from torch import nn
 
 from modules.base import PositionwiseFF as PositionwiseFFBase, ResCrossAttn as ResCrossAttnBase, ResSelfAttn as ResSelfAttnBase
+from utils.fmt.parser import parse_none
 from utils.torch.ext import randint_t_core
 
 from cnfg.ihyp import *
@@ -143,7 +144,7 @@ class ResSelfAttn(ResSelfAttnBase):
 
 		super(ResSelfAttn, self).__init__(isize, hsize, num_head=num_head, dropout=dropout, norm_residual=norm_residual, **kwargs)
 
-		_noiser = Noiser if custom_noiser is None else custom_noiser
+		_noiser = parse_none(custom_noiser, Noiser)
 		self.noiser = None if power is None else _noiser(power, inplace=True)
 
 	def forward(self, iQ, *inputs, noise_mask=None, **kwargs):
@@ -175,7 +176,7 @@ class ResCrossAttn(ResCrossAttnBase):
 
 		super(ResCrossAttn, self).__init__(isize, hsize, num_head=num_head, dropout=dropout, norm_residual=norm_residual, **kwargs)
 
-		_noiser = Noiser if custom_noiser is None else custom_noiser
+		_noiser = parse_none(custom_noiser, Noiser)
 		self.noiser = None if power is None else _noiser(power, inplace=True)
 
 	def forward(self, iQ, iK, *inputs, noise_mask=None, **kwargs):
@@ -207,7 +208,7 @@ class PositionwiseFF(PositionwiseFFBase):
 
 		super(PositionwiseFF, self).__init__(isize, **kwargs)
 
-		_noiser = Noiser if custom_noiser is None else custom_noiser
+		_noiser = parse_none(custom_noiser, Noiser)
 		self.noiser = None if power is None else _noiser(power, inplace=True)
 
 	def forward(self, x, mask=None, **kwargs):

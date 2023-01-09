@@ -4,6 +4,7 @@ import torch
 
 from modules.mulang.eff.base import LayerNorm
 from modules.rfn import LSTMCell4FFN as LSTMCell4FFNBase
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -11,7 +12,7 @@ class LSTMCell4FFN(LSTMCell4FFNBase):
 
 	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, ntask=None, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
 
 		super(LSTMCell4FFN, self).__init__(isize, osize=_osize, hsize=_hsize, dropout=dropout, **kwargs)

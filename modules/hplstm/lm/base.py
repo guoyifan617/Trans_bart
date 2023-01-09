@@ -4,6 +4,7 @@ import torch
 
 from modules.hplstm.LGate import LGateFunc
 from modules.hplstm.base import HPLSTM as HPLSTMBase, MHPLSTMCore as MHPLSTMCoreBase
+from utils.fmt.parser import parse_none
 
 class MHPLSTMCore(MHPLSTMCoreBase):
 
@@ -40,7 +41,7 @@ class HPLSTM(HPLSTMBase):
 
 	def __init__(self, isize, num_head=8, osize=None, dropout=0.0, **kwargs):
 
-		_osize = isize if osize is None else osize
+		_osize = parse_none(osize, isize)
 
 		super(HPLSTM, self).__init__(isize, num_head=isize, osize=_osize, dropout=dropout, **kwargs)
 

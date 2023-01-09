@@ -10,6 +10,7 @@ from modules.plm.t5 import PositionwiseFF, ResCrossAttn, ResSelfAttn
 from transformer.Decoder import Decoder as DecoderBase, DecoderLayer as DecoderLayerBase
 from utils.base import index_tensors, select_zero_
 from utils.beam import expand_bsize_for_beam
+from utils.fmt.parser import parse_none
 from utils.plm.base import copy_plm_parameter
 from utils.plm.t5 import reorder_pemb
 from utils.sampler import SampleMax
@@ -23,7 +24,7 @@ class DecoderLayer(DecoderLayerBase):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, norm_residual=norm_residual_default, k_rel_pos=use_k_relative_position_decoder, max_bucket_distance=relative_position_max_bucket_distance_decoder, k_rel_pos_cattn=use_k_relative_position_cattn, max_bucket_distance_cattn=relative_position_max_bucket_distance_cattn, model_name="decoder", **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(DecoderLayer, self).__init__(isize, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, norm_residual=norm_residual, k_rel_pos=k_rel_pos, max_bucket_distance=max_bucket_distance, **kwargs)
@@ -52,7 +53,7 @@ class DecoderLayer(DecoderLayerBase):
 
 	def load_plm(self, plm_parameters, model_name=None, layer_idx=None, **kwargs):
 
-		_model_name = self.model_name if model_name is None else model_name
+		_model_name = parse_none(model_name, self.model_name)
 		with torch_no_grad():
 			copy_plm_parameter(self.self_attn.net.adaptor.weight, plm_parameters, ["%s.block.%d.layer.0.SelfAttention.q.weight" % (_model_name, layer_idx,), "%s.block.%d.layer.0.SelfAttention.k.weight" % (_model_name, layer_idx,), "%s.block.%d.layer.0.SelfAttention.v.weight" % (_model_name, layer_idx,)], func=torch.cat, func_kwargs={"dim": 0})
 			_bias_key = "%s.block.%d.layer.0.SelfAttention.q.bias" % (_model_name, layer_idx,)
@@ -124,7 +125,7 @@ class Decoder(DecoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, emb_w=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindemb=True, forbidden_index=None, share_layer=False, disable_pemb=disable_std_pemb_decoder, model_name="decoder", **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(Decoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, emb_w=emb_w, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, bindemb=bindemb, forbidden_index=forbidden_index, share_layer=share_layer, disable_pemb=disable_pemb, **kwargs)
@@ -356,7 +357,7 @@ class Decoder(DecoderBase):
 
 	def load_plm(self, plm_parameters, model_name=None, **kwargs):
 
-		_model_name = self.model_name if model_name is None else model_name
+		_model_name = parse_none(model_name, self.model_name)
 		with torch_no_grad():
 			if "lm_head.weight" in plm_parameters:
 				copy_plm_parameter(self.classifier.weight, plm_parameters, "lm_head.weight")

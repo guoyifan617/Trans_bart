@@ -5,6 +5,7 @@ from torch.nn import functional as nnFunc
 
 from modules.spreader.Spreader import SpreaderFunc
 from modules.spreader.manual.rnn import Spreader as SpreaderBase
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -12,7 +13,7 @@ class Spreader(SpreaderBase):
 
 	def __init__(self, isize, hsize=None, start=2, end=8, factor=0.5, dropout=0.0, norm_residual=norm_residual_default, xseql=cache_len_default, **kwargs):
 
-		_hsize = isize if hsize is None else hsize
+		_hsize = parse_none(hsize, isize)
 
 		super(Spreader, self).__init__(isize, hsize=_hsize, start=start, end=end, factor=factor, dropout=dropout, norm_residual=norm_residual, **kwargs)
 
@@ -96,7 +97,7 @@ class BiSpreader(Spreader):
 
 	def __init__(self, isize, hsize=None, start=2, end=8, factor=0.5, dropout=0.0, norm_residual=norm_residual_default, xseql=cache_len_default, **kwargs):
 
-		_hsize = isize if hsize is None else hsize
+		_hsize = parse_none(hsize, isize)
 
 		super(BiSpreader, self).__init__(isize, hsize=_hsize, start=start, end=end, factor=factor, dropout=dropout, norm_residual=norm_residual, **kwargs)
 

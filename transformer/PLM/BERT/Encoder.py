@@ -8,6 +8,7 @@ from modules.dropout import Dropout
 from modules.plm.bert import PositionwiseFF
 from transformer.Encoder import Encoder as EncoderBase
 from transformer.TA.Encoder import EncoderLayer as EncoderLayerBase
+from utils.fmt.parser import parse_none
 from utils.plm.base import copy_plm_parameter
 from utils.torch.comp import torch_no_grad
 
@@ -19,7 +20,7 @@ class EncoderLayer(EncoderLayerBase):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, norm_residual=norm_residual_default, k_rel_pos=use_k_relative_position_encoder, max_bucket_distance=relative_position_max_bucket_distance_encoder, model_name="bert", **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(EncoderLayer, self).__init__(isize, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, norm_residual=norm_residual, k_rel_pos=k_rel_pos, max_bucket_distance=max_bucket_distance, **kwargs)
@@ -29,7 +30,7 @@ class EncoderLayer(EncoderLayerBase):
 
 	def load_plm(self, plm_parameters, model_name=None, layer_idx=None, **kwargs):
 
-		_model_name = self.model_name if model_name is None else model_name
+		_model_name = parse_none(model_name, self.model_name)
 		with torch_no_grad():
 			copy_plm_parameter(self.attn.net.adaptor.weight, plm_parameters, ["%s.encoder.layer.%d.attention.self.query.weight" % (_model_name, layer_idx,), "%s.encoder.layer.%d.attention.self.key.weight" % (_model_name, layer_idx,), "%s.encoder.layer.%d.attention.self.value.weight" % (_model_name, layer_idx,)], func=torch.cat, func_kwargs={"dim": 0})
 			_bias_key = "%s.encoder.layer.%d.attention.self.query.bias" % (_model_name, layer_idx,)
@@ -61,7 +62,7 @@ class Encoder(EncoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindDecoderEmb=True, num_type=num_type, share_layer=False, model_name="bert", **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, xseql=xseql, ahsize=ahsize, norm_output=norm_output, share_layer=share_layer, **kwargs)
@@ -98,7 +99,7 @@ class Encoder(EncoderBase):
 
 	def load_plm(self, plm_parameters, model_name=None, **kwargs):
 
-		_model_name = self.model_name if model_name is None else model_name
+		_model_name = parse_none(model_name, self.model_name)
 		with torch_no_grad():
 			copy_plm_parameter(self.wemb.weight, plm_parameters, "%s.embeddings.word_embeddings.weight" % _model_name)
 			copy_plm_parameter(self.pemb, plm_parameters, "%s.embeddings.position_embeddings.weight" % _model_name)

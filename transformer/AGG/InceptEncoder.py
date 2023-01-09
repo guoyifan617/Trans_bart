@@ -5,6 +5,7 @@ from torch import nn
 from modules.base import ResidueCombiner
 from transformer.AGG.HierEncoder import Encoder as EncoderBase
 from transformer.Encoder import EncoderLayer as EncoderLayerBase
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -12,7 +13,7 @@ class EncoderLayer(nn.Module):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, num_sub=1, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
@@ -36,7 +37,7 @@ class Encoder(EncoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=False, num_sub=1, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 

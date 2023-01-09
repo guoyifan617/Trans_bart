@@ -6,6 +6,7 @@ from torch import nn
 from modules.base import Dropout, Linear
 from modules.spreader.Spreader import SpreaderFunc
 from modules.spreader.SpreaderNocx import SpreaderNocxFunc
+from utils.fmt.parser import parse_none
 from utils.init.spreader import build_spread_vector
 from utils.torch.comp import flip_mask#, torch_no_grad
 
@@ -17,7 +18,7 @@ class Spreader(nn.Module):
 
 		super(Spreader, self).__init__()
 
-		_hsize = isize if hsize is None else hsize
+		_hsize = parse_none(hsize, isize)
 
 		self.trans = Linear(isize, _hsize, bias=enable_proj_bias)
 		self.outer = Linear(_hsize, isize, bias=enable_proj_bias)

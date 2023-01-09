@@ -5,6 +5,7 @@ from math import sqrt
 from torch import nn
 
 from modules.base import Dropout, PositionwiseFF as PositionwiseFFBase, ResCrossAttn as ResCrossAttnBase, ResSelfAttn as ResSelfAttnBase
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
@@ -103,7 +104,7 @@ class ResCrossAttn(ResCrossAttnBase):
 
 	def __init__(self, isize, hsize, num_head=8, dropout=0.0, norm_residual=norm_residual_default, k_isize=None, k_se=k_se, **kwargs):
 
-		_k_isize = isize if k_isize is None else k_isize
+		_k_isize = parse_none(k_isize, isize)
 		_s_isize, _s_hsize, _s_ksize = isize // k_se, hsize // k_se, _k_isize // k_se
 
 		super(ResCrossAttn, self).__init__(_s_isize, _s_hsize, num_head=num_head, dropout=dropout, norm_residual=norm_residual, k_isize=_s_ksize, **kwargs)

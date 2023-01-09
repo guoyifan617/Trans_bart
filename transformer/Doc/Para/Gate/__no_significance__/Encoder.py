@@ -8,6 +8,7 @@ from modules.base import CrossAttn
 from modules.paradoc import GateResidual, SelfGate
 from transformer.Encoder import Encoder as EncoderBase, EncoderLayer as EncoderLayerBase
 from utils.doc.paragate.base4torch import clear_pad_mask
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -15,7 +16,7 @@ class CrossEncoderLayer(EncoderLayerBase):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		super(CrossEncoderLayer, self).__init__(isize, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize)
 
@@ -47,7 +48,7 @@ class GateEncoderLayer(CrossEncoderLayer):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 
 		super(GateEncoderLayer, self).__init__(isize, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize)
 		self.gr = SelfGate(isize)
@@ -58,7 +59,7 @@ class Encoder(nn.Module):
 
 		super(Encoder, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		self.enc = EncoderBase(isize, nwd, num_layer, _fhsize, dropout, attn_drop, num_head, xseql, _ahsize, norm_output)

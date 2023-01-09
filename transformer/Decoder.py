@@ -7,6 +7,7 @@ from torch import nn
 from modules.base import CrossAttn, Dropout, Linear, MultiHeadAttn, PositionalEmb, PositionwiseFF, ResCrossAttn, ResSelfAttn
 from utils.base import index_tensors, select_zero_
 from utils.beam import expand_bsize_for_beam
+from utils.fmt.parser import parse_none
 from utils.sampler import SampleMax
 from utils.torch.comp import all_done, mask_tensor_type, torch_no_grad
 
@@ -27,7 +28,7 @@ class DecoderLayer(nn.Module):
 
 		super(DecoderLayer, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		self.self_attn = ResSelfAttn(isize, _ahsize, num_head=num_head, dropout=attn_drop, norm_residual=norm_residual, k_rel_pos=k_rel_pos, uni_direction_reduction=True, max_bucket_distance=max_bucket_distance)
@@ -63,7 +64,7 @@ class NAWDecoderLayer(DecoderLayer):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, norm_residual=norm_residual_default, k_rel_pos=use_k_relative_position_decoder, max_bucket_distance=relative_position_max_bucket_distance_decoder, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(NAWDecoderLayer, self).__init__(isize, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, norm_residual=norm_residual, k_rel_pos=k_rel_pos, max_bucket_distance=max_bucket_distance)
@@ -136,7 +137,7 @@ class Decoder(nn.Module):
 
 		super(Decoder, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		self.drop = Dropout(dropout, inplace=True) if dropout > 0.0 else None

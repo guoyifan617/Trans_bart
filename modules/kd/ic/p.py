@@ -5,6 +5,7 @@ from math import sqrt
 from torch import nn
 from torch.nn.functional import kl_div
 
+from utils.fmt.parser import parse_none
 from utils.kd.base import renorm as norm_func
 from utils.kd.ic.p import init_cache
 from utils.kd.self.p import correct_index, fix_gold
@@ -19,13 +20,13 @@ class TopCache(nn.Module):
 
 		super(TopCache, self).__init__()
 		self.num_topk, self.min_gold_p, self.mavg_beta = num_topk, min_gold_p, mavg_beta
-		self.T = 1.0 if T is None else T
+		self.T = parse_none(T, 1.0)
 		_init_topk, _init_p = init_cache(vsize, (num_topk + num_topk) if num_cache_topk is None else num_cache_topk, p=((min_gold_p + 0.5) if min_gold_p < 0.5 else min_gold_p) if p is None else p, num_topk=num_topk)
 		self.register_buffer("cache_index", _init_topk)
 		self.register_buffer("cache_p", _init_p)
 		self.cache_update_steps = 0
-		self.warm_cache_steps = 0 if warm_cache_steps is None else warm_cache_steps
-		self.warm_mvavg_steps = 0 if warm_mvavg_steps is None else warm_mvavg_steps
+		self.warm_cache_steps = parse_none(warm_cache_steps, 0)
+		self.warm_mvavg_steps = parse_none(warm_mvavg_steps, 0)
 
 	def forward(self, x, gold=None, gold_pad_mask=None, update_cache=True, **kwargs):
 

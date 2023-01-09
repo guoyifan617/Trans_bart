@@ -8,6 +8,7 @@ from modules.base import Dropout
 from transformer.Doc.Para.Gate.RSGEncoder import Encoder as EncoderBase
 from transformer.Encoder import Encoder as StdEncoderBase
 from utils.doc.paragate.base4torch import clear_pad_mask
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -38,7 +39,7 @@ class Encoder(EncoderBase):
 
 	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, nprev_context=2, num_layer_cross=1, **kwargs):
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, xseql=xseql, ahsize=ahsize, norm_output=norm_output, nprev_context=nprev_context, num_layer_cross=num_layer_cross, **kwargs)

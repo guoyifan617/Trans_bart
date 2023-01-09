@@ -7,6 +7,7 @@ from modules.base import Dropout, PositionalEmb
 from transformer.Decoder import DecoderLayer as MSEncoderLayerBase
 from transformer.Encoder import Encoder as EncoderBase
 from utils.fmt.base import parse_double_value_tuple
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
@@ -30,7 +31,7 @@ class MSEncoder(nn.Module):
 
 		super(MSEncoder, self).__init__()
 
-		_ahsize = isize if ahsize is None else ahsize
+		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		self.drop = Dropout(dropout, inplace=True) if dropout > 0.0 else None

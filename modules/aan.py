@@ -4,10 +4,12 @@ import torch
 from torch import nn
 
 from modules.base import Custom_Act, Dropout, Linear
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
 # Average Attention is proposed in Accelerating Neural Transformer via an Average Attention Network (https://www.aclweb.org/anthology/P18-1166/)
+
 class AverageAttn(nn.Module):
 
 	# isize: input size of Feed-forward NN
@@ -20,7 +22,7 @@ class AverageAttn(nn.Module):
 
 		super(AverageAttn, self).__init__()
 
-		_hsize = isize if hsize is None else hsize
+		_hsize = parse_none(hsize, isize)
 
 		self.num_pos = num_pos
 		self.register_buffer("w", torch.Tensor(num_pos, 1))

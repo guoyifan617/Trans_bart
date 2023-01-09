@@ -10,6 +10,7 @@ from modules.act import Custom_Act, LGLU, get_act, reduce_model as reduce_model_
 from modules.dropout import Dropout, reduce_model as reduce_model_drop
 from utils.base import reduce_model_list
 from utils.beam import repeat_bsize_for_beam_tensor
+from utils.fmt.parser import parse_none
 from utils.relpos.bucket import build_rel_pos_bucket, build_rel_pos_bucket_map
 from utils.torch.comp import torch_no_grad
 from utils.torch.pyc import transfer_CNone_tuple
@@ -206,7 +207,7 @@ class MultiHeadAttn(nn.Module):
 		self.num_head = num_head
 
 		self.query_adaptor = Linear(isize, self.hsize, bias=enable_proj_bias)
-		_k_isize = isize if k_isize is None else k_isize
+		_k_isize = parse_none(k_isize, isize)
 		self.key_adaptor = self.query_adaptor if bind_qk and isize == _k_isize else Linear(_k_isize, self.hsize, bias=enable_proj_bias)
 		self.value_adaptor = Linear(_k_isize if v_isize is None else v_isize, self.hsize, bias=enable_proj_bias)
 
