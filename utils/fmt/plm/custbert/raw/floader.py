@@ -11,6 +11,7 @@ from uuid import uuid4 as uuid_func
 
 from utils.base import mkdir
 from utils.fmt.plm.custbert.raw.base import inf_file_loader
+from utils.fmt.raw.cachepath import get_cache_fname, get_cache_path
 from utils.fmt.raw.reader.sort.single import sort_lines_reader
 from utils.fmt.single import batch_padder
 from utils.fmt.vocab.char import ldvocab
@@ -22,29 +23,6 @@ from cnfg.base import seed as rand_seed
 from cnfg.ihyp import h5_libver, h5datawargs, max_pad_tokens_sentence, max_sentences_gpu, max_tokens_gpu, normal_tokens_vs_pad_tokens
 from cnfg.vocab.plm.custbert import init_normal_token_id, init_vocab, pad_id, vocab_size
 
-cache_file_prefix = "train"
-
-def get_cache_path(*fnames):
-
-	_cache_path = None
-	for _t in fnames:
-		_ = _t.rfind("/") + 1
-		if _ > 0:
-			_cache_path = _t[:_]
-			break
-	_uuid = uuid_func().hex
-	if _cache_path is None:
-		_cache_path = "cache/floader/%s/" % _uuid
-	else:
-		_cache_path = "%sfloader/%s/" % (_cache_path, _uuid,)
-	mkdir(_cache_path)
-
-	return _cache_path
-
-def get_cache_fname(fpath, i=0, fprefix=cache_file_prefix):
-
-	return "%s%s.%d.h5" % (fpath, fprefix, i,)
-
 class Loader:
 
 	def __init__(self, sfiles, dfiles, vcbf, max_len=510, num_cache=4, raw_cache_size=4194304, skip_lines=0, nbatch=256, minfreq=False, vsize=vocab_size, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, file_loader=inf_file_loader, ldvocab=ldvocab, print_func=print):
@@ -55,7 +33,7 @@ class Loader:
 		self.vcb = ldvocab(vcbf, minf=minfreq, omit_vsize=vsize, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id)[0]
 		self.manager = Manager()
 		self.out = self.manager.list()
-		self.todo = self.manager.list([get_cache_fname(self.cache_path, i=_, fprefix=cache_file_prefix) for _ in range(self.num_cache)])
+		self.todo = self.manager.list([get_cache_fname(self.cache_path, i=_) for _ in range(self.num_cache)])
 		self.running = Value("B", 1, lock=True)
 		self.p_loader = start_process(target=self.loader)
 		self.iter = None
