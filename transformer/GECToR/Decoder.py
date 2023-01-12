@@ -24,7 +24,7 @@ class Decoder(DecoderBase):
 				tag_out[mlm_mask] = out_mlm.argmax(-1)
 		else:
 			tag_out = None
-		loss = None if tgt is None else (self.op_loss(out_op, tgt) if mlm_mask is None else (self.op_loss(out_op, tgt.masked_fill(mlm_mask, op_pad_id)) + self.mlm_loss(self.lsm(out_mlm, tgt[mlm_mask]))))
+		loss = None if tgt is None else (self.op_loss(out_op, tgt) if mlm_mask is None else (self.op_loss(out_op, tgt.masked_fill(mlm_mask, op_pad_id)) + self.mlm_loss(self.lsm(out_mlm), tgt[mlm_mask])))
 
 		return loss, tag_out
 
