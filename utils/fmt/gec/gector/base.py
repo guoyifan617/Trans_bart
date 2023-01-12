@@ -84,6 +84,7 @@ def generate_iter_data(src, tgt, mask_id=mask_id, edit_mask_id=edit_mask_id, bla
 		for _ in reversed(_cid):
 			del _il[_]
 		_src, _edit, _tgt = _s, _e, _t
+		yield _src, _edit, _tgt
 		if any(_na):
 			_s, _e, _t = [], [], []
 			for _su, _eu, _tu, _au in zip(_src, _edit, _tgt, _na):
