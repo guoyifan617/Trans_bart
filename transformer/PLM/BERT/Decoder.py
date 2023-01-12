@@ -19,6 +19,8 @@ class Decoder(nn.Module):
 
 		super(Decoder, self).__init__()
 
+		self.model_name = model_name
+
 		self.drop = Dropout(dropout, inplace=True) if dropout > 0.0 else None
 
 		self.ff = nn.Sequential(Linear(isize, isize), Custom_Act() if use_adv_act_default else GELU(), nn.LayerNorm(isize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters))

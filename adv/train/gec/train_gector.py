@@ -22,7 +22,7 @@ from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
 from utils.torch.comp import torch_autocast, torch_inference_mode
 from utils.tqdm import tqdm
-from utils.train.base import getlr, optm_step, optm_step_zero_grad_set_none, reset_Adam
+from utils.train.base import freeze_module, getlr, optm_step, optm_step_zero_grad_set_none, reset_Adam
 from utils.train.dss import dynamic_sample
 
 import cnfg.gec.gector as cnfg
@@ -238,6 +238,9 @@ if cnfg.src_emb is not None:
 if cnfg.tgt_emb is not None:
 	logger.info("Load target embedding from: " + cnfg.tgt_emb)
 	load_emb(cnfg.tgt_emb, mymodel.dec.wemb.weight, nwordt, cnfg.scale_down_emb, cnfg.freeze_tgtemb)
+if cnfg.freeze_word_embedding:
+	logger.info("Freeze word embedding")
+	freeze_module(mymodel.enc.wemb)
 
 if cuda_device:
 	mymodel.to(cuda_device, non_blocking=True)
