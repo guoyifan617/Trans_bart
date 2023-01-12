@@ -18,7 +18,7 @@ def gec_noise_reader(fname=None, noiser=None, tokenizer=None, min_len=2, max_len
 				for _s, _e, _t in generate_iter_data(tokenizer(src), tokenizer(tgt)):
 					_l = len(_s)
 					if _l < max_len:
-						yield _s, _e, _t
+						yield tuple(_s), tuple(_e), tuple(_t)
 
 class GECNoiseReader:
 
