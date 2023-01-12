@@ -48,7 +48,7 @@ class Loader:
 					edt_grp = rsf.create_group("edt")
 					tgt_grp = rsf.create_group("tgt")
 					curd = 0
-					for i_d, ed, td in batch_padder(self.file_loader(self.sfile, self.noiser, self.tokenizer, max_len=self.max_len, print_func=None), self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader):
+					for i_d, ed, td in batch_padder(self.file_loader(self.sfile, self.noiser, self.tokenizer, max_len=self.max_len, print_func=None), self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader):
 						wid = str(curd)
 						src_grp.create_dataset(wid, data=np_array(i_d, dtype=np_int32), **h5datawargs)
 						edt_grp.create_dataset(wid, data=np_array(ed, dtype=np_int8), **h5datawargs)
