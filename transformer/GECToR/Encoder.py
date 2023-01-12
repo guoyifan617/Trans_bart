@@ -29,7 +29,7 @@ class Encoder(EncoderBase):
 
 	def build_task_model(self, *args, **kwargs):
 
-		self.edit_emb = nn.Embedding(num_edit, self.wemb.size(-1), padding_idx=pad_id)
+		self.edit_emb = nn.Embedding(num_edit, self.wemb.weight.size(-1), padding_idx=pad_id)
 		self.fix_task_init()
 
 	def fix_task_init(self):
