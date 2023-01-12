@@ -76,7 +76,7 @@ class Loader:
 						wid = str(curd)
 						src_grp.create_dataset(wid, data=np_array(i_d, dtype=np_int32), **h5datawargs)
 						edt_grp.create_dataset(wid, data=np_array(ed, dtype=np_int8), **h5datawargs)
-						tgt_grp.create_dataset(wid, data=np_array(td, dtype=np_int8), **h5datawargs)
+						tgt_grp.create_dataset(wid, data=np_array(td, dtype=np_int32), **h5datawargs)
 						curd += 1
 					rsf["ndata"] = np_array([curd], dtype=np_int32)
 				self.out.append(_cache_file)
