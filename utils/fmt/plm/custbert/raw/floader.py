@@ -9,7 +9,6 @@ from shutil import rmtree
 from time import sleep
 from uuid import uuid4 as uuid_func
 
-from utils.base import mkdir
 from utils.fmt.plm.custbert.raw.base import inf_file_loader
 from utils.fmt.raw.cachepath import get_cache_fname, get_cache_path
 from utils.fmt.raw.reader.sort.single import sort_lines_reader

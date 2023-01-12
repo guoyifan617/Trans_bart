@@ -8,7 +8,6 @@ from random import seed as rpyseed, shuffle
 from shutil import rmtree
 from time import sleep
 
-from utils.base import mkdir
 from utils.fmt.gec.noise.base import Noiser
 from utils.fmt.gec.noise.freader import gec_noise_reader
 from utils.fmt.gec.noise.triple import batch_padder

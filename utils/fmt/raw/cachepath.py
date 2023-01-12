@@ -2,6 +2,8 @@
 
 from uuid import uuid4 as uuid_func
 
+from utils.base import mkdir
+
 cache_file_prefix = "train"
 
 def get_cache_path(*fnames):
