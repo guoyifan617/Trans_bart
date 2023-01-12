@@ -129,7 +129,7 @@ def eva(ed, nd, model, lossf, mv_device, multi_gpu, use_amp=False):
 	r = w = 0
 	sum_loss = 0.0
 	model.eval()
-	src_grp, edt_grp, tgt_grp = ed["src"], ed["edt"] ed["tgt"]
+	src_grp, edt_grp, tgt_grp = ed["src"], ed["edt"], ed["tgt"]
 	with torch_inference_mode():
 		for i in tqdm(range(nd), mininterval=tqdm_mininterval):
 			bid = str(i)
