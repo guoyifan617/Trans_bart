@@ -1,7 +1,6 @@
 #encoding: utf-8
 
 from math import sqrt
-from torch import nn
 
 from loss.base import CrossEntropyLoss, LabelSmoothingLoss
 from modules.base import Linear

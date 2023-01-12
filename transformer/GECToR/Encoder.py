@@ -1,6 +1,7 @@
 #encoding: utf-8
 
 from math import sqrt
+from torch import nn
 
 from transformer.Encoder import Encoder as EncoderBase
 from utils.torch.comp import torch_no_grad
