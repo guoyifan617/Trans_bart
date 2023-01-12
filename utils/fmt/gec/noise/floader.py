@@ -61,32 +61,31 @@ class Loader:
 
 	def iter_func(self, *args, **kwargs):
 
-		while self.running.value:
-			if self.out:
-				_cache_file = self.out.pop(0)
-				if fs_check(_cache_file):
-					try:
-						td = h5File(_cache_file, "r")
-					except Exception as e:
-						td = None
-						if self.print_func is not None:
-							self.print_func(e)
-					if td is not None:
-						if self.print_func is not None:
-							self.print_func("load %s" % _cache_file)
-						tl = [str(i) for i in range(td["ndata"][()].item())]
-						shuffle(tl)
-						src_grp = td["src"]
-						edt_grp = td["edt"]
-						tgt_grp = td["tgt"]
-						for i_d in tl:
-							yield torch.from_numpy(src_grp[i_d][()]), torch.from_numpy(edt_grp[i_d][()]), torch.from_numpy(tgt_grp[i_d][()])
-						td.close()
-						if self.print_func is not None:
-							self.print_func("close %s" % _cache_file)
-				self.todo.append(_cache_file)
-			else:
-				sleep(self.sleep_secs)
+		while self.running.value and (not self.out):
+			sleep(self.sleep_secs)
+		if self.out:
+			_cache_file = self.out.pop(0)
+			if fs_check(_cache_file):
+				try:
+					td = h5File(_cache_file, "r")
+				except Exception as e:
+					td = None
+					if self.print_func is not None:
+						self.print_func(e)
+				if td is not None:
+					if self.print_func is not None:
+						self.print_func("load %s" % _cache_file)
+					tl = [str(i) for i in range(td["ndata"][()].item())]
+					shuffle(tl)
+					src_grp = td["src"]
+					edt_grp = td["edt"]
+					tgt_grp = td["tgt"]
+					for i_d in tl:
+						yield torch.from_numpy(src_grp[i_d][()]), torch.from_numpy(edt_grp[i_d][()]), torch.from_numpy(tgt_grp[i_d][()])
+					td.close()
+					if self.print_func is not None:
+						self.print_func("close %s" % _cache_file)
+			self.todo.append(_cache_file)
 
 	def __call__(self, *args, **kwargs):
 

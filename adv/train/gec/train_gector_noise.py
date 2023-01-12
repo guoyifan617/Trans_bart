@@ -202,7 +202,7 @@ multi_gpu_optimizer = multi_gpu and cnfg.multi_gpu_optimizer
 
 set_random_seed(cnfg.seed, use_cuda)
 
-td = DataLoader(cnfg.train_data, vcbf=cnfg.plm_vcb, noise_char=cnfg.noise_char, noise_vcb=cnfg.noise_vcb, ngpu=len(cuda_devices) if multi_gpu else 1, print_func=logger.info)#h5File(cnfg.train_data, "r")
+td = DataLoader(cnfg.train_data, vcbf=cnfg.plm_vcb, noise_char=cnfg.noise_char, noise_vcb=cnfg.noise_vcb, ngpu=len(cuda_devices) if multi_gpu else 1, print_func=None)#h5File(cnfg.train_data, "r")
 vd = h5File(cnfg.dev_data, "r")
 
 #ntrain = td["ndata"][()].item()
