@@ -82,7 +82,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 						_chkpf = chkpf
 					save_model(model, _chkpf, multi_gpu, print_func=logger.info)
 					if statesf is not None:
-						save_states(state_holder.state_dict(update=False, **{"remain_steps": _cur_rstep, "checkpoint_id": _cur_checkid, "training_list": tl[cur_b - 1:]}), statesf, print_func=logger.info)
+						save_states(state_holder.state_dict(update=False, **{"remain_steps": _cur_rstep, "checkpoint_id": _cur_checkid}), statesf, print_func=logger.info)#, "training_list": tl[cur_b - 1:]
 				_cur_rstep -= 1
 				if _cur_rstep <= 0:
 					break
@@ -98,7 +98,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 					if (_eeva < minerr) or (_leva < minloss):
 						save_model(model, wkdir + "eva_%.3f_%.2f.h5" % (_leva, _eeva,), multi_gpu, print_func=logger.info, mtyp="ieva" if save_auto_clean else None)
 						if statesf is not None:
-							save_states(state_holder.state_dict(update=False, **{"remain_steps": _cur_rstep, "checkpoint_id": _cur_checkid, "training_list": tl[cur_b - 1:]}), statesf, print_func=logger.info)
+							save_states(state_holder.state_dict(update=False, **{"remain_steps": _cur_rstep, "checkpoint_id": _cur_checkid}), statesf, print_func=logger.info)#, "training_list": tl[cur_b - 1:]
 						logger.info("New best model saved")
 						namin = 0
 						if _eeva < minerr:
@@ -112,7 +112,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 				part_loss = 0.0
 				part_wd = 0
 
-		if save_checkp_epoch and (_cur_rstep is None) and (save_every is not None) and (cur_b % save_every == 0) and (chkpf is not None) and (cur_b < ntrain):
+		if save_checkp_epoch and (_cur_rstep is None) and (save_every is not None) and (cur_b % save_every == 0) and (chkpf is not None):# and (cur_b < ntrain)
 			if num_checkpoint > 1:
 				_fend = "_%d.h5" % (_cur_checkid)
 				_chkpf = chkpf[:-3] + _fend
@@ -121,7 +121,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 				_chkpf = chkpf
 			save_model(model, _chkpf, multi_gpu, print_func=logger.info)
 			if statesf is not None:
-				save_states(state_holder.state_dict(update=False, **{"remain_steps": _cur_rstep, "checkpoint_id": _cur_checkid, "training_list": tl[cur_b - 1:]}), statesf, print_func=logger.info)
+				save_states(state_holder.state_dict(update=False, **{"remain_steps": _cur_rstep, "checkpoint_id": _cur_checkid}), statesf, print_func=logger.info)#, "training_list": tl[cur_b - 1:]
 		cur_b += 1
 	if part_wd != 0.0:
 		logger.info("Average loss over %d tokens: %.3f" % (part_wd, part_loss / part_wd,))

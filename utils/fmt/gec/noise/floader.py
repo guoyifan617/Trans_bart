@@ -2,7 +2,7 @@
 
 import torch
 from multiprocessing import Manager, Value
-from numpy import array as np_array, int32 as np_int32
+from numpy import array as np_array, int32 as np_int32, int8 as np_int8
 from os.path import exists as fs_check
 from random import seed as rpyseed, shuffle
 from shutil import rmtree
@@ -46,7 +46,7 @@ def get_cache_fname(fpath, i=0, fprefix=cache_file_prefix):
 
 class Loader:
 
-	def __init__(self, sfile, vcbf=plm_vcb, noise_char=noise_char, noise_vcb=noise_vcb, max_len=cache_len_default, num_cache=8, minfreq=False, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, norm_u8=False, file_loader=gec_noise_reader, print_func=print):
+	def __init__(self, sfile, vcbf=plm_vcb, noise_char=noise_char, noise_vcb=noise_vcb, max_len=cache_len_default, num_cache=4, minfreq=False, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, norm_u8=False, file_loader=gec_noise_reader, print_func=print):
 
 		self.sfile, self.max_len, self.num_cache, self.minbsize, self.maxpad, self.maxpart, self.sleep_secs, self.file_loader, self.print_func = sfile, max_len, num_cache, ngpu, maxpad, maxpart, sleep_secs, file_loader, print_func
 		self.bsize, self.maxtoken = (bsize, maxtoken,) if self.minbsize == 1 else (bsize * self.minbsize, maxtoken * self.minbsize,)
@@ -69,9 +69,14 @@ class Loader:
 				_cache_file = self.todo.pop(0)
 				with h5File(_cache_file, "w", libver=h5_libver) as rsf:
 					src_grp = rsf.create_group("src")
+					edt_grp = rsf.create_group("edt")
+					tgt_grp = rsf.create_group("tgt")
 					curd = 0
-					for i_d in batch_padder(self.file_loader(self.sfile, self.noiser, self.tokenizer, max_len=self.max_len, print_func=None), self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader):
-						src_grp.create_dataset(str(curd), data=np_array(i_d, dtype=np_int32), **h5datawargs)
+					for i_d, ed, td in batch_padder(self.file_loader(self.sfile, self.noiser, self.tokenizer, max_len=self.max_len, print_func=None), self.vcb, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader):
+						wid = str(curd)
+						src_grp.create_dataset(wid, data=np_array(i_d, dtype=np_int32), **h5datawargs)
+						edt_grp.create_dataset(wid, data=np_array(ed, dtype=np_int8), **h5datawargs)
+						tgt_grp.create_dataset(wid, data=np_array(td, dtype=np_int8), **h5datawargs)
 						curd += 1
 					rsf["ndata"] = np_array([curd], dtype=np_int32)
 				self.out.append(_cache_file)
@@ -96,8 +101,10 @@ class Loader:
 						tl = [str(i) for i in range(td["ndata"][()].item())]
 						shuffle(tl)
 						src_grp = td["src"]
+						edt_grp = td["edt"]
+						tgt_grp = td["tgt"]
 						for i_d in tl:
-							yield torch.from_numpy(src_grp[i_d][()])
+							yield torch.from_numpy(src_grp[i_d][()]), torch.from_numpy(edt_grp[i_d][()]), torch.from_numpy(tgt_grp[i_d][()])
 						td.close()
 						if self.print_func is not None:
 							self.print_func("close %s" % _cache_file)

@@ -1,7 +1,7 @@
 #encoding: utf-8
 
 import sys
-from numpy import array as np_array, int32 as np_int32
+from numpy import array as np_array, int32 as np_int32, int8 as np_int8
 
 from utils.fmt.gec.gector.triple import batch_padder
 from utils.h5serial import h5File
@@ -23,8 +23,8 @@ def handle(finput, fedit, ftarget, frs, minbsize=1, expand_for_mulgpu=True, bsiz
 		curd = 0
 		for i_d, ed, td in batch_padder(finput, fedit, ftarget, _bsize, maxpad, maxpart, _maxtoken, minbsize):
 			rid = np_array(i_d, dtype=np_int32)
-			red = np_array(ed, dtype=np_int32)
-			rtd = np_array(td, dtype=np_int32)
+			red = np_array(ed, dtype=np_int8)
+			rtd = np_array(td, dtype=np_int8)
 			wid = str(curd)
 			src_grp.create_dataset(wid, data=rid, **h5datawargs)
 			edt_grp.create_dataset(wid, data=red, **h5datawargs)
