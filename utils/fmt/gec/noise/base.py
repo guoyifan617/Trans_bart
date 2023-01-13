@@ -19,7 +19,10 @@ def load_replace_data(fname):
 				tmp = tmp.decode("utf-8")
 				if len(tmp) > 1:
 					for _c in tmp:
-						rsd[_c] = tmp
+						if _c in rsd:
+							rsd[_c].append(tmp)
+						else:
+							rsd[_c] = [tmp]
 
 	return rsd
 
@@ -53,7 +56,7 @@ class CharReplacer(NoiserBase):
 		_sample_func, _rpd = parse_none(sample_func, self.sample_func), parse_none(data, self.rpd)
 		rs = []
 		for _ in x:
-			rs.append(filter_bi_same(_sample_func(_rpd[_], 2), _) if _ in _rpd else _)
+			rs.append(filter_bi_same(_sample_func(_sample_func(_rpd[_], 1), 2), _) if _ in _rpd else _)
 
 		return "".join(rs)
 
