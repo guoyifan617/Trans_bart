@@ -93,6 +93,18 @@ def drop(x, sind, k, **kwargs):
 
 	return "%s%s" % (x[:sind], x[sind + k:],)
 
+def sorted_keep_span(spl, l):
+
+	_l = 0
+	_ = {}
+	for _sind, _span_len in spl:
+		_l += _span_len
+		if (_l > l) and _:
+			break
+		_[_sind] = (_sind, _span_len,)
+	for _sind in sorted(_.keys()):
+		yield _[_sind]
+
 class Noiser:
 
 	def __init__(self, char=None, vcb=None, min_span_len=1, max_span_len=5, p=0.15, w_char=0.3, w_vcb=0.2, w_shuf=0.2, w_repeat=0.1, w_drop=0.1):
@@ -133,8 +145,8 @@ class Noiser:
 			return x
 		_last_ind = _r_len - 1
 		_min_span_len, _max_span_len, _sample_ind, _sample_cw, _inc_ind, _dec_ind, _shuf_ind = self.min_span_len, self.max_span_len, self.sample_ind, self.sample_cw, self.inc_ind, self.dec_ind, self.shuf_ind
-		_ = int(_r_len * self.p)
-		_min_span_len, _max_span_len = max(min(_min_span_len, _), 1), max(min(_max_span_len, _), 1)
+		_corr_len = max(int(_r_len * self.p), 1)
+		_min_span_len, _max_span_len = min(_min_span_len, _corr_len), min(_max_span_len, _corr_len)
 		_sind = 0
 		_spans = []
 		while _r_len > 0:
@@ -142,9 +154,10 @@ class Noiser:
 			_spans.append((_sind, _span_len,))
 			_sind += _span_len
 			_r_len -= _span_len
+		shuffle(_spans)
 		_shift = 0
 		rs = x
-		for _sind, _span_len in choices(_spans, k=max(1, int(len(_spans) * self.p))):
+		for _sind, _span_len in sorted_keep_span(_spans, _corr_len):
 			_ind = choices(_sample_ind, cum_weights=_sample_cw, k=1)[0]
 			_r_sind = _sind + _shift
 			if (_ind == _shuf_ind) and (_span_len == 1):
