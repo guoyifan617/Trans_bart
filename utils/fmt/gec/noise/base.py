@@ -107,7 +107,7 @@ def sorted_keep_span(spl, l):
 
 class Noiser:
 
-	def __init__(self, char=None, vcb=None, min_span_len=1, max_span_len=5, p=0.15, w_char=0.3, w_vcb=0.2, w_shuf=0.2, w_repeat=0.1, w_drop=0.1):
+	def __init__(self, char=None, vcb=None, min_span_len=1, max_span_len=5, p=0.15, w_char=0.2, w_vcb=0.2, w_shuf=0.1, w_repeat=0.1, w_drop=0.1):
 
 		self.edits = []
 		w = []
@@ -118,7 +118,12 @@ class Noiser:
 				w.append(w_char)
 			else:
 				self.edits.extend([CharReplacer(_) for _ in char])
-				w.extend(w_char if isinstance(w_char, list) else [w_char for _ in range(len(char))])
+				if isinstance(w_char, list):
+					w.extend(w_char)
+				else:
+					_l = len(char)
+					_avg = w_char / float(_l)
+					w.extend([_avg for _ in range(_l)])
 		if vcb is not None:
 			self.edits.append(VocabReplacer(vcb))
 			w.append(w_vcb)
