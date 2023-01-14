@@ -13,8 +13,8 @@ def filter_func(x, vcb):
 
 def handle(srcf, rsf, vsize=65532):
 
-	_vcb_freq = ldvocab_freq(srcf)[0]
-	save_vocab({k: v for k, v in _vcb_freq.items() if filter_func(k, _vcb_freq)}, rsf, omit_vsize=vsize)
+	_vcb_freq = ldvocab_freq(srcf, omit_vsize=vsize)[0]
+	save_vocab({k: v for k, v in _vcb_freq.items() if filter_func(k, _vcb_freq)}, rsf)
 
 if __name__ == "__main__":
 	handle(sys.argv[1], sys.argv[2], int(sys.argv[3]))
