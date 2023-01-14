@@ -1,6 +1,6 @@
 #encoding: utf-8
 
-from transformer.PLM.BERT.NMT import NMT as NMTBase
+from transformer.PLM.BERT.NMTBase import NMT as NMTBase
 from transformer.PLM.RoBERTa.Decoder import Decoder
 from transformer.PLM.RoBERTa.Encoder import Encoder
 from utils.fmt.parser import parse_double_value_tuple, parse_none

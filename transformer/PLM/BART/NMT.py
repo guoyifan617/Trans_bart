@@ -2,7 +2,7 @@
 
 from transformer.PLM.BART.Decoder import Decoder
 from transformer.PLM.BART.Encoder import Encoder
-from transformer.PLM.BERT.NMT import NMT as NMTBase
+from transformer.PLM.NMT import NMT as NMTBase
 from utils.fmt.parser import parse_double_value_tuple, parse_none
 from utils.plm.base import set_ln_ieps
 from utils.relpos.base import share_rel_pos_cache

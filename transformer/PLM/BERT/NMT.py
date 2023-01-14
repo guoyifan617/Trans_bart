@@ -1,8 +1,8 @@
 #encoding: utf-8
 
-from transformer.NMT import NMT as NMTBase
 from transformer.PLM.BERT.Decoder import Decoder
 from transformer.PLM.BERT.Encoder import Encoder
+from transformer.PLM.BERT.NMTBase import NMT as NMTBase
 from utils.fmt.parser import parse_double_value_tuple, parse_none
 from utils.plm.base import set_ln_ieps
 from utils.relpos.base import share_rel_pos_cache
@@ -38,10 +38,3 @@ class NMT(NMTBase):
 		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 
 		return self.dec(self.enc(inpute, token_types=token_types, mask=_mask), word_prediction=word_prediction)
-
-	def load_plm(self, plm_parameters, model_name=None, **kwargs):
-
-		_model_name = parse_none(model_name, self.model_name)
-		enc_model_name, dec_model_name = parse_double_value_tuple(_model_name)
-		self.enc.load_plm(plm_parameters, model_name=enc_model_name, **kwargs)
-		self.dec.load_plm(plm_parameters, model_name=dec_model_name, **kwargs)

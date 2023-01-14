@@ -1,7 +1,7 @@
 #encoding: utf-8
 
 from transformer.Encoder import Encoder
-from transformer.NMT import NMT as NMTBase
+from transformer.PLM.BERT.NMTBase import NMT as NMTBase
 from transformer.PLM.CustBERT.Decoder import Decoder
 from utils.fmt.parser import parse_double_value_tuple, parse_none
 from utils.io import load_model_cpu
