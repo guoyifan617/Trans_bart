@@ -11,6 +11,7 @@ from utils.base import set_random_seed
 from utils.fmt.base import sys_open
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.fmt.plm.base import fix_parameter_name
+from utils.func import identity_func
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
 from utils.torch.comp import torch_autocast, torch_inference_mode
@@ -22,7 +23,7 @@ from cnfg.vocab.plm.roberta import vocab_size
 
 reg_weight, reg_bias = cnfg.reg_weight, cnfg.reg_bias
 if reg_weight is None:
-	scale_func = (lambda x: x) if reg_bias is None else (lambda x: x - reg_bias)
+	scale_func = identity_func if reg_bias is None else (lambda x: x - reg_bias)
 else:
 	scale_func = (lambda x: x / reg_weight) if reg_bias is None else (lambda x: x / reg_weight - reg_bias)
 
