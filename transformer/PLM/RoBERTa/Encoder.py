@@ -5,17 +5,18 @@ from utils.fmt.parser import parse_none
 from utils.plm.base import copy_plm_parameter
 from utils.torch.comp import torch_all, torch_no_grad
 
-from cnfg.plm.roberta.base import num_type
+from cnfg.plm.roberta.base import eliminate_type_emb, num_type
 from cnfg.plm.roberta.ihyp import *
 from cnfg.vocab.plm.roberta import pad_id, pemb_start_ind
 
 class Encoder(EncoderBase):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindDecoderEmb=True, num_type=num_type, share_layer=False, model_name="roberta", **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindDecoderEmb=True, num_type=num_type, share_layer=False, model_name="roberta", eliminate_type_emb=eliminate_type_emb, **kwargs):
 
 		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, xseql=xseql, ahsize=ahsize, norm_output=norm_output, bindDecoderEmb=bindDecoderEmb, num_type=num_type, share_layer=share_layer, model_name=model_name, **kwargs)
 
 		self.wemb.padding_idx = pad_id
+		self.eliminate_type_emb = eliminate_type_emb
 
 	def forward(self, inputs, token_types=None, mask=None, **kwargs):
 
@@ -43,7 +44,7 @@ class Encoder(EncoderBase):
 			copy_plm_parameter(self.wemb.weight, plm_parameters, "%s.embeddings.word_embeddings.weight" % _model_name)
 			copy_plm_parameter(self.pemb, plm_parameters, "%s.embeddings.position_embeddings.weight" % _model_name)
 			_temb_key = "%s.embeddings.token_type_embeddings.weight" % _model_name
-			if num_type == 1:
+			if self.eliminate_type_emb and (self.temb.weight.size(0) == 1):
 				_temb_w = plm_parameters[_temb_key]
 				if not torch_all(_temb_w.eq(0.0)).item():
 					self.wemb.weight.add_(_temb_w)

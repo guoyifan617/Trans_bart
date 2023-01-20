@@ -7,7 +7,7 @@ from torch import nn
 from modules.rfn import LSTMCell4FFN#, rnncells import LSTMCell4RNMT as
 from transformer.RFN.Decoder import Decoder as DecoderBase
 from utils.base import index_tensors, iternext, select_zero_
-from utils.beam import expand_bsize_for_beam
+from utils.decode.beam import expand_bsize_for_beam
 from utils.sampler import SampleMax
 from utils.torch.comp import all_done
 

@@ -7,7 +7,7 @@ from torch import nn
 from modules.mulang.eff.base import LayerNorm, MBLinear, PositionwiseFF, ResCrossAttn, ResSelfAttn
 from transformer.Decoder import Decoder as DecoderBase, DecoderLayer as DecoderLayerBase
 from utils.base import index_tensors, select_zero_
-from utils.beam import expand_bsize_for_beam
+from utils.decode.beam import expand_bsize_for_beam
 from utils.fmt.parser import parse_none
 from utils.sampler import SampleMax
 from utils.torch.comp import all_done, torch_no_grad

@@ -9,7 +9,7 @@ from modules.dropout import TokenDropout
 from modules.paradoc import GateResidual
 from transformer.Decoder import Decoder as DecoderBase, DecoderLayer as DecoderLayerBase
 from utils.base import index_tensors, select_zero_
-from utils.beam import expand_bsize_for_beam
+from utils.decode.beam import expand_bsize_for_beam
 from utils.doc.paragate.base4torch import clear_pad_mask
 from utils.fmt.parser import parse_none
 from utils.sampler import SampleMax

@@ -9,7 +9,7 @@ from torch.utils.cpp_extension import load
 from modules.act import Custom_Act, LGLU, get_act, reduce_model as reduce_model_act
 from modules.dropout import Dropout, reduce_model as reduce_model_drop
 from utils.base import reduce_model_list
-from utils.beam import repeat_bsize_for_beam_tensor
+from utils.decode.beam import repeat_bsize_for_beam_tensor
 from utils.fmt.parser import parse_none
 from utils.relpos.bucket import build_rel_pos_bucket, build_rel_pos_bucket_map
 from utils.torch.comp import torch_no_grad
@@ -198,7 +198,7 @@ class MultiHeadAttn(nn.Module):
 	# sparsenorm: using sparse normer or standard softmax
 	# bind_qk: query and key can share a same linear transformation for the Reformer: The Efficient Transformer (https://arxiv.org/abs/2001.04451) paper.
 
-	def __init__(self, isize, hsize, osize, num_head=8, dropout=0.0, k_isize=None, v_isize=None, enable_bias=enable_prev_ln_bias_default, enable_proj_bias=enable_proj_bias_default, k_rel_pos=0, uni_direction_reduction=False, is_left_to_right_reduction=True, zero_reduction=relpos_reduction_with_zeros, max_bucket_distance=0, sparsenorm=False, bind_qk=False, xseql=cache_len_default, **kwargs):
+	def __init__(self, isize, hsize, osize, num_head=8, dropout=0.0, k_isize=None, v_isize=None, enable_bias=enable_prev_ln_bias_default, enable_proj_bias=enable_proj_bias_default, k_rel_pos=0, uni_direction_reduction=False, is_left_to_right_reduction=True, zero_reduction=relpos_reduction_with_zeros, max_bucket_distance=0, sparsenorm=False, bind_qk=False, xseql=cache_len_default, is_decoding=False, **kwargs):
 
 		super(MultiHeadAttn, self).__init__()
 
@@ -260,6 +260,7 @@ class MultiHeadAttn(nn.Module):
 		self.register_buffer("real_iV", None)
 		self.register_buffer("iK", None)
 		self.register_buffer("iV", None)
+		self.is_decoding = is_decoding
 
 		if self.c_available():
 			self.c_init()
@@ -282,11 +283,11 @@ class MultiHeadAttn(nn.Module):
 
 		real_iQ = self.query_adaptor(iQ).view(bsize, nquery, nheads, adim).transpose(1, 2)
 
-		if (self.real_iK is not None) and self.iK.is_set_to(iK) and (not self.training):
+		if (self.real_iK is not None) and self.iK.is_set_to(iK) and self.is_decoding:
 			real_iK = self.real_iK
 		else:
 			real_iK = self.key_adaptor(iK).view(bsize, seql, nheads, adim).permute(0, 2, 3, 1)
-			if not self.training:
+			if self.is_decoding:
 				self.iK, self.real_iK = iK, real_iK
 		if (self.real_iV is not None) and self.iV.is_set_to(iV) and (not self.training):
 			real_iV = self.real_iV
@@ -599,7 +600,7 @@ class SelfAttn(nn.Module):
 # Accelerated MultiHeadAttn for cross attention, use when K == V
 class CrossAttn(nn.Module):
 
-	def __init__(self, isize, hsize, osize, num_head=8, dropout=0.0, k_isize=None, enable_bias=enable_prev_ln_bias_default, enable_proj_bias=enable_proj_bias_default, sparsenorm=False, **kwargs):
+	def __init__(self, isize, hsize, osize, num_head=8, dropout=0.0, k_isize=None, enable_bias=enable_prev_ln_bias_default, enable_proj_bias=enable_proj_bias_default, sparsenorm=False, is_decoding=False, **kwargs):
 
 		super(CrossAttn, self).__init__()
 
@@ -621,6 +622,7 @@ class CrossAttn(nn.Module):
 		self.register_buffer("real_iK", None)
 		self.register_buffer("real_iV", None)
 		self.register_buffer("iK", None)
+		self.is_decoding = is_decoding
 
 		if self.c_available():
 			self.c_init()
@@ -633,12 +635,12 @@ class CrossAttn(nn.Module):
 		adim = self.attn_dim
 
 		real_iQ = self.query_adaptor(iQ).view(bsize, nquery, nheads, adim).transpose(1, 2)
-		if (self.real_iK is not None) and self.iK.is_set_to(iK) and (not self.training):
+		if (self.real_iK is not None) and self.iK.is_set_to(iK) and self.is_decoding:
 			real_iK, real_iV = self.real_iK, self.real_iV
 		else:
 			real_iK, real_iV = self.kv_adaptor(iK).view(bsize, seql, 2, nheads, adim).unbind(2)
 			real_iK, real_iV = real_iK.permute(0, 2, 3, 1), real_iV.transpose(1, 2)
-			if not self.training:
+			if self.is_decoding:
 				self.iK, self.real_iK, self.real_iV = iK, real_iK, real_iV
 
 		scores = real_iQ.matmul(real_iK) / sqrt(adim)
@@ -659,6 +661,7 @@ class CrossAttn(nn.Module):
 
 		if mode:
 			self.reset_buffer()
+		self.is_decoding = not mode
 
 		return self
 

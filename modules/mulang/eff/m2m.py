@@ -88,12 +88,12 @@ class CrossAttn(CrossAttnBase):
 		nheads, ngroup, adim = self.num_head, self.ngroup, self.attn_dim
 
 		real_iQ = self.query_adaptor(iQ).view(bsize, nquery, nheads, adim).transpose(1, 2)
-		if (self.real_iK is not None) and self.iK.is_set_to(iK) and (not self.training):
+		if (self.real_iK is not None) and self.iK.is_set_to(iK) and self.is_decoding:
 			real_iK, real_iV = self.real_iK, self.real_iV
 		else:
 			real_iK, real_iV = self.kv_adaptor(iK).view(bsize, seql, ngroup, 2, -1).transpose(2, 3).contiguous().view(bsize, seql, 2, nheads, adim).unbind(2)
 			real_iK, real_iV = real_iK.permute(0, 2, 3, 1), real_iV.transpose(1, 2)
-			if not self.training:
+			if self.is_decoding:
 				self.iK, self.real_iK, self.real_iV = iK, real_iK, real_iV
 
 		scores = real_iQ.matmul(real_iK) / sqrt(adim)

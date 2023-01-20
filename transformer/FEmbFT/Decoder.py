@@ -6,7 +6,7 @@ from math import sqrt
 from modules.elinear import IPLinear
 from transformer.Decoder import Decoder as DecoderBase
 from utils.base import index_tensors, select_zero_
-from utils.beam import expand_bsize_for_beam
+from utils.decode.beam import expand_bsize_for_beam
 from utils.sampler import SampleMax
 from utils.torch.comp import all_done
 

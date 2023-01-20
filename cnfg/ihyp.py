@@ -19,7 +19,7 @@ bind_c_forward = use_c_backend
 
 # the use of deterministic algorithms
 use_deterministic = not performance_over_reproduction
-allow_fp16_reduction = use_deterministic
+allow_tf32 = allow_fp16_reduction = performance_over_reproduction
 
 # biases
 enable_prev_ln_bias_default = enable_proj_bias_default = not ease_optimization

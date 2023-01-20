@@ -8,7 +8,7 @@ from modules.TA import PositionwiseFF, ResCrossAttn, ResSelfAttn
 from modules.dropout import Dropout
 from transformer.Decoder import Decoder as DecoderBase, DecoderLayer as DecoderLayerBase
 from utils.base import index_tensors, select_zero_
-from utils.beam import expand_bsize_for_beam
+from utils.decode.beam import expand_bsize_for_beam
 from utils.fmt.parser import parse_none
 from utils.plm.base import copy_plm_parameter
 from utils.sampler import SampleMax

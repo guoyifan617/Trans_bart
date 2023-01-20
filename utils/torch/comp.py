@@ -2,27 +2,37 @@
 
 import torch
 
-from cnfg.ihyp import allow_fp16_reduction, enable_torch_check, use_deterministic, use_inference_mode
+from cnfg.ihyp import allow_fp16_reduction, allow_tf32, enable_torch_check, use_deterministic, use_inference_mode
 
 secure_type_map = {torch.float16: torch.float64, torch.float32: torch.float64, torch.uint8: torch.int64, torch.int8: torch.int64, torch.int16: torch.int64, torch.int32: torch.int64}
 
 try:
-	torch.backends.cuda.matmul.allow_tf32 = use_deterministic
-	torch.backends.cudnn.allow_tf32 = use_deterministic
+	if hasattr(torch, "set_float32_matmul_precision"):
+		torch.set_float32_matmul_precision("medium" if allow_fp16_reduction else ("high" if allow_tf32 else "highest"))
+	torch.backends.cuda.matmul.allow_tf32 = allow_tf32
+	torch.backends.cudnn.allow_tf32 = allow_tf32
 	torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = allow_fp16_reduction
-except:
-	pass
+except Exception as e:
+	print(e)
+
 # Make cudnn methods deterministic according to: https://pytorch.org/docs/stable/notes/randomness.html#cudnn
-try:
-	torch.use_deterministic_algorithms(use_deterministic)
-except:
+_config_cudnn_deterministic_variable = True
+if hasattr(torch, "use_deterministic_algorithms"):
+	try:
+		torch.use_deterministic_algorithms(use_deterministic, warn_only=True)
+		_config_cudnn_deterministic_variable = False
+	except Exception as e:
+		print(e)
+if _config_cudnn_deterministic_variable:
 	torch.backends.cudnn.deterministic = use_deterministic
+
 torch.backends.cudnn.benchmark = False
 
-try:
-	torch.autograd.set_detect_anomaly(enable_torch_check)
-except Exception as e:
-	pass
+if hasattr(torch, "autograd") and hasattr(torch.autograd, "set_detect_anomaly"):
+	try:
+		torch.autograd.set_detect_anomaly(enable_torch_check)
+	except Exception as e:
+		print(e)
 
 def all_done_bool(stat, *inputs, **kwargs):
 
@@ -133,7 +143,7 @@ def torch_is_autocast_enabled_empty(*args, **kwargs):
 	return False
 
 # handling torch.bool
-try:
+if hasattr(torch, "bool"):
 	mask_tensor_type = torch.bool
 	secure_type_map[mask_tensor_type] = torch.int64
 	nccl_type_map = {torch.bool:torch.uint8}
@@ -146,7 +156,7 @@ try:
 	torch_any_dim = torch_any_bool_dim
 	torch_any_wodim = torch_any_bool_wodim
 	flip_mask = flip_mask_bool
-except Exception as e:
+else:
 	mask_tensor_type = torch.uint8
 	nccl_type_map = None
 	all_done = all_done_byte
@@ -160,11 +170,16 @@ except Exception as e:
 	flip_mask = flip_mask_byte
 
 # handling torch.cuda.amp, fp16 will NOT be really enabled if torch.cuda.amp does not exist (for early versions)
-try:
-	from torch.cuda.amp import GradScaler, autocast as torch_autocast
-	torch_is_autocast_enabled = torch.is_autocast_enabled
-	is_fp16_supported = True
-except Exception as e:
+_config_torch_cuda_amp = True
+if hasattr(torch, "cuda") and hasattr(torch.cuda, "amp"):
+	try:
+		from torch.cuda.amp import GradScaler, autocast as torch_autocast
+		torch_is_autocast_enabled = torch.is_autocast_enabled
+		is_fp16_supported = True
+		_config_torch_cuda_amp = False
+	except Exception as e:
+		print(e)
+if _config_torch_cuda_amp:
 	torch_autocast, GradScaler, torch_is_autocast_enabled, is_fp16_supported = EmptyAutocast, EmptyGradScaler, torch_is_autocast_enabled_empty, False
 
 # inference mode for torch >= 1.9.0
