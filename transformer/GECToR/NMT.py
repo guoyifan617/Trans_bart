@@ -37,14 +37,14 @@ class NMT(NMTBase):
 		if rel_pos_enabled:
 			share_rel_pos_cache(self)
 
-	def forward(self, inpute, edit=None, mask=None, mlm_mask=None, tgt=None, prediction=False, **kwargs):
+	def forward(self, inpute, edit=None, token_types=None, mask=None, mlm_mask=None, tgt=None, prediction=False, **kwargs):
 
 		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 		_mlm_mask = inpute.eq(mask_id) if mlm_mask is None else mlm_mask
 		if not torch_any_wodim(_mlm_mask).item():
 			_mlm_mask = None
 
-		return self.dec(self.enc(inpute, edit=edit, mask=_mask), mlm_mask=_mlm_mask, tgt=tgt, prediction=prediction)
+		return self.dec(self.enc(inpute, edit=edit, token_types=token_types, mask=_mask), mlm_mask=_mlm_mask, tgt=tgt, prediction=prediction)
 
 	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, pad_id=pad_id, edit_pad_id=edit_pad_id, delete_id=delete_id, **kwargs):
 

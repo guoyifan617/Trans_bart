@@ -7,17 +7,19 @@ from transformer.Encoder import Encoder as EncoderBase
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
-from cnfg.vocab.gector.edit import pad_id, vocab_size as num_edit
+from cnfg.vocab.gector.edit import num_type, pad_id, vocab_size as num_edit
 
 class Encoder(EncoderBase):
 
-	def forward(self, inputs, edit=None, mask=None, **kwargs):
+	def forward(self, inputs, edit=None, token_types=None, mask=None, **kwargs):
 
 		out = self.wemb(inputs)
 		if edit is not None:
 			out = out + self.edit_emb(edit)
 		if self.pemb is not None:
 			out = self.pemb(inputs, expand=False).add(out, alpha=sqrt(out.size(-1)))
+		if self.temb is not None:
+			out = out + (self.temb.weight[0] if token_types is None else self.temb(token_types))
 
 		if self.drop is not None:
 			out = self.drop(out)
@@ -30,6 +32,7 @@ class Encoder(EncoderBase):
 	def build_task_model(self, *args, **kwargs):
 
 		self.edit_emb = nn.Embedding(num_edit, self.wemb.weight.size(-1), padding_idx=pad_id)
+		self.temb = None if num_type > 0 else nn.Embedding(num_type, self.wemb.weight.size(-1))
 		self.fix_task_init()
 
 	def fix_task_init(self):
@@ -39,3 +42,5 @@ class Encoder(EncoderBase):
 				_ = 2.0 / sqrt(sum(self.edit_emb.weight.size()))
 				self.edit_emb.weight.uniform_(-_, _)
 				self.edit_emb.weight[pad_id].zero_()
+				if self.temb is not None:
+					self.temb.weight.zero_()

@@ -5,7 +5,7 @@ from cnfg.base import *
 # new configurations for RoBERTa
 model_name = "roberta"
 num_type = 1
-eliminate_type_emb = True
+eliminate_type_emb = False
 pre_trained_m = None
 
 # override standard configurations
