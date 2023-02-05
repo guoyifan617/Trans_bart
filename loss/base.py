@@ -62,10 +62,9 @@ class StdLabelSmoothingLoss(_Loss):
 		if isinstance(ignore_index, (list, tuple,)):
 			tmp = []
 			for _tmp in ignore_index:
-				if (_tmp >= 0) and (_tmp not in tmp):
+				if (_tmp >= 0) and (_tmp not in fbil):
 					tmp.append(_tmp)
-					if _tmp not in fbil:
-						fbil.add(_tmp)
+					fbil.add(_tmp)
 			_nid = len(tmp)
 			if _nid > 0:
 				self.ignore_index = tuple(tmp) if _nid > 1 else tmp[0]
