@@ -13,7 +13,7 @@ from utils.sampler import SampleMax
 from utils.torch.comp import all_done#, torch_no_grad
 
 from cnfg.ihyp import *
-#from cnfg.vocab.base import eos_id, pad_id
+from cnfg.vocab.base import eos_id, pad_id
 
 class DecoderLayer(DecoderLayerBase):
 
