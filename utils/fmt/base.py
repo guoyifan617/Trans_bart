@@ -1,8 +1,10 @@
 #encoding: utf-8
 
 import sys
+from gzip import open as gz_open
 from random import shuffle
 
+from cnfg.hyp import raw_cache_compression_level
 from cnfg.vocab.base import pad_id
 
 serial_func, deserial_func = repr, eval
@@ -11,9 +13,9 @@ iter_to_str = lambda lin: map(str, lin)
 iter_to_int = lambda lin: map(int, lin)
 iter_to_float = lambda lin: map(float, lin)
 
-def sys_open(fname, mode="r", **kwargs):
+def sys_open(fname, mode="r", compresslevel=raw_cache_compression_level, **kwargs):
 
-	return ((sys.stdin.buffer if "r" in mode else sys.stdout.buffer) if "b" in mode else (sys.stdin if "r" in mode else sys.stdout)) if fname == "-" else open(fname, mode=mode, **kwargs)
+	return ((sys.stdin.buffer if "r" in mode else sys.stdout.buffer) if "b" in mode else (sys.stdin if "r" in mode else sys.stdout)) if fname == "-" else (gz_open(fname, mode=mode, compresslevel=compresslevel, **kwargs) if fname.endswith(".gz") else open(fname, mode=mode, **kwargs))
 
 def save_objects(fname, *inputs):
 

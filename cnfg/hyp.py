@@ -38,7 +38,8 @@ init_lr = 1e-4
 # enable tqdm progress bar.
 enable_tqdm = False
 
-# trade CPU for IO and disk space, see [h5py](http://docs.h5py.org/en/stable/high/dataset.html) for details.
+# trade CPU for IO and disk space, see [gzip](https://docs.python.org/3/library/gzip.html) and [h5py](http://docs.h5py.org/en/stable/high/dataset.html) for details.
+raw_cache_compression_level = 9
 # choices: None, "gzip", "lzf"
 hdf5_data_compression = "gzip"
 # choices: 0 to 9, default is 4. None for lzf.
