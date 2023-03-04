@@ -1,7 +1,9 @@
 #encoding: utf-8
 
 import sys
+from bz2 import open as bz_open
 from gzip import open as gz_open
+from lzma import open as xz_open
 from random import shuffle
 
 from cnfg.hyp import raw_cache_compression_level
@@ -15,7 +17,17 @@ iter_to_float = lambda lin: map(float, lin)
 
 def sys_open(fname, mode="r", compresslevel=raw_cache_compression_level, **kwargs):
 
-	return ((sys.stdin.buffer if "r" in mode else sys.stdout.buffer) if "b" in mode else (sys.stdin if "r" in mode else sys.stdout)) if fname == "-" else (gz_open(fname, mode=mode, compresslevel=compresslevel, **kwargs) if fname.endswith(".gz") else open(fname, mode=mode, **kwargs))
+	if fname == "-":
+		return ((sys.stdin.buffer if "r" in mode else sys.stdout.buffer) if "b" in mode else (sys.stdin if "r" in mode else sys.stdout))
+	else:
+		if fname.endswith(".gz"):
+			return gz_open(fname, mode=mode, compresslevel=compresslevel, **kwargs)
+		elif fname.endswith(".bz2"):
+			return bz_open(fname, mode=mode, compresslevel=compresslevel, **kwargs)
+		elif fname.endswith(".xz"):
+			return xz_open(fname, mode=mode, **kwargs)
+		else:
+			return open(fname, mode=mode, **kwargs))
 
 def save_objects(fname, *inputs):
 
