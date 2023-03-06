@@ -22,9 +22,9 @@ from cnfg.ihyp import cache_len_default, h5_libver, h5datawargs, max_pad_tokens_
 
 class Loader:
 
-	def __init__(self, sfile, vcbf=plm_vcb, noise_char=noise_char, noise_vcb=noise_vcb, max_len=cache_len_default, num_cache=4, minfreq=False, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, norm_u8=False, file_loader=gec_noise_reader, print_func=print):
+	def __init__(self, sfile, vcbf=plm_vcb, noise_char=noise_char, noise_vcb=noise_vcb, max_len=cache_len_default, num_cache=4, raw_cache_size=4194304, minfreq=False, ngpu=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, sleep_secs=1.0, norm_u8=False, file_loader=gec_noise_reader, print_func=print):
 
-		self.sfile, self.max_len, self.num_cache, self.minbsize, self.maxpad, self.maxpart, self.sleep_secs, self.file_loader, self.print_func = sfile, max_len, num_cache, ngpu, maxpad, maxpart, sleep_secs, file_loader, print_func
+		self.sfile, self.max_len, self.num_cache, self.raw_cache_size, self.minbsize, self.maxpad, self.maxpart, self.sleep_secs, self.file_loader, self.print_func = sfile, max_len, num_cache, raw_cache_size, ngpu, maxpad, maxpart, sleep_secs, file_loader, print_func
 		self.bsize, self.maxtoken = (bsize, maxtoken,) if self.minbsize == 1 else (bsize * self.minbsize, maxtoken * self.minbsize,)
 		self.cache_path = get_cache_path(self.sfile) if isinstance(self.sfile, str) else get_cache_path(*self.sfile)
 		self.tokenizer = Tokenizer(vcbf, norm_u8=norm_u8)
@@ -39,7 +39,8 @@ class Loader:
 	def loader(self):
 
 		rpyseed(rand_seed)
-		file_reader = sort_lines_reader()
+		dloader = self.file_loader(self.sfile, self.noiser, self.tokenizer, max_len=self.max_len, inf_loop=self.raw_cache_size is not None, print_func=None)
+		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
 		while self.running.value:
 			if self.todo:
 				_cache_file = self.todo.pop(0)
@@ -48,7 +49,7 @@ class Loader:
 					edt_grp = rsf.create_group("edt")
 					tgt_grp = rsf.create_group("tgt")
 					curd = 0
-					for i_d, ed, td in batch_padder(self.file_loader(self.sfile, self.noiser, self.tokenizer, max_len=self.max_len, print_func=None), self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader):
+					for i_d, ed, td in batch_padder(dloader, self.bsize, self.maxpad, self.maxpart, self.maxtoken, self.minbsize, file_reader=file_reader):
 						wid = str(curd)
 						src_grp.create_dataset(wid, data=np_array(i_d, dtype=np_int32), **h5datawargs)
 						edt_grp.create_dataset(wid, data=np_array(ed, dtype=np_int8), **h5datawargs)
