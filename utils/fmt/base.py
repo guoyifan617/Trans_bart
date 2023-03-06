@@ -27,7 +27,7 @@ def sys_open(fname, mode="r", compresslevel=raw_cache_compression_level, **kwarg
 		elif fname.endswith(".xz"):
 			return xz_open(fname, mode=mode, **kwargs)
 		else:
-			return open(fname, mode=mode, **kwargs))
+			return open(fname, mode=mode, **kwargs)
 
 def save_objects(fname, *inputs):
 
