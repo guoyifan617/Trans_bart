@@ -6,8 +6,9 @@ from torch import nn
 from transformer.Encoder import Encoder as EncoderBase
 from utils.torch.comp import torch_no_grad
 
+from cnfg.gec.gector import num_type
 from cnfg.ihyp import *
-from cnfg.vocab.gector.edit import num_type, pad_id, vocab_size as num_edit
+from cnfg.vocab.gector.edit import pad_id, vocab_size as num_edit
 
 class Encoder(EncoderBase):
 
