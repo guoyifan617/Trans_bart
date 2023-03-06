@@ -104,8 +104,5 @@ class Loader:
 	def close(self):
 
 		self.running.value = 0
-		if self.todo:
-			self.todo.clear()
-		if self.out:
-			self.out.clear()
+		sleep(self.sleep_secs)
 		rmtree(self.cache_path, ignore_errors=True)
