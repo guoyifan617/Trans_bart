@@ -5,7 +5,7 @@ import torch
 from torch.optim import Adam as Optimizer
 
 from lrsch import CustLR as LRScheduler
-from parallel.base import DataParallelCriterion
+#from parallel.base import DataParallelCriterion
 from parallel.optm import MultiGPUGradScaler
 from parallel.parallelMT import DataParallelMT
 from transformer.GECToR.NMT import NMT
@@ -241,14 +241,14 @@ if cnfg.tgt_emb is not None:
 
 if cuda_device:
 	mymodel.to(cuda_device, non_blocking=True)
-	lossf.to(cuda_device, non_blocking=True)
+	#lossf.to(cuda_device, non_blocking=True)
 
 use_amp = cnfg.use_amp and use_cuda
 scaler = (MultiGPUGradScaler() if multi_gpu_optimizer else GradScaler()) if use_amp else None
 
 if multi_gpu:
 	mymodel = DataParallelMT(mymodel, device_ids=cuda_devices, output_device=cuda_device.index, host_replicate=True, gather_output=False)
-	lossf = DataParallelCriterion(lossf, device_ids=cuda_devices, output_device=cuda_device.index, replicate_once=True)
+	#lossf = DataParallelCriterion(lossf, device_ids=cuda_devices, output_device=cuda_device.index, replicate_once=True)
 
 if multi_gpu:
 	optimizer = mymodel.build_optimizer(Optimizer, lr=init_lr, betas=adam_betas_default, eps=ieps_adam_default, weight_decay=cnfg.weight_decay, amsgrad=use_ams, multi_gpu_optimizer=multi_gpu_optimizer, contiguous_parameters=contiguous_parameters)
