@@ -39,7 +39,7 @@ class Loader:
 	def loader(self):
 
 		rpyseed(rand_seed)
-		dloader = self.file_loader(self.sfile, self.noiser, self.tokenizer, max_len=self.max_len, inf_loop=self.raw_cache_size is not None, print_func=None)
+		dloader = self.file_loader(self.sfile, self.noiser, self.tokenizer, max_len=self.max_len, inf_loop=self.raw_cache_size is not None)
 		file_reader = sort_lines_reader(line_read=self.raw_cache_size)
 		while self.running.value:
 			if self.todo:
