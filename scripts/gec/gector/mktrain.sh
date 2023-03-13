@@ -46,5 +46,5 @@ if $do_sort; then
 fi
 
 python tools/gec/gector/mkiodata.py $wkd/src.train.srt $wkd/edit.train.srt $wkd/tgt.train.srt $wkd/$rsf_train $ngpu &
-python tools/gec/gector/mkiodata.py $wkd/src.train.srt $wkd/edit.train.srt $wkd/tgt.train.srt $wkd/$rsf_dev $ngpu &
+python tools/gec/gector/mkiodata.py $wkd/src.dev.srt $wkd/edit.dev.srt $wkd/tgt.dev.srt $wkd/$rsf_dev $ngpu &
 wait
