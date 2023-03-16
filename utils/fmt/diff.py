@@ -1,12 +1,50 @@
 #encoding: utf-8
 
-from difflib import Differ
+from difflib import Differ, SequenceMatcher
+
+default_differ = False
+
+op_mapper = {" ": "k", "+": "i", "-": "d"}
 
 differ = Differ()
 
-diff_func = differ.compare
+diff_func_differ = differ.compare
 
-op_mapper = {" ": "k", "+": "i", "-": "d"}
+def diff_func_matcher(x, ref):
+
+	rs = []
+	for tag, xsi, xei, rsi, rei in SequenceMatcher(None, x, ref, autojunk=False).get_opcodes():
+		_tc = tag[0]
+		if _tc == "d":
+			rs.extend("- %s" % _ for _ in x[xsi:xei])
+		elif _tc == "e":
+			rs.extend("  %s" % _c for _c in x[xsi:xei])
+		elif _tc == "i":
+			rs.extend("+ %s" % _c for _c in ref[rsi:rei])
+		else:
+			rs.extend("- %s" % _c for _c in x[xsi:xei])
+			rs.extend("+ %s" % _c for _c in ref[rsi:rei])
+
+	return rs
+
+def diff_func_matcher_reorder_insert(x, ref):
+
+	rs = []
+	for tag, xsi, xei, rsi, rei in SequenceMatcher(None, x, ref, autojunk=False).get_opcodes():
+		_tc = tag[0]
+		if _tc == "d":
+			rs.extend("- %s" % _ for _ in x[xsi:xei])
+		elif _tc == "e":
+			rs.extend("  %s" % _c for _c in x[xsi:xei])
+		elif _tc == "i":
+			rs.extend("+ %s" % _c for _c in ref[rsi:rei])
+		else:
+			rs.extend("+ %s" % _c for _c in ref[rsi:rei])
+			rs.extend("- %s" % _c for _c in x[xsi:xei])
+
+	return rs
+
+diff_func = diff_func_differ if default_differ else diff_func_matcher
 
 class TokenMapper:
 
@@ -38,7 +76,7 @@ class TokenMapper:
 
 		return [[self.map_c[_] for _ in _seq] for _seq in args]
 
-def seq_diff(a, b, op_mapper=op_mapper):
+def seq_diff(a, b, op_mapper=op_mapper, diff_func=diff_func):
 
 	_mapper = TokenMapper()
 	_ma, _mb = _mapper.map(a, b)
@@ -49,7 +87,6 @@ def seq_diff(a, b, op_mapper=op_mapper):
 def reorder_insert(seqin):
 
 	_d_cache = []
-	rs = []
 	for _du in seqin:
 		_op = _du[0]
 		if _op == "d":
@@ -62,6 +99,12 @@ def reorder_insert(seqin):
 	if _d_cache:
 		yield from _d_cache
 
-def seq_diff_reorder_insert(a, b, op_mapper=op_mapper):
+def seq_diff_reorder_insert_differ(a, b, op_mapper=op_mapper):
 
-	return reorder_insert(seq_diff(a, b, op_mapper=op_mapper))
+	return reorder_insert(seq_diff(a, b, op_mapper=op_mapper, diff_func=diff_func_differ))
+
+def seq_diff_reorder_insert_matcher(a, b, op_mapper=op_mapper):
+
+	return seq_diff(a, b, op_mapper=op_mapper, diff_func=diff_func_matcher_reorder_insert)
+
+seq_diff_reorder_insert = seq_diff_reorder_insert_differ if default_differ else seq_diff_reorder_insert_matcher
