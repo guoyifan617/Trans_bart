@@ -18,7 +18,7 @@ from utils.tqdm import tqdm
 
 import cnfg.gec.gector as cnfg
 from cnfg.ihyp import *
-from cnfg.vocab.plm.custbert import eos_id, sos_id, vocab_size
+from cnfg.vocab.plm.custbert import eos_id, init_normal_token_id, init_vocab, sos_id, vocab_size
 
 def load_fixing(module):
 
@@ -28,7 +28,7 @@ def load_fixing(module):
 td = h5File(cnfg.test_data, "r")
 
 ntest = td["ndata"][()].item()
-vcbt = reverse_dict(ldvocab(sys.argv[2])[0])
+vcbt = reverse_dict(ldvocab(sys.argv[2], minf=False, omit_vsize=vocab_size, vanilla=False, init_vocab=init_vocab, init_normal_token_id=init_normal_token_id)[0])
 
 if len(sys.argv) == 4:
 	mymodel = NMT(cnfg.isize, vocab_size, vocab_size, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
