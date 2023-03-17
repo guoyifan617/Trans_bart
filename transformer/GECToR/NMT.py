@@ -54,6 +54,7 @@ class NMT(NMTBase):
 		bsize = inpute.size(0)
 		_rids = list(range(bsize))
 		_inpute = inpute
+		_pad_mask = _inpute.eq(pad_id)
 		_edit = inpute.new_full(inpute.size(), blank_id).masked_fill_(_pad_mask, edit_pad_id)
 		_last_step = _max_len - 1
 		for step in range(_max_len):
@@ -63,7 +64,6 @@ class NMT(NMTBase):
 					_mlm_mask = None
 			else:
 				_mlm_mask = None
-			_pad_mask = _inpute.eq(pad_id)
 			_tag_out = self.dec(self.enc(_inpute, edit=_edit, mask=_pad_mask.unsqueeze(1)), mlm_mask=_mlm_mask, tgt=None, prediction=True)[-1]
 			_keep_mask = _tag_out.eq(keep_id) | _inpute.eq(eos_id)
 			done_trans = torch_all_dim(_keep_mask | _tag_out.eq(delete_id) | _pad_mask, -1)
@@ -93,7 +93,8 @@ class NMT(NMTBase):
 					_l = len(_iu)
 					if _l > _mlen:
 						_mlen = _l
-				_inpute, _edit = _inpute.new_tensor(pad_batch(_next_i, _mlen, pad_id=pad_id)), _inpute.new_tensor(pad_batch(_next_e, _mlen, pad_id=edit_pad_id))
+				_inpute, _edit = _inpute.new_tensor(pad_batch(_next_i, _mlen, pad_id=pad_id)), _edit.new_tensor(pad_batch(_next_e, _mlen, pad_id=edit_pad_id))
+				_pad_mask = _inpute.eq(pad_id)
 		if _rids:
 			_mlm_mask = _inpute.eq(mask_id)
 			if torch_any_wodim(_mlm_mask).item():
