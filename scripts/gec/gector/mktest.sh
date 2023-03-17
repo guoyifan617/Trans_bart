@@ -18,7 +18,7 @@ export sort_decode=true
 
 export tgtd=$cachedir/$dataid
 
-#export tgt_vcb=$src_vcb
+export tgt_vcb=$src_vcb
 export bpef=out.bpe
 
 mkdir -p $rsd
@@ -32,7 +32,7 @@ else
 fi
 
 python tools/plm/mktest.py $srt_input_f $tgtd/test.h5 $ngpu
-python predict_gector.py $tgtd/$bpef $modelf
+python predict_gector.py $tgtd/$bpef $tgt_vcb $modelf
 
 if $sort_decode; then
 	python tools/restore.py $tgtd/$srctf.ids $srt_input_f $tgtd/$bpef $rsf
