@@ -19,7 +19,7 @@ from utils.muloptm import getlr as getmolr, optm_step, report_dl
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_inference_mode
+from utils.torch.comp import torch_compile, torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import optm_step_zero_grad_set_none, reset_Adam
 from utils.train.dss import dynamic_sample
@@ -295,6 +295,9 @@ if use_amp:
 if multi_gpu:
 	mymodel = DataParallelMT(mymodel, device_ids=cuda_devices, output_device=cuda_device.index, host_replicate=True, gather_output=False)
 	lossf = DataParallelCriterion(lossf, device_ids=cuda_devices, output_device=cuda_device.index, replicate_once=True)
+
+mymodel = torch_compile(mymodel)
+lossf = torch_compile(lossf)
 
 # lr for rmsprop, pytorch default. https://pytorch.org/docs/stable/optim.html
 lrsch = [LRScheduler(optimizer[0], cnfg.isize, cnfg.warm_step, scale=cnfg.lr_scale), InverseSqrtLR(optimizer[1], lr=init_lr, min_lr=1e-7), InverseSqrtLR(optimizer[-1], lr=init_lr, min_lr=1e-7)]#[LRScheduler(optm, cnfg.isize, cnfg.warm_step, scale=cnfg.lr_scale) for optm in optimizer]

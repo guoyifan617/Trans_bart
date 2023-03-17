@@ -15,7 +15,7 @@ from utils.base import set_random_seed
 from utils.fmt.base4torch import parse_cuda_decode
 from utils.h5serial import h5File
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_autocast, torch_inference_mode
+from utils.torch.comp import torch_autocast, torch_compile, torch_inference_mode
 from utils.tqdm import tqdm
 
 import cnfg.base as cnfg
@@ -66,6 +66,8 @@ if cuda_device:
 	mymodel.to(cuda_device, non_blocking=True)
 	if multi_gpu:
 		mymodel = DataParallelMT(mymodel, device_ids=cuda_devices, output_device=cuda_device.index, host_replicate=True, gather_output=True)
+
+mymodel = torch_compile(mymodel)
 
 beam_size = cnfg.beam_size
 length_penalty = cnfg.length_penalty

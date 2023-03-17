@@ -1,3 +1,5 @@
 #encoding: utf-8
 
-identity_func = lambda x: x
+def identity_func(x, *args, **kwargs):
+
+	return x

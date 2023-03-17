@@ -11,7 +11,7 @@ from utils.fmt.single import batch_padder
 from utils.fmt.vocab.base import reverse_dict
 from utils.fmt.vocab.token import ldvocab
 from utils.io import load_model_cpu
-from utils.torch.comp import torch_autocast, torch_inference_mode
+from utils.torch.comp import torch_autocast, torch_compile, torch_inference_mode
 
 from cnfg.ihyp import *
 from cnfg.vocab.base import eos_id
@@ -89,6 +89,7 @@ class TranslatorCore:
 			model.to(self.cuda_device, non_blocking=True)
 			if self.multi_gpu:
 				model = DataParallelMT(model, device_ids=cuda_devices, output_device=self.cuda_device.index, host_replicate=True, gather_output=False)
+		model = torch_compile(model)
 		self.use_amp = cnfg.use_amp and self.use_cuda
 		self.beam_size = cnfg.beam_size
 		self.length_penalty = cnfg.length_penalty

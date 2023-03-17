@@ -21,7 +21,7 @@ from utils.io import load_model_cpu, save_model, save_states
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_autocast, torch_inference_mode
+from utils.torch.comp import torch_autocast, torch_compile, torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import getlr, optm_step, optm_step_zero_grad_set_none, reset_Adam
 from utils.train.dss import dynamic_sample
@@ -271,6 +271,9 @@ scaler = (MultiGPUGradScaler() if multi_gpu_optimizer else GradScaler()) if use_
 if multi_gpu:
 	mymodel = DataParallelMT(mymodel, device_ids=cuda_devices, output_device=cuda_device.index, host_replicate=True, gather_output=False)
 	lossf = DataParallelCriterion(lossf, device_ids=cuda_devices, output_device=cuda_device.index, replicate_once=True)
+
+mymodel = torch_compile(mymodel)
+lossf = torch_compile(lossf)
 
 if multi_gpu:
 	optimizer = mymodel.build_optimizer(Optimizer, lr=init_lr, betas=adam_betas_default, eps=ieps_adam_default, weight_decay=cnfg.weight_decay, amsgrad=use_ams, multi_gpu_optimizer=multi_gpu_optimizer, contiguous_parameters=contiguous_parameters)

@@ -2,7 +2,7 @@
 
 from random import shuffle
 
-from utils.fmt.base import read_lines, dict_insert_set, iter_dict_sort
+from utils.fmt.base import dict_insert_set, iter_dict_sort, read_lines
 from utils.fmt.parser import parse_none
 
 def sort_list_reader(x, *args, clear_input=True, **kwargs):

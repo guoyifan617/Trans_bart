@@ -19,7 +19,7 @@ from utils.io import load_model_cpu, save_model, save_states
 from utils.state.holder import Holder
 from utils.state.pyrand import PyRandomState
 from utils.state.thrand import THRandomState
-from utils.torch.comp import torch_inference_mode
+from utils.torch.comp import torch_compile, torch_inference_mode
 from utils.tqdm import tqdm
 from utils.train.base import getlr, optm_step_zero_grad_set_none
 from utils.train.dss import dynamic_sample
@@ -368,6 +368,9 @@ mymodel.train_arch(train_arch)
 if multi_gpu:
 	mymodel = DataParallelMT(mymodel, device_ids=cuda_devices, output_device=cuda_device.index, host_replicate=True, gather_output=False)
 	lossf = DataParallelCriterion(lossf, device_ids=cuda_devices, output_device=cuda_device.index, replicate_once=True)
+
+mymodel = torch_compile(mymodel)
+lossf = torch_compile(lossf)
 
 _warm_lr = int(cnfg.warm_step / (arch_steps + model_steps) * model_steps)
 _warm_arch = cnfg.warm_step - _warm_lr

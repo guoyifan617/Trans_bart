@@ -2,7 +2,9 @@
 
 import torch
 
-from cnfg.ihyp import allow_fp16_reduction, allow_tf32, enable_torch_check, use_deterministic, use_inference_mode
+from utils.func import identity_func
+
+from cnfg.ihyp import allow_fp16_reduction, allow_tf32, enable_torch_check, use_deterministic, use_inference_mode, use_torch_compile
 
 secure_type_map = {torch.float16: torch.float64, torch.float32: torch.float64, torch.uint8: torch.int64, torch.int8: torch.int64, torch.int16: torch.int64, torch.int32: torch.int64}
 
@@ -195,3 +197,5 @@ else:
 
 		return torch.set_grad_enabled(not mode)
 torch_is_grad_enabled, torch_set_grad_enabled, torch_no_grad = torch.is_grad_enabled, torch.set_grad_enabled, torch.no_grad
+
+torch_compile = torch.compile if hasattr(torch, "compile") and use_torch_compile else identity_func
