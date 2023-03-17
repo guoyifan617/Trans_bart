@@ -53,7 +53,7 @@ class BernoulliParameter(nn.Module):
 		self.host_mask, self.auto_mask = host_mask, auto_mask
 		self.masked_data = None
 		self.ignore_mask = False
-		self.register_buffer("fixed_mask", None)
+		self.register_buffer("fixed_mask", None, persistent=False)
 
 	def forward(self):
 

@@ -15,10 +15,10 @@ class SelfAttn(SelfAttnBase):
 
 		super(SelfAttn, self).__init__(*inputs, xseql=xseql, **kwargs)
 
-		self.register_buffer("l_mask", torch.ones(xseql, xseql, dtype=mask_tensor_type).tril(-1))
-		self.register_buffer("r_mask", torch.ones(xseql, xseql, dtype=mask_tensor_type).triu(1))
-		self.register_buffer("unmask", ~torch.eye(xseql, xseql, dtype=mask_tensor_type))
-		#self.register_buffer("scale_eye", torch.ones(xseql, xseql) - torch.eye(xseql) * 0.5)
+		self.register_buffer("l_mask", torch.ones(xseql, xseql, dtype=mask_tensor_type).tril(-1), persistent=False)
+		self.register_buffer("r_mask", torch.ones(xseql, xseql, dtype=mask_tensor_type).triu(1), persistent=False)
+		self.register_buffer("unmask", ~torch.eye(xseql, xseql, dtype=mask_tensor_type), persistent=False)
+		#self.register_buffer("scale_eye", torch.ones(xseql, xseql) - torch.eye(xseql) * 0.5, persistent=False)
 
 		self.xseql = xseql
 

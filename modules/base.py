@@ -136,7 +136,7 @@ class PositionalEmb(nn.Module):
 		self.poff = pos_offset
 		self.doff = dim_offset
 		self.alpha = alpha
-		self.register_buffer("w", torch.Tensor(num_pos, num_dim))
+		self.register_buffer("w", torch.Tensor(num_pos, num_dim), persistent=False)
 		self.reset_parameters()
 
 	# x: input (bsize, seql)
@@ -221,8 +221,8 @@ class MultiHeadAttn(nn.Module):
 		if k_rel_pos > 0:
 			self.rel_shift = k_rel_pos
 			if max_bucket_distance > 0:
-				self.register_buffer("rel_pos_map", build_rel_pos_bucket_map(k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=uni_direction_reduction))
-				self.register_buffer("rel_pos", build_rel_pos_bucket(xseql, k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=uni_direction_reduction, dis_map=self.rel_pos_map))
+				self.register_buffer("rel_pos_map", build_rel_pos_bucket_map(k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=uni_direction_reduction), persistent=False)
+				self.register_buffer("rel_pos", build_rel_pos_bucket(xseql, k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=uni_direction_reduction, dis_map=self.rel_pos_map), persistent=False)
 				self.rel_pemb = nn.Embedding((k_rel_pos + 1) if uni_direction else (k_rel_pos + k_rel_pos + 1), self.num_head)
 				self.clamp_max, self.clamp_min = max_bucket_distance, uni_direction_reduction
 			else:
@@ -247,19 +247,19 @@ class MultiHeadAttn(nn.Module):
 					self.clamp_min, self.clamp_max = -k_rel_pos, k_rel_pos
 				self.rel_pemb = nn.Embedding(_n_pemb, self.attn_dim, padding_idx=padding_idx)
 				_rpm = torch.arange(0, xseql, dtype=torch.long)
-				self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1)).clamp(min=self.clamp_min, max=self.clamp_max) + self.rel_shift)
-				self.register_buffer("rel_pos_map", None)
+				self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1)).clamp(min=self.clamp_min, max=self.clamp_max) + self.rel_shift, persistent=False)
+				self.register_buffer("rel_pos_map", None, persistent=False)
 			self.xseql = xseql
 			# the buffer can be shared inside the encoder or the decoder across layers for saving memory, by setting self.ref_rel_posm of self attns in deep layers to SelfAttn in layer 0, and sharing corresponding self.rel_pos
 			self.ref_rel_posm = None
-			self.register_buffer("rel_pos_cache", None)
+			self.register_buffer("rel_pos_cache", None, persistent=False)
 		else:
 			self.rel_pemb = None
 
-		self.register_buffer("real_iK", None)
-		self.register_buffer("real_iV", None)
-		self.register_buffer("iK", None)
-		self.register_buffer("iV", None)
+		self.register_buffer("real_iK", None, persistent=False)
+		self.register_buffer("real_iV", None, persistent=False)
+		self.register_buffer("iK", None, persistent=False)
+		self.register_buffer("iV", None, persistent=False)
 		self.is_decoding = is_decoding
 
 		if self.c_available():
@@ -450,8 +450,8 @@ class SelfAttn(nn.Module):
 		if k_rel_pos > 0:
 			self.rel_shift = k_rel_pos
 			if max_bucket_distance > 0:
-				self.register_buffer("rel_pos_map", build_rel_pos_bucket_map(k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=uni_direction_reduction))
-				self.register_buffer("rel_pos", build_rel_pos_bucket(xseql, k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=uni_direction_reduction, dis_map=self.rel_pos_map))
+				self.register_buffer("rel_pos_map", build_rel_pos_bucket_map(k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=uni_direction_reduction), persistent=False)
+				self.register_buffer("rel_pos", build_rel_pos_bucket(xseql, k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=uni_direction_reduction, dis_map=self.rel_pos_map), persistent=False)
 				self.rel_pemb = nn.Embedding((k_rel_pos + 1) if uni_direction_reduction else (k_rel_pos + k_rel_pos + 1), self.num_head)
 				self.clamp_max, self.clamp_min = max_bucket_distance, uni_direction_reduction
 			else:
@@ -476,12 +476,12 @@ class SelfAttn(nn.Module):
 					self.clamp_min, self.clamp_max = -k_rel_pos, k_rel_pos
 				self.rel_pemb = nn.Embedding(_n_pemb, self.attn_dim, padding_idx=padding_idx)
 				_rpm = torch.arange(0, xseql, dtype=torch.long)
-				self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1)).clamp(min=self.clamp_min, max=self.clamp_max) + self.rel_shift)
-				self.register_buffer("rel_pos_map", None)
+				self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1)).clamp(min=self.clamp_min, max=self.clamp_max) + self.rel_shift, persistent=False)
+				self.register_buffer("rel_pos_map", None, persistent=False)
 			self.xseql = xseql
 			# the buffer can be shared inside the encoder or the decoder across layers for saving memory, by setting self.ref_rel_posm of self attns in deep layers to SelfAttn in layer 0, and sharing corresponding self.rel_pos
 			self.ref_rel_posm = None
-			self.register_buffer("rel_pos_cache", None)
+			self.register_buffer("rel_pos_cache", None, persistent=False)
 		else:
 			self.rel_pemb = None
 
@@ -619,9 +619,9 @@ class CrossAttn(nn.Module):
 
 		self.drop = Dropout(dropout, inplace=sparsenorm) if dropout > 0.0 else None
 
-		self.register_buffer("real_iK", None)
-		self.register_buffer("real_iV", None)
-		self.register_buffer("iK", None)
+		self.register_buffer("real_iK", None, persistent=False)
+		self.register_buffer("real_iV", None, persistent=False)
+		self.register_buffer("iK", None, persistent=False)
 		self.is_decoding = is_decoding
 
 		if self.c_available():
@@ -1252,7 +1252,7 @@ class CoordinateEmb(nn.Module):
 		self.poff = pos_offset
 		self.doff = dim_offset
 		self.alpha = alpha
-		self.register_buffer("w", torch.Tensor(num_steps, num_pos, num_dim))
+		self.register_buffer("w", torch.Tensor(num_steps, num_pos, num_dim), persistent=False)
 		self.reset_parameters()
 
 	# x: input (bsize, seql)

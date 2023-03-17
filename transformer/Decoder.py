@@ -143,7 +143,7 @@ class Decoder(nn.Module):
 		self.drop = Dropout(dropout, inplace=True) if dropout > 0.0 else None
 
 		self.xseql = xseql
-		self.register_buffer("mask", torch.ones(xseql, xseql, dtype=mask_tensor_type).triu(1).unsqueeze(0))
+		self.register_buffer("mask", torch.ones(xseql, xseql, dtype=mask_tensor_type).triu(1).unsqueeze(0), persistent=False)
 
 		self.wemb = nn.Embedding(nwd, isize, padding_idx=pad_id)
 		if emb_w is not None:

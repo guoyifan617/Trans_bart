@@ -18,8 +18,8 @@ class Cache(nn.Module):
 
 		super(Cache, self).__init__()
 		self.mavg_beta = parse_none(mavg_beta, 0.0)
-		self.register_buffer("cache_index", torch.zeros(vsize, dtype=torch.long))
-		self.register_buffer("cache_p", torch.zeros(vsize, isize))
+		self.register_buffer("cache_index", torch.zeros(vsize, dtype=torch.long), persistent=False)
+		self.register_buffer("cache_p", torch.zeros(vsize, isize), persistent=False)
 		self.cache_update_steps = 0
 		self.warm_cache_steps = parse_none(warm_cache_steps, 0)
 		self.warm_mvavg_steps = parse_none(warm_mvavg_steps, 0)

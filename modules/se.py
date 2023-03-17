@@ -20,7 +20,7 @@ class Squeezer(nn.Module):
 		_ = 1.0 / sqrt(float(k))
 		self.weight = nn.Parameter(torch.Tensor(isize // k, k, 1).uniform_(-_, _))
 		self.drop = Dropout(dropout, inplace=False) if dropout > 0.0 else None
-		self.register_buffer("cache", None)
+		self.register_buffer("cache", None, persistent=False)
 
 	def forward(self, x, **kwargs):
 
@@ -49,7 +49,7 @@ class Expander(nn.Module):
 		_ = 1.0 / sqrt(float(k))
 		self.weight = nn.Parameter(torch.Tensor(isize, k).uniform_(-_, _))
 		self.drop = Dropout(dropout, inplace=False) if dropout > 0.0 else None
-		self.register_buffer("cache", None)
+		self.register_buffer("cache", None, persistent=False)
 
 	def forward(self, x, **kwargs):
 
@@ -113,8 +113,8 @@ class ResCrossAttn(ResCrossAttnBase):
 		self.qs_net = Squeezer(isize, k_se, dropout=dropout)
 		self.ks_net = Squeezer(_k_isize, k_se, dropout=dropout)
 		self.e_net = Expander(_s_isize, k_se, dropout=dropout)
-		self.register_buffer("s_iK", None)
-		self.register_buffer("iK", None)
+		self.register_buffer("s_iK", None, persistent=False)
+		self.register_buffer("iK", None, persistent=False)
 
 	def forward(self, iQ, iK, *inputs, **kwargs):
 

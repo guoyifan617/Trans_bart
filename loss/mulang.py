@@ -10,7 +10,7 @@ class MultiLabelSmoothingLoss(MultiLabelSmoothingLossBase):
 	def __init__(self, *inputs, **kwargs):
 
 		super(MultiLabelSmoothingLoss, self).__init__(*inputs, **kwargs)
-		self.register_buffer("weight", self.weight.squeeze(1))
+		self.register_buffer("weight", self.weight.squeeze(1), persistent=False)
 
 	def forward(self, input, target, tinput, mask=None, **kwargs):
 

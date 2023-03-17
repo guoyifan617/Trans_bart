@@ -71,8 +71,8 @@ class SelfAttn(SelfAttnBase):
 		if self.rel_pemb is not None:
 			self.k_rel_pos, self.xseql = base_module.k_rel_pos, base_module.xseql
 			self.ref_rel_posm = base_module.ref_rel_posm
-			self.register_buffer("rel_pos", base_module.rel_pos)
-			self.register_buffer("rel_pos_cache", base_module.rel_pos_cache)
+			self.register_buffer("rel_pos", base_module.rel_pos, persistent=False)
+			self.register_buffer("rel_pos_cache", base_module.rel_pos_cache, persistent=False)
 
 class CrossAttn(CrossAttnBase):
 

@@ -18,11 +18,11 @@ class Spreader(SpreaderBase):
 		super(Spreader, self).__init__(isize, hsize=_hsize, start=start, end=end, factor=factor, dropout=dropout, norm_residual=norm_residual, **kwargs)
 
 		self.xseql = xseql
-		self.register_buffer("decay_head", torch.stack((self.decay.new_zeros(_hsize), self.decay.new_ones(_hsize),), dim=0))
+		self.register_buffer("decay_head", torch.stack((self.decay.new_zeros(_hsize), self.decay.new_ones(_hsize),), dim=0), persistent=False)
 		_rpm = torch.arange(0, xseql, dtype=torch.long)
-		self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1) + 1).triu())
+		self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1) + 1).triu(), persistent=False)
 		self.ref_rel_posm = None
-		self.register_buffer("rel_pos_cache", None)
+		self.register_buffer("rel_pos_cache", None, persistent=False)
 
 	def forward(self, x, states=None, **kwargs):
 
@@ -81,9 +81,9 @@ class BiSpreader(Spreader):
 
 		super(BiSpreader, self).__init__(isize, hsize=_hsize, start=start, end=end, factor=factor, dropout=dropout, norm_residual=norm_residual, **kwargs)
 
-		self.register_buffer("decay_head", self.decay.new_ones(1, _hsize))
+		self.register_buffer("decay_head", self.decay.new_ones(1, _hsize), persistent=False)
 		_rpm = torch.arange(0, xseql, dtype=torch.long)
-		self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1)).abs())
+		self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1)).abs(), persistent=False)
 
 	def forward(self, x, mask=None, **kwargs):
 

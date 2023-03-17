@@ -27,8 +27,8 @@ class Spreader(nn.Module):
 		self.normer_csum = nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters)
 		self.drop = Dropout(dropout, inplace=True) if dropout > 0.0 else None
 
-		self.register_buffer("decay", build_spread_vector(start, end, _hsize, f=factor))
-		self.register_buffer("decay_beta", 1.0 - self.decay)
+		self.register_buffer("decay", build_spread_vector(start, end, _hsize, f=factor), persistent=False)
+		self.register_buffer("decay_beta", 1.0 - self.decay, persistent=False)
 
 		self.norm_residual = norm_residual
 

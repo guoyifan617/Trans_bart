@@ -18,13 +18,13 @@ class Spreader(SpreaderBase):
 		super(Spreader, self).__init__(isize, hsize=_hsize, start=start, end=end, factor=factor, dropout=dropout, norm_residual=norm_residual, **kwargs)
 
 		self.xseql = xseql
-		self.register_buffer("decay_emb", torch.cat((self.decay.new_zeros(1, _hsize), self.decay.new_ones(1, _hsize), self.decay.unsqueeze(0).expand(xseql, _hsize).cumprod(dim=0),), dim=0))
+		self.register_buffer("decay_emb", torch.cat((self.decay.new_zeros(1, _hsize), self.decay.new_ones(1, _hsize), self.decay.unsqueeze(0).expand(xseql, _hsize).cumprod(dim=0),), dim=0), persistent=False)
 		_rpm = torch.arange(0, xseql, dtype=torch.long)
-		self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1) + 1).triu())
+		self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1) + 1).triu(), persistent=False)
 		self.ref_rel_posm = None
-		self.register_buffer("rel_pos_cache", None)
+		self.register_buffer("rel_pos_cache", None, persistent=False)
 		self.ref_attn_matm = None
-		self.register_buffer("attn_mat_cache", None)
+		self.register_buffer("attn_mat_cache", None, persistent=False)
 
 	def forward(self, x, states=None, **kwargs):
 
@@ -101,9 +101,9 @@ class BiSpreader(Spreader):
 
 		super(BiSpreader, self).__init__(isize, hsize=_hsize, start=start, end=end, factor=factor, dropout=dropout, norm_residual=norm_residual, **kwargs)
 
-		self.register_buffer("decay_emb", torch.cat((self.decay.new_ones(1, _hsize), self.decay.unsqueeze(0).expand(xseql, _hsize).cumprod(dim=0),), dim=0))
+		self.register_buffer("decay_emb", torch.cat((self.decay.new_ones(1, _hsize), self.decay.unsqueeze(0).expand(xseql, _hsize).cumprod(dim=0),), dim=0), persistent=False)
 		_rpm = torch.arange(0, xseql, dtype=torch.long)
-		self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1)).abs())
+		self.register_buffer("rel_pos", (_rpm.unsqueeze(0) - _rpm.unsqueeze(1)).abs(), persistent=False)
 
 	def forward(self, x, mask=None, **kwargs):
 

@@ -34,7 +34,7 @@ class SigmoidITensor(nn.Module):
 		self.wstep = float(warm_steps) / 5.0
 		self.tarv = target_value
 		self.xseql = xseql
-		self.register_buffer("w", ((((torch.arange(1, xseql + 1, dtype=torch.float, requires_grad=False) / self.wstep)).sigmoid() * 2 - 1) * self.tarv).unsqueeze(0).unsqueeze(-1))
+		self.register_buffer("w", ((((torch.arange(1, xseql + 1, dtype=torch.float, requires_grad=False) / self.wstep)).sigmoid() * 2 - 1) * self.tarv).unsqueeze(0).unsqueeze(-1), persistent=False)
 
 	def forward(self, x, expand=True, **kwargs):
 

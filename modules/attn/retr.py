@@ -19,10 +19,10 @@ class SelfAttn(SelfAttnBase):
 		self.smoothing, self.use_cumsum = smoothing if (smoothing is not None) and (smoothing > 0.0) and (smoothing < 1.0) else None, use_cumsum
 		if self.use_cumsum and (self.smoothing is not None):
 			self.num_pos = xseql
-			self.register_buffer("csum", torch.Tensor(xseql, 1))
+			self.register_buffer("csum", torch.Tensor(xseql, 1), persistent=False)
 			self.reset_parameters()
 		else:
-			self.register_buffer("csum", None)
+			self.register_buffer("csum", None, persistent=False)
 
 	def forward(self, iQ, mask=None, states=None, **kwargs):
 

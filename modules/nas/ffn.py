@@ -164,8 +164,8 @@ class TaughtCrossAttn(nn.Module):
 
 		self.outer = Linear(self.hsize, osize, bias=enable_bias)
 
-		self.register_buffer("real_iV", None)
-		self.register_buffer("iK", None)
+		self.register_buffer("real_iV", None, persistent=False)
+		self.register_buffer("iK", None, persistent=False)
 
 	# context is not used, keep for ResTaughtCrossAttn wrapper
 	def forward(self, context, iK, scores, **kwargs):

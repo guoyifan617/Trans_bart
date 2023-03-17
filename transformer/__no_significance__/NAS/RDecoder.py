@@ -38,7 +38,7 @@ class DecoderLayer(nn.Module):
 
 		self.ctr = designer
 
-		self.register_buffer("q_mask_full", torch.as_tensor([1 if i == 0 else 0 for i in range(self.max_prev_nodes)], dtype=mask_tensor_type, device=self.node_p.device).unsqueeze(-1).expand(-1, 5))
+		self.register_buffer("q_mask_full", torch.as_tensor([1 if i == 0 else 0 for i in range(self.max_prev_nodes)], dtype=mask_tensor_type, device=self.node_p.device).unsqueeze(-1).expand(-1, 5), persistent=False)
 
 		self.path_normer = GumbleNormDrop()
 

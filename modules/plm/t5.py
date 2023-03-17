@@ -77,13 +77,13 @@ class CrossAttn(CrossAttnBase):
 
 		if (k_rel_pos > 0) and (max_bucket_distance > 0):
 			self.rel_shift = k_rel_pos
-			self.register_buffer("rel_pos_map", build_rel_pos_bucket_map(k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=False))
-			self.register_buffer("rel_pos", build_rel_pos_bucket(xseql, k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=False, dis_map=self.rel_pos_map))
+			self.register_buffer("rel_pos_map", build_rel_pos_bucket_map(k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=False), persistent=False)
+			self.register_buffer("rel_pos", build_rel_pos_bucket(xseql, k_rel_pos=k_rel_pos, max_len=max_bucket_distance, uni_direction=False, dis_map=self.rel_pos_map), persistent=False)
 			self.rel_pemb = nn.Embedding(k_rel_pos + k_rel_pos + 1, self.num_head)
 			self.clamp_max, self.clamp_min = max_bucket_distance, False
 			self.xseql = xseql
 			self.ref_rel_posm = None
-			self.register_buffer("rel_pos_cache", None)
+			self.register_buffer("rel_pos_cache", None, persistent=False)
 		else:
 			self.rel_pemb = None
 		self.ref_rel_emb = None

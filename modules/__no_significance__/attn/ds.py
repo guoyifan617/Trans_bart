@@ -17,8 +17,8 @@ class SelfAttn(SelfAttnBase):
 		self.hsize *= 2
 		self.outer = Linear(self.hsize, osize, bias=(False if self.outer.bias is None else True))
 
-		self.register_buffer("l_mask", torch.ones(xseql, xseql, dtype=mask_tensor_type).tril(-1))
-		self.register_buffer("r_mask", torch.ones(xseql, xseql, dtype=mask_tensor_type).triu(1))
+		self.register_buffer("l_mask", torch.ones(xseql, xseql, dtype=mask_tensor_type).tril(-1), persistent=False)
+		self.register_buffer("r_mask", torch.ones(xseql, xseql, dtype=mask_tensor_type).triu(1), persistent=False)
 
 		self.xseql = xseql
 

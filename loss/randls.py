@@ -42,11 +42,11 @@ class RandLabelSmoothingLoss(_Loss):
 
 		smoothing_value = label_smoothing / (nclass - 1 - len(fbil))
 
-		self.register_buffer("fbil", torch.as_tensor(sorted(fbil), dtype=torch.long) if fbil else None)
+		self.register_buffer("fbil", torch.as_tensor(sorted(fbil), dtype=torch.long) if fbil else None, persistent=False)
 		weight = torch.full((nclass,), smoothing_value)
 		if self.fbil is not None:
 			weight.index_fill_(0, self.fbil, 0.0)
-		self.register_buffer("weight", weight.unsqueeze(0))
+		self.register_buffer("weight", weight.unsqueeze(0), persistent=False)
 		self.conf = 1.0 - label_smoothing
 		self.uniform_upper = 2.0 * smoothing_value
 

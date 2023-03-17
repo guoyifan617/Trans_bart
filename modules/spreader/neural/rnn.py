@@ -22,7 +22,7 @@ class Spreader(SpreaderBase):
 		super(Spreader, self).__init__(isize, hsize=_hsize, start=start, end=end, factor=factor, dropout=dropout, norm_residual=norm_residual, **kwargs)
 
 		self.decay = nn.Parameter(arcsigmoid(build_spread_vector(start, end, _hsize, f=factor)))
-		self.register_buffer("decay_beta", None)
+		self.register_buffer("decay_beta", None, persistent=False)
 		self.decay_init = tuple(self.decay.tolist())
 
 	def forward(self, x, states=None, **kwargs):

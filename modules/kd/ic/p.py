@@ -22,8 +22,8 @@ class TopCache(nn.Module):
 		self.num_topk, self.min_gold_p, self.mavg_beta = num_topk, min_gold_p, mavg_beta
 		self.T = parse_none(T, 1.0)
 		_init_topk, _init_p = init_cache(vsize, (num_topk + num_topk) if num_cache_topk is None else num_cache_topk, p=((min_gold_p + 0.5) if min_gold_p < 0.5 else min_gold_p) if p is None else p, num_topk=num_topk)
-		self.register_buffer("cache_index", _init_topk)
-		self.register_buffer("cache_p", _init_p)
+		self.register_buffer("cache_index", _init_topk, persistent=False)
+		self.register_buffer("cache_p", _init_p, persistent=False)
 		self.cache_update_steps = 0
 		self.warm_cache_steps = parse_none(warm_cache_steps, 0)
 		self.warm_mvavg_steps = parse_none(warm_mvavg_steps, 0)
@@ -100,7 +100,7 @@ class TopCache(nn.Module):
 
 		if self.T != T:
 			with torch_no_grad():
-				self.register_buffer("cache_p", arcsoftmax(self.cache_p).mul_(self.T / T).softmax(-1))
+				self.register_buffer("cache_p", arcsoftmax(self.cache_p).mul_(self.T / T).softmax(-1), persistent=False)
 			self.T = T
 
 def shift_caches(topkm_l):

@@ -25,7 +25,7 @@ class AverageAttn(nn.Module):
 		_hsize = parse_none(hsize, isize)
 
 		self.num_pos = num_pos
-		self.register_buffer("w", torch.Tensor(num_pos, 1))
+		self.register_buffer("w", torch.Tensor(num_pos, 1), persistent=False)
 
 		if enable_ffn:
 			self.ffn = nn.Sequential(Linear(isize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Dropout(dropout, inplace=inplace_after_Custom_Act), Linear(_hsize, isize, bias=enable_proj_bias), Dropout(dropout, inplace=True)) if dropout > 0.0 else nn.Sequential(Linear(isize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize, bias=enable_proj_bias))
