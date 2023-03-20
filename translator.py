@@ -16,7 +16,7 @@ from utils.torch.comp import torch_autocast, torch_compile, torch_inference_mode
 from cnfg.ihyp import *
 from cnfg.vocab.base import eos_id
 
-def data_loader(sentences_iter, vcbi, minbsize=1, bsize=768, maxpad=16, maxpart=4, maxtoken=3920):
+def data_loader(sentences_iter, vcbi, minbsize=1, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu):
 	for i_d in batch_padder(sentences_iter, vcbi, bsize, maxpad, maxpart, maxtoken, minbsize):
 		yield torch.as_tensor(i_d, dtype=torch.long)
 
@@ -33,7 +33,8 @@ def sorti(lin):
 		if ls:
 			data = dict_insert_set(data, ls, len(ls.split()))
 
-	return list(iter_dict_sort(data, free=True))
+	for _ in iter_dict_sort(data, free=True):
+		yield from _
 
 def restore(src, tsrc, trs):
 
@@ -48,7 +49,7 @@ def restore(src, tsrc, trs):
 
 class TranslatorCore:
 
-	def __init__(self, modelfs, fvocab_i, fvocab_t, cnfg, minbsize=1, expand_for_mulgpu=True, bsize=64, maxpad=16, maxpart=4, maxtoken=1536, minfreq=False, vsize=False, **kwargs):
+	def __init__(self, modelfs, fvocab_i, fvocab_t, cnfg, minbsize=1, expand_for_mulgpu=True, bsize=max_sentences_gpu, maxpad=max_pad_tokens_sentence, maxpart=normal_tokens_vs_pad_tokens, maxtoken=max_tokens_gpu, minfreq=False, vsize=False, **kwargs):
 
 		vcbi, nwordi = ldvocab(fvocab_i, minf=minfreq, omit_vsize=vsize, vanilla=False)
 		vcbt, nwordt = ldvocab(fvocab_t, minf=minfreq, omit_vsize=vsize, vanilla=False)
@@ -158,7 +159,7 @@ class Translator:
 			for _tmpu in _paras:
 				_tmp.extend(clean_list([clean_str(_tmps) for _tmps in self.sent_split(_tmpu)]))
 				_tmp.append("\n")
-		_tmp_o = _tmpi = sorti(_tmp)
+		_tmp_o = _tmpi = list(sorti(_tmp))
 
 		for pu in self.flow:
 			_tmp_o = pu(_tmp_o)
