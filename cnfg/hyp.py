@@ -63,7 +63,7 @@ performance_over_reproduction = True
 use_inference_mode = True
 
 # use torch.compile if supported
-use_torch_compile = True
+use_torch_compile = False
 
 # enable torch checks, only support anomaly detection for the autograd engine currently.
 enable_torch_check = False

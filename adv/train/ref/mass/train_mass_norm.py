@@ -275,9 +275,6 @@ if multi_gpu:
 	mymodel = DataParallelMT(mymodel, device_ids=cuda_devices, output_device=cuda_device.index, host_replicate=True, gather_output=False)
 	lossf = DataParallelCriterion(lossf, device_ids=cuda_devices, output_device=cuda_device.index, replicate_once=True)
 
-mymodel = torch_compile(mymodel)
-lossf = torch_compile(lossf)
-
 mask_ratio, random_ratio, len_ratio = cnfg.mask_ratio, cnfg.random_ratio, cnfg.len_ratio
 mask_ratio, random_ratio = update_p(mask_ratio, random_ratio)
 

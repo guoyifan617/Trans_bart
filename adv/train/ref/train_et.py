@@ -260,10 +260,10 @@ if multi_gpu:
 	mymodel = DataParallelMT(mymodel, device_ids=cuda_devices, output_device=cuda_device.index, host_replicate=True, gather_output=False)
 	lossf = DataParallelCriterion(lossf, device_ids=cuda_devices, output_device=cuda_device.index, replicate_once=True)
 
+lrsch = LRScheduler(optimizer, cnfg.isize, cnfg.warm_step)
+
 mymodel = torch_compile(mymodel)
 lossf = torch_compile(lossf)
-
-lrsch = LRScheduler(optimizer, cnfg.isize, cnfg.warm_step)
 
 state_holder = None if statesf is None and cnt_states is None else Holder(**{"optm": optimizer, "lrsch": lrsch, "pyrand": PyRandomState(), "thrand": THRandomState(use_cuda=use_cuda)})
 
