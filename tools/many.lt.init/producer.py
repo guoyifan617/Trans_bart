@@ -199,8 +199,8 @@ optimizer.zero_grad(set_to_none=optm_step_zero_grad_set_none)
 
 lrsch = LRScheduler(optimizer, cnfg.isize, cnfg.warm_step, scale=cnfg.lr_scale)
 
-mymodel = torch_compile(mymodel)
-lossf = torch_compile(lossf)
+mymodel = torch_compile(mymodel, *torch_compile_args, **torch_compile_kwargs)
+lossf = torch_compile(lossf, *torch_compile_args, **torch_compile_kwargs)
 
 perf = {}
 

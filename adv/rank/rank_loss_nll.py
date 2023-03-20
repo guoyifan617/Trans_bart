@@ -69,8 +69,8 @@ if cuda_device:
 		mymodel = DataParallelMT(mymodel, device_ids=cuda_devices, output_device=cuda_device.index, host_replicate=True, gather_output=False)
 		lossf = DataParallelCriterion(lossf, device_ids=cuda_devices, output_device=cuda_device.index, replicate_once=True)
 
-mymodel = torch_compile(mymodel)
-lossf = torch_compile(lossf)
+mymodel = torch_compile(mymodel, *torch_compile_args, **torch_compile_kwargs)
+lossf = torch_compile(lossf, *torch_compile_args, **torch_compile_kwargs)
 
 ens = "\n".encode("utf-8")
 

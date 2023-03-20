@@ -83,7 +83,7 @@ if cuda_device:
 	if multi_gpu:
 		mymodel = DataParallelMT(mymodel, device_ids=cuda_devices, output_device=cuda_device.index, host_replicate=True, gather_output=False)
 
-mymodel = torch_compile(mymodel)
+mymodel = torch_compile(mymodel, *torch_compile_args, **torch_compile_kwargs)
 
 ens = "\n".encode("utf-8")
 with sys_open(sys.argv[1], "wb") as f, h5File(cnfg.test_data, "r") as td, torch_inference_mode():

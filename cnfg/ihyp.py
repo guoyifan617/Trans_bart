@@ -42,6 +42,10 @@ relative_position_max_bucket_distance_encoder, relative_position_max_bucket_dist
 disable_std_pemb_encoder, disable_std_pemb_decoder = parse_double_value_tuple(disable_std_pemb)
 relpos_reduction_with_zeros = True
 
+# torch_compile args
+torch_compile_args = []
+torch_compile_kwargs = {"fullgraph": False, "dynamic": False}
+
 # hyper-parameters
 inf_default = inf
 

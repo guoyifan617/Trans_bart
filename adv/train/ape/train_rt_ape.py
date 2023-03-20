@@ -285,8 +285,8 @@ src_tgt_m, tgt_src_m = DataParallelMT(src_tgt_m, device_ids=cuda_devices, output
 
 lrsch = LRScheduler(optimizer, cnfg.isize, cnfg.warm_step, scale=cnfg.lr_scale)
 
-mymodel = torch_compile(mymodel)
-lossf = torch_compile(lossf)
+mymodel = torch_compile(mymodel, *torch_compile_args, **torch_compile_kwargs)
+lossf = torch_compile(lossf, *torch_compile_args, **torch_compile_kwargs)
 
 state_holder = None if statesf is None and cnt_states is None else Holder(**{"optm": optimizer, "lrsch": lrsch, "pyrand": PyRandomState(), "thrand": THRandomState(use_cuda=use_cuda)})
 

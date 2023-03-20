@@ -14,8 +14,15 @@ try:
 	torch.backends.cuda.matmul.allow_tf32 = allow_tf32
 	torch.backends.cudnn.allow_tf32 = allow_tf32
 	torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = allow_fp16_reduction
+	torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction = allow_fp16_reduction
 except Exception as e:
 	print(e)
+
+if hasattr(torch.autograd, "set_multithreading_enabled"):
+	try:
+		torch.autograd.set_multithreading_enabled(True)
+	except Exception as e:
+		print(e)
 
 # Make cudnn methods deterministic according to: https://pytorch.org/docs/stable/notes/randomness.html#cudnn
 _config_cudnn_deterministic_variable = True

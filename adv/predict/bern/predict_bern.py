@@ -64,7 +64,7 @@ if cuda_device:
 	if multi_gpu:
 		mymodel = DataParallelMT(mymodel, device_ids=cuda_devices, output_device=cuda_device.index, host_replicate=True, gather_output=False)
 
-mymodel = torch_compile(mymodel)
+mymodel = torch_compile(mymodel, *torch_compile_args, **torch_compile_kwargs)
 
 beam_size = cnfg.beam_size
 length_penalty = cnfg.length_penalty
