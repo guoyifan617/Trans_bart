@@ -18,7 +18,7 @@ def clean_sp_char(istr):
 		elif not ((num < 32 and num != 9) or (num > 126 and num < 161) or (num > 8202 and num < 8206) or (num > 57343 and num < 63744) or (num > 64975 and num < 65008) or (num > 65519)):
 			rs.append(c)
 
-	return ''.join(rs)
+	return "".join(rs)
 
 def norm_u8_str(x, uni_normer=uni_normer):
 

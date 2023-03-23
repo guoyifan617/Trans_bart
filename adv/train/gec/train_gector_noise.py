@@ -293,7 +293,7 @@ else:
 			save_states(state_holder.state_dict(update=False, **{"remain_steps": remain_steps, "checkpoint_id": cur_checkid}), statesf, print_func=logger.info)
 		logger.info("New best model saved")
 
-'''if cnfg.dss_ws is not None and cnfg.dss_ws > 0.0 and cnfg.dss_ws < 1.0:
+"""if cnfg.dss_ws is not None and cnfg.dss_ws > 0.0 and cnfg.dss_ws < 1.0:
 	dss_ws = int(cnfg.dss_ws * ntrain)
 	_Dws = {}
 	_prev_Dws = {}
@@ -302,7 +302,7 @@ else:
 		dss_rm = int(cnfg.dss_rm * ntrain * (1.0 - cnfg.dss_ws))
 	else:
 		dss_rm = 0
-else:'''
+else:"""
 dss_ws = 0
 dss_rm = 0
 _Dws = None

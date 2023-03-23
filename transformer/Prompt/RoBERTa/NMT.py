@@ -12,6 +12,5 @@ class NMT(NMTBase):
 		_mask = inpute.eq(pad_id).unsqueeze(1) if mask is None else mask
 		out = self.enc(inpute, token_types=token_types, mask=_mask)
 		_bsize, _, _hsize = out.size()
-		_pm = inpute.eq(mask_id).unsqueeze(-1).expand(-1, -1, _hsize)
 
-		return self.dec(out[_pm].view(_bsize, _hsize), word_prediction=word_prediction)
+		return self.dec(out[inpute.eq(mask_id)].view(_bsize, _hsize), word_prediction=word_prediction)
