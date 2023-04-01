@@ -1,5 +1,6 @@
 #encoding: utf-8
 
+import torch
 from math import ceil
 from random import random
 from torch import nn
