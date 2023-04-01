@@ -47,3 +47,7 @@ def thread_keeper(conditions, func, sleep_secs, *args, **kwargs):
 		_condition = _conditions[0]
 		while _condition():
 			_t = thread_keeper_core(_t, sleep_secs, *args, **kwargs)
+
+def start_thread_with_keeper(conditions, func, sleep_secs, *args, **kwargs):
+
+	return start_thread(target=thread_keeper, args=[conditions, func, sleep_secs, *args], kwargs=kwargs)

@@ -15,14 +15,22 @@ class TokenDropout(Dropout):
 
 		super(TokenDropout, self).__init__(p=p, inplace=inplace)
 		self.keep_magnitude = (1.0 / (1.0 - self.p)) if keep_magnitude else False
+		self.register_buffer("pcache", torch.full((1,), self.p), persistent=False)
 
 	def forward(self, inpute, **kwargs):
 
 		if self.training:
-			mask = inpute.new_full(inpute.size()[:-1], self.p, requires_grad=False).bernoulli().to(mask_tensor_type, non_blocking=True).unsqueeze(-1)
-			out = inpute.masked_fill_(mask, 0.0) if self.inplace else inpute.masked_fill(mask, 0.0)
-			if self.keep_magnitude:
-				out = out * self.keep_magnitude
+			_ = inpute.dim() - 1
+			_p = self.pcache.view([1 for i in range(_)]) if _ > 1 else self.pcache
+			mask = _p.expand(inpute.size()[:-1]).bernoulli().to(mask_tensor_type, non_blocking=True).unsqueeze(-1)
+			if self.inplace:
+				out = inpute.masked_fill_(mask, 0.0)
+				if self.keep_magnitude:
+					out.mul_(self.keep_magnitude)
+			else:
+				out = inpute.masked_fill(mask, 0.0)
+				if self.keep_magnitude:
+					out = out * self.keep_magnitude
 
 			return out
 		else:
@@ -35,15 +43,24 @@ class PartTokenDropout(Dropout):
 		super(PartTokenDropout, self).__init__(p=p, inplace=inplace)
 		self.p1 = min(float(p1), self.p)
 		self.keep_magnitude, self.p2 = (1.0 / (1.0 - self.p)) if keep_magnitude else False, self.p / self.p1
+		self.register_buffer("pcache", torch.full((1,), self.p1), persistent=False)
 
 	def forward(self, inpute, **kwargs):
 
 		if self.training:
-			mask = inpute.new_full(inpute.size()[:-1], self.p1, requires_grad=False).bernoulli().to(mask_tensor_type, non_blocking=True).unsqueeze(-1)
-			mask = inpute.new_zeros(inpute.size(), requires_grad=False).masked_fill_(mask, self.p2).bernoulli().to(mask_tensor_type, non_blocking=True)
-			out = inpute.masked_fill_(mask, 0.0) if self.inplace else inpute.masked_fill(mask, 0.0)
-			if self.keep_magnitude:
-				out = out * self.keep_magnitude
+			_ = inpute.dim() - 1
+			_p1 = self.pcache.view([1 for i in range(_)]) if _ > 1 else self.pcache
+			_isize = inpute.size()
+			mask = _p1.expand(_isize[:-1]).bernoulli().to(mask_tensor_type, non_blocking=True).unsqueeze(-1)
+			mask = inpute.new_zeros(_isize, requires_grad=False).masked_fill_(mask, self.p2).bernoulli().to(mask_tensor_type, non_blocking=True)
+			if self.inplace:
+				out = inpute.masked_fill_(mask, 0.0)
+				if self.keep_magnitude:
+					out.mul_(self.keep_magnitude)
+			else:
+				out = inpute.masked_fill(mask, 0.0)
+				if self.keep_magnitude:
+					out = out * self.keep_magnitude
 
 			return out
 		else:
@@ -75,6 +92,7 @@ class NGramDropout(Dropout):
 		self.keep_magnitude = (1.0 / (1.0 - self.p)) if keep_magnitude else False
 		self.sample_p = norm([float(pu) for pu in sample_p])
 		self.max_n = len(sample_p)
+		self.register_buffer("pcache", torch.full((1,), self.p), persistent=False)
 
 	def forward(self, inpute, **kwargs):
 
@@ -82,18 +100,25 @@ class NGramDropout(Dropout):
 			seql = inpute.size(self.seqdim)
 			ngram = sample(self.sample_p if seql > self.max_n else norm(self.sample_p[:seql - 1])) + 1
 			_msize = list(inpute.size())[:-1]
+			_ = len(_msize)
+			_p = self.pcache.view([1 for i in range(_)]) if _ > 1 else self.pcache
 			if ngram > 1:
 				nblock = ceil(float(seql) / float(ngram))
 				_msize[self.seqdim] = nblock
-				mask = inpute.new_full(_msize, self.p, requires_grad=False).bernoulli().to(mask_tensor_type, non_blocking=True).repeat([ngram if i == self.seqdim else 1 for i in range(len(_msize))])
+				mask = _p.expand(_msize).bernoulli().to(mask_tensor_type, non_blocking=True).repeat([ngram if i == self.seqdim else 1 for i in range(len(_msize))])
 				if ngram * nblock != seql:
 					mask = mask.narrow(self.seqdim, 0, seql)
 				mask = mask.unsqueeze(-1)
 			else:
-				mask = inpute.new_full(_msize, self.p, requires_grad=False).bernoulli().to(mask_tensor_type, non_blocking=True).unsqueeze(-1)
-			out = inpute.masked_fill_(mask, 0.0) if self.inplace else inpute.masked_fill(mask, 0.0)
-			if self.keep_magnitude:
-				out = out * self.keep_magnitude
+				mask = _p.expand(_msize).bernoulli().to(mask_tensor_type, non_blocking=True).unsqueeze(-1)
+			if self.inplace:
+				out = inpute.masked_fill_(mask, 0.0)
+				if self.keep_magnitude:
+					out.mul_(self.keep_magnitude)
+			else:
+				out = inpute.masked_fill(mask, 0.0)
+				if self.keep_magnitude:
+					out = out * self.keep_magnitude
 
 			return out
 		else:
@@ -106,11 +131,14 @@ class MagOneDropout(Dropout):
 
 		super(MagOneDropout, self).__init__(p=p, inplace=inplace)
 		self.dim, self.eps = dim, eps
+		self.register_buffer("pcache", torch.full((1,), self.p), persistent=False)
 
 	def forward(self, inpute, **kwargs):
 
 		if self.training:
-			mask = inpute.new_full(inpute.size(), self.p, requires_grad=False).bernoulli().to(mask_tensor_type, non_blocking=True)
+			_ = inpute.dim()
+			_p = self.pcache.view([1 for i in range(_)]) if _ > 1 else self.pcache
+			mask = _p.expand_as(inpute).bernoulli().to(mask_tensor_type, non_blocking=True)
 			out = inpute.masked_fill_(mask, 0.0) if self.inplace else inpute.masked_fill(mask, 0.0)
 			# without detaching seems wrong, but with detaching leads to training issues.
 			_sum = out.sum(dim=self.dim, keepdim=True).add_(self.eps)#.detach()
@@ -126,11 +154,14 @@ class InfDropout(Dropout):
 
 		super(InfDropout, self).__init__(p=p, inplace=inplace)
 		self.mv = float(mask_value)#, self.keep_magnitude, 1.0 / (1.0 - self.p)
+		self.register_buffer("pcache", torch.full((1,), self.p), persistent=False)
 
 	def forward(self, inpute, **kwargs):
 
 		if self.training:
-			mask = inpute.new_full(inpute.size(), self.p, requires_grad=False).bernoulli().to(mask_tensor_type, non_blocking=True)
+			_ = inpute.dim()
+			_p = self.pcache.view([1 for i in range(_)]) if _ > 1 else self.pcache
+			mask = _p.expand_as(inpute).bernoulli().to(mask_tensor_type, non_blocking=True)
 
 			return inpute.masked_fill_(mask, self.mv) if self.inplace else inpute.masked_fill(mask, self.mv)#* self.keep_magnitude
 		else:
