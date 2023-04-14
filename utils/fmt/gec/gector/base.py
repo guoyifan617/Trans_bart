@@ -1,6 +1,6 @@
 #encoding: utf-8
 
-from utils.fmt.diff import seq_diff_reorder_insert as diff_func
+from utils.fmt.diff import seq_diff_reorder_insert as seq_diff
 
 from cnfg.vocab.gector.edit import blank_id, delete_id, insert_id, keep_id, mask_id as edit_mask_id
 from cnfg.vocab.gector.op import append_id, pad_id as op_pad_id
@@ -31,14 +31,11 @@ def apply_op_ids(i, e, t, mask_id=mask_id, append_id=append_id, keep_id=keep_id,
 
 def generate_iter_data(src, tgt, mask_id=mask_id, edit_mask_id=edit_mask_id, blank_id=blank_id, delete_id=delete_id, insert_id=insert_id, keep_id=keep_id, append_id=append_id, eos_id=eos_id, op_pad_id=op_pad_id):
 
-	_diff = diff_func(src, tgt)
-	_src, _tgt, _il = [], [], []
-	_prev_op = None
-	_iu = []
-	for _op, _token in _diff:
+	_src, _tgt, _il, _iu, _prev_op = [], [], [], [], None
+	for _op, _token in seq_diff(src, tgt):
 		if _op == "i":
 			_iu.append(_token)
-			if _prev_op == "k":
+			if _prev_op == "e":
 				_tgt[-1] = append_id
 		else:
 			if _iu:
