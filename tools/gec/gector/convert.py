@@ -12,7 +12,7 @@ def handle(srcf, tgtf, rssf, rsef, rstf):
 		for s, t in zip(frds, frdt):
 			_s, _t = s.strip(), t.strip()
 			if _s and _t:
-				_s, _t = iter_to_int(_s.decode("utf-8").split()), iter_to_int(_t.decode("utf-8").split())
+				_s, _t = tuple(iter_to_int(_s.decode("utf-8").split())), tuple(iter_to_int(_t.decode("utf-8").split()))
 				for _src, _edit, _tgt in generate_iter_data(_s, _t):
 					fwrts.write(" ".join(iter_to_str(_src)).encode("utf-8"))
 					fwrts.write(ens)
