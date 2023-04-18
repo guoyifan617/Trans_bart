@@ -9,8 +9,8 @@ def sort_list_reader(x, *args, clear_input=True, **kwargs):
 
 	_d = {}
 	for _ in x:
+		_ = tuple(_)
 		_k = len(_[0])
-		#_ = tuple(_)
 		if _k in _d:
 			if _ not in _d[_k]:
 				_d[_k].add(_)
@@ -35,8 +35,8 @@ class sort_lines_reader:
 		_data_iter = x if _line_read is None else read_lines(x, _line_read)
 		_d = {}
 		for _ in _data_iter:
+			_ = tuple(_)
 			_k = len(_[0])
-			#_ = tuple(_)
 			if _k in _d:
 				if _ not in _d[_k]:
 					_d[_k].add(_)
