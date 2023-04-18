@@ -13,7 +13,7 @@ def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, ge
 	rst = []
 	nd = maxlen = mlen_i = mlen_t = 0
 	for i_d, td in zip(finput if file_reader is None else file_reader(finput), ftarget if file_reader is None else file_reader(ftarget)):
-		i_d, td = i_d, td
+		i_d, td = list(i_d), list(td)
 		lid = len(i_d)
 		ltd = len(td)
 		lgth = lid + ltd
