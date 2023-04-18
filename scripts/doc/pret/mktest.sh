@@ -21,6 +21,8 @@ export sort_decode=true
 export debpe=true
 export spm_bpe=false
 
+export faext=".xz"
+
 export tgtd=$cachedir/$dataid
 
 export bpef=out.bpe
@@ -36,8 +38,8 @@ fi
 mkdir -p $rsd
 
 if $sort_decode; then
-	export srt_input_f=$tgtd/$srctf.srt
-	export srt_input_fp=$tgtd/$srcpf.srt
+	export srt_input_f=$tgtd/$srctf.srt$faext
+	export srt_input_fp=$tgtd/$srcpf.srt$faext
 	python tools/doc/sort.py $srcd/$srctf $srcd/$srcpf $srt_input_f $srt_input_fp 1048576
 else
 	export $srt_input_f=$srcd/$srctf

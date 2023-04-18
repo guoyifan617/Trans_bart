@@ -22,12 +22,12 @@ def share_rel_pos_cache(netin):
 							base_nets[_key] = layer
 						if _key_rel_pos_map is not None:
 							if _key in rel_map_cache_d:
-								layer.rel_pos_map = rel_map_cache_d[_key]
+								layer.register_buffer("rel_pos_map", rel_map_cache_d[_key], persistent=False)
 							else:
 								rel_map_cache_d[_key] = layer.rel_pos_map
 						_key = (layer.clamp_min, layer.clamp_max, layer.rel_shift, _key_rel_pos_map, layer.rel_pos.size(),)
 						if _key in rel_cache_d:
-							layer.rel_pos = rel_cache_d[_key]
+							layer.register_buffer("rel_pos", rel_cache_d[_key], persistent=False)
 						else:
 							rel_cache_d[_key] = layer.rel_pos
 

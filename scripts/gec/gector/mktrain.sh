@@ -22,29 +22,47 @@ export ngpu=1
 export do_map=true
 export do_sort=true
 
+export faext=".xz"
+
 export wkd=$cachedir/$dataid
 
 mkdir -p $wkd
 
+export stif=$wkd/$srctf.ids$faext
+export ttif=$wkd/$tgttf.ids$faext
+export sdif=$wkd/$srcvf.ids$faext
+export tdif=$wkd/$tgtvf.ids$faext
+export stcf=$wkd/src.train.ids$faext
+export etcf=$wkd/edit.train.ids$faext
+export ttcf=$wkd/tgt.train.ids$faext
+export sdcf=$wkd/src.dev.ids$faext
+export edcf=$wkd/edit.dev.ids$faext
+export tdcf=$wkd/tgt.dev.ids$faext
 if $do_map; then
-	python tools/plm/map/custbert.py $srcd/$srctf $src_vcb $wkd/$srctf.ids &
-	python tools/plm/map/custbert.py $srcd/$tgttf $src_vcb $wkd/$tgttf.ids &
-	python tools/plm/map/custbert.py $srcd/$srcvf $src_vcb $wkd/$srcvf.ids &
-	python tools/plm/map/custbert.py $srcd/$tgtvf $src_vcb $wkd/$tgtvf.ids &
+	python tools/plm/map/custbert.py $srcd/$srctf $src_vcb $stif &
+	python tools/plm/map/custbert.py $srcd/$tgttf $src_vcb $ttif &
+	python tools/plm/map/custbert.py $srcd/$srcvf $src_vcb $sdif &
+	python tools/plm/map/custbert.py $srcd/$tgtvf $src_vcb $tdif &
 	wait
-	python tools/gec/gector/convert.py $wkd/$srctf.ids $wkd/$tgttf.ids $wkd/src.train.ids $wkd/edit.train.ids $wkd/tgt.train.ids &
-	python tools/gec/gector/convert.py $wkd/$srcvf.ids $wkd/$tgtvf.ids $wkd/src.dev.ids $wkd/edit.dev.ids $wkd/tgt.dev.ids &
+	python tools/gec/gector/convert.py $stif $ttif $stcf $etcf $ttcf &
+	python tools/gec/gector/convert.py $sdif $tdif $sdcf $edcf $tdcf &
 	wait
 fi
 
+export stsf=$wkd/src.train.srt$faext
+export etsf=$wkd/edit.train.srt$faext
+export ttsf=$wkd/tgt.train.srt$faext
+export sdsf=$wkd/src.dev.srt$faext
+export edsf=$wkd/edit.dev.srt$faext
+export tdsf=$wkd/tgt.dev.srt$faext
 if $do_sort; then
-	python tools/sort.py $wkd/src.train.ids $wkd/edit.train.ids $wkd/tgt.train.ids $wkd/src.train.srt $wkd/edit.train.srt $wkd/tgt.train.srt $maxtokens &
+	python tools/sort.py $stcf $etcf $ttcf $stsf $etsf $ttsf $maxtokens &
 	# use the following command to sort a very large dataset with limited memory
-	#bash tools/lsort/sort.sh $wkd/src.train.ids $wkd/edit.train.ids $wkd/tgt.train.ids $wkd/src.train.srt $wkd/edit.train.srt $wkd/tgt.train.srt $maxtokens &
-	python tools/sort.py $wkd/src.dev.ids $wkd/edit.dev.ids $wkd/tgt.dev.ids $wkd/src.dev.srt $wkd/edit.dev.srt $wkd/tgt.dev.srt 1048576 &
+	#bash tools/lsort/sort.sh $stcf $etcf $ttcf $stsf $etsf $ttsf $maxtokens &
+	python tools/sort.py $sdcf $edcf $tdcf $sdsf $edsf $tdsf 1048576 &
 	wait
 fi
 
-python tools/gec/gector/mkiodata.py $wkd/src.train.srt $wkd/edit.train.srt $wkd/tgt.train.srt $wkd/$rsf_train $ngpu &
-python tools/gec/gector/mkiodata.py $wkd/src.dev.srt $wkd/edit.dev.srt $wkd/tgt.dev.srt $wkd/$rsf_dev $ngpu &
+python tools/gec/gector/mkiodata.py $stsf $etsf $ttsf $wkd/$rsf_train $ngpu &
+python tools/gec/gector/mkiodata.py $sdsf $edsf $tdsf $wkd/$rsf_dev $ngpu &
 wait
