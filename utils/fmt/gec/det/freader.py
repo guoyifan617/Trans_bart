@@ -19,8 +19,8 @@ def gec_noise_reader_core(files=None, noiser=None, tokenizer=None, min_len=2, ma
 					src = noiser(tgt)
 					_l = len(src)
 					if (src != tgt) and (_l > min_len) and (_l < _s_max_len):
-						yield tokenizer(tgt), [correct_id]
-						yield tokenizer(src), [incorrect_id]
+						yield tuple(tokenizer(tgt)), tuple([correct_id])
+						yield tuple(tokenizer(src)), tuple([incorrect_id])
 
 def gec_noise_reader(fname=None, noiser=None, tokenizer=None, min_len=2, max_len=cache_len_default, inf_loop=False, **kwargs):
 
