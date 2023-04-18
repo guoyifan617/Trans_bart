@@ -34,12 +34,13 @@ class Encoder(EncoderBase):
 
 		return out if self.out_normer is None else self.out_normer(out)
 
-	def build_task_model(self, *args, token_drop=token_drop, **kwargs):
+	def build_task_model(self, *args, token_drop=token_drop, fix_init=True, **kwargs):
 
 		self.edit_emb = nn.Embedding(num_edit, self.wemb.weight.size(-1), padding_idx=pad_id)
 		self.temb = None if num_type > 0 else nn.Embedding(num_type, self.wemb.weight.size(-1))
 		self.edit_tdrop = TokenDropout(token_drop, inplace=True) if token_drop > 0.0 else None
-		self.fix_task_init()
+		if fix_init:
+			self.fix_task_init()
 
 	def fix_task_init(self):
 

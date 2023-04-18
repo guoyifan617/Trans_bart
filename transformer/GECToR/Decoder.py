@@ -33,13 +33,14 @@ class Decoder(DecoderBase):
 
 		return loss, tag_out
 
-	def build_task_model(self, *args, use_smooth_op_loss=use_smooth_op_loss, **kwargs):
+	def build_task_model(self, *args, use_smooth_op_loss=use_smooth_op_loss, fix_init=True, **kwargs):
 
 		self.use_smooth_op_loss = use_smooth_op_loss
 		self.op_classifier = Linear(self.classifier.weight.size(-1), num_op)
 		self.op_loss = LabelSmoothingLoss(num_op, use_smooth_op_loss, ignore_index=op_pad_id, reduction="sum", forbidden_index=None) if self.use_smooth_op_loss > 0.0 else CrossEntropyLoss(ignore_index=op_pad_id, reduction="sum")
 		self.mlm_loss = LabelSmoothingLoss(mlm_vocab_size, label_smoothing, ignore_index=mlm_pad_id, reduction="sum", forbidden_index=forbidden_indexes)
-		self.fix_task_init()
+		if fix_init:
+			self.fix_task_init()
 
 	def fix_task_init(self):
 

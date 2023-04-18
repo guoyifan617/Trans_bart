@@ -32,7 +32,7 @@ vcbt = reverse_dict(ldvocab(sys.argv[2], minf=False, omit_vsize=vocab_size, vani
 
 if len(sys.argv) == 4:
 	mymodel = NMT(cnfg.isize, vocab_size, vocab_size, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
-	mymodel.build_task_model()
+	mymodel.build_task_model(fix_init=False)
 
 	mymodel = load_model_cpu(sys.argv[3], mymodel)
 	mymodel.apply(load_fixing)
@@ -41,7 +41,7 @@ else:
 	models = []
 	for modelf in sys.argv[3:]:
 		tmp = NMT(cnfg.isize, vocab_size, vocab_size, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
-		tmp.build_task_model()
+		tmp.build_task_model(fix_init=False)
 
 		tmp = load_model_cpu(modelf, tmp)
 		tmp.apply(load_fixing)

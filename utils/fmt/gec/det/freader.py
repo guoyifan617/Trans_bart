@@ -1,10 +1,10 @@
 #encoding: utf-8
 
 from utils.fmt.base import FileList
-from utils.fmt.gec.gector.base import generate_iter_data
 from utils.fmt.parser import parse_none
 
 from cnfg.hyp import cache_len_default
+from cnfg.vocab.gector.det import correct_id, incorrect_id
 
 def gec_noise_reader_core(files=None, noiser=None, tokenizer=None, min_len=2, max_len=cache_len_default, **kwargs):
 
@@ -17,10 +17,10 @@ def gec_noise_reader_core(files=None, noiser=None, tokenizer=None, min_len=2, ma
 				_l = len(tgt)
 				if (_l > min_len) and (_l < _s_max_len):
 					src = noiser(tgt)
-					for _s, _e, _t in generate_iter_data(tokenizer(src), tokenizer(tgt)):
-						_l = len(_s)
-						if _l < max_len:
-							yield _s, _e, _t
+					_l = len(src)
+					if (src != tgt) and (_l > min_len) and (_l < _s_max_len):
+						yield tokenizer(tgt), [correct_id]
+						yield tokenizer(src), [incorrect_id]
 
 def gec_noise_reader(fname=None, noiser=None, tokenizer=None, min_len=2, max_len=cache_len_default, inf_loop=False, **kwargs):
 

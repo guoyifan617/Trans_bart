@@ -60,7 +60,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 			scaler.scale(loss).backward()
 
 		wd_add = seq_batch.ne(pad_id).int().sum().item()
-		loss = output = seq_batch = seq_edt = seq_o = None
+		loss = seq_batch = seq_edt = seq_o = None
 		sum_loss += loss_add
 		#if save_loss:
 			#_ls[i_d] = loss_add / wd_add
@@ -214,7 +214,7 @@ nword = nwordi = nwordt = vocab_size
 tl = []#[str(i) for i in range(ntrain)]
 
 logger.info("Design models with seed: %d" % torch.initial_seed())
-mymodel = NMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
+mymodel = NMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, fhsize=cnfg.ff_hsize, dropout=cnfg.drop, attn_drop=cnfg.attn_drop, global_emb=cnfg.share_emb, num_head=cnfg.nhead, xseql=cache_len_default, ahsize=cnfg.attn_hsize, norm_output=cnfg.norm_output, bindDecoderEmb=cnfg.bindDecoderEmb, forbidden_index=cnfg.forbidden_indexes)
 
 mymodel = init_model_params(mymodel)
 mymodel.apply(init_fixing)
