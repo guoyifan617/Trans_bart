@@ -2,7 +2,7 @@
 
 import sys
 
-from utils.fmt.base import FileList
+from utils.fmt.base import FileList, sys_open
 
 interval = 15
 
@@ -22,7 +22,7 @@ def handle(srcf, osfl):
 				wid = lts // interval
 				if wid not in fwd:
 					sind = str(wid) + "_"
-					fwrtl = [open(sind + srcf, "wb") for srcf in osfl]
+					fwrtl = [sys_open(sind + srcf, "wb") for srcf in osfl]
 					fwd[wid] = fwrtl
 				else:
 					fwrtl = fwd[wid]
