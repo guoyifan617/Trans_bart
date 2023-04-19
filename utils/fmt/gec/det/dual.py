@@ -6,13 +6,13 @@ from utils.fmt.base import get_bsize, pad_batch
 
 from cnfg.vocab.plm.custbert import pad_id
 
-def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, get_bsize=get_bsize, file_reader=None, **kwargs):
+def batch_loader(finput, bsize, maxpad, maxpart, maxtoken, minbsize, get_bsize=get_bsize, file_reader=None, **kwargs):
 
 	_f_maxpart = float(maxpart)
 	rsi = []
 	rst = []
 	nd = maxlen = mlen_i = mlen_t = 0
-	for i_d, td in zip(finput if file_reader is None else file_reader(finput), ftarget if file_reader is None else file_reader(ftarget)):
+	for i_d, td in (finput if file_reader is None else file_reader(finput)):
 		i_d, td = list(i_d), list(td)
 		lid = len(i_d)
 		ltd = len(td)
@@ -40,7 +40,7 @@ def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, ge
 	if rsi:
 		yield rsi, rst, mlen_i, mlen_t
 
-def batch_padder(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, pad_batch=pad_batch, batch_loader=batch_loader, pad_id=pad_id, **kwargs):
+def batch_padder(finput, bsize, maxpad, maxpart, maxtoken, minbsize, pad_batch=pad_batch, batch_loader=batch_loader, pad_id=pad_id, **kwargs):
 
-	for i_d, td, mlen_i, mlen_t in batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, **kwargs):
+	for i_d, td, mlen_i, mlen_t in batch_loader(finput, bsize, maxpad, maxpart, maxtoken, minbsize, **kwargs):
 		yield pad_batch(i_d, mlen_i, pad_id=pad_id), pad_batch(td, mlen_t, pad_id=pad_id)
