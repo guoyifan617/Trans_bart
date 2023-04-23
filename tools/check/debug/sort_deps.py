@@ -119,7 +119,7 @@ def sort_dep_lines(lin):
 	for lu in lin:
 		if lu.strip():
 			_is_from_imp = lu.find("from ") >= 0
-			if lu.find("cnfg.") >= 0:
+			if (lu.find(" cnfg.") >= 0) or (lu.find(" cnfg ") >= 0) or ((lu.find(" cnfg") >= 0) and (not _is_from_imp)):
 				if _is_from_imp:
 					cnfg_py_frm.append(lu)
 				else:

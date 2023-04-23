@@ -28,7 +28,7 @@ from utils.train.base import getlr, optm_step, optm_step_zero_grad_set_none, res
 
 import cnfg.gec.gector as cnfg
 from cnfg.ihyp import *
-from cnfg.vocab.plm.custbert import pad_id, vocab_size
+from cnfg.vocab.plm.custbert import vocab_size
 
 def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tokens, multi_gpu, multi_gpu_optimizer, tokens_optm=32768, nreport=None, save_every=None, chkpf=None, state_holder=None, statesf=None, num_checkpoint=1, cur_checkid=0, report_eva=True, remain_steps=None, save_loss=False, save_checkp_epoch=False, scaler=None):
 
@@ -59,7 +59,7 @@ def train(td, tl, ed, nd, optm, lrsch, model, lossf, mv_device, logger, done_tok
 		else:
 			scaler.scale(loss).backward()
 
-		wd_add = seq_batch.ne(pad_id).int().sum().item()
+		wd_add = seq_o.numel()
 		loss = output = seq_batch = seq_o = None
 		sum_loss += loss_add
 		#if save_loss:
