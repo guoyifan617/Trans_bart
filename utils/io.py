@@ -1,5 +1,6 @@
 #encoding: utf-8
 
+import torch
 from os import remove
 from os.path import exists as fs_check
 from threading import Thread
