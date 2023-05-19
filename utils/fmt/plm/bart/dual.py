@@ -1,6 +1,8 @@
 #encoding: utf-8
 
-from utils.fmt.base import get_bsize, list_reader as file_reader
+from math import ceil
+
+from utils.fmt.base import get_bsize, iter_to_int, list_reader as file_reader
 from utils.fmt.plm.dual import batch_padder as batch_padder_base
 
 from cnfg.vocab.plm.roberta import eos_id, pad_id

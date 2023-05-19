@@ -128,6 +128,16 @@ def line_reader_wst(fname, keep_empty_line=True, print_func=print):
 				if keep_empty_line:
 					yield ""
 
+def loop_file_so(fsrc, frs, process_func=None, processor=None):
+
+	ens = "\n".encode("utf-8")
+	with sys_open(fsrc, "rb") as frd, sys_open(frs, "wb") as fwrt:
+		for line in frd:
+			tmp = line.strip()
+			if tmp:
+				fwrt.write(process_func(tmp.decode("utf-8"), processor).encode("utf-8"))
+			fwrt.write(ens)
+
 def clean_str(strin):
 
 	return " ".join([tmpu for tmpu in strin.split() if tmpu])

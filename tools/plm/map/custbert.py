@@ -2,8 +2,8 @@
 
 import sys
 
+from utils.fmt.base import loop_file_so
 from utils.fmt.plm.custbert.token import Tokenizer, map_line
-from utils.fmt.plm.token import loop_file_so
 
 def handle(fsrc, vcb, frs, split=False):
 

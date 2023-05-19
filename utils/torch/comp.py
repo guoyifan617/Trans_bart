@@ -14,7 +14,8 @@ try:
 	torch.backends.cuda.matmul.allow_tf32 = allow_tf32
 	torch.backends.cudnn.allow_tf32 = allow_tf32
 	torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = allow_fp16_reduction
-	torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction = allow_fp16_reduction
+	if hasattr(torch.backends.cuda.matmul, "allow_bf16_reduced_precision_reduction"):
+		torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction = allow_fp16_reduction
 except Exception as e:
 	print(e)
 

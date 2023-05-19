@@ -2,7 +2,7 @@
 
 import sys
 
-from utils.fmt.base import iter_to_str, sys_open
+from utils.fmt.base import iter_to_str, loop_file_so, sys_open
 
 tokenize_line = lambda lin, processor: " ".join(processor.convert_ids_to_tokens(processor(lin, return_token_type_ids=True, return_attention_mask=False, return_offsets_mapping=True).input_ids))
 map_line = lambda lin, processor: " ".join(iter_to_str(processor(*lin.split("\t"), return_token_type_ids=True, return_attention_mask=False, return_offsets_mapping=True).input_ids))
@@ -13,16 +13,6 @@ def map_line_with_token_type(lin, processor):
 	_ = processor(*lin.decode("utf-8").split("\t"), return_token_type_ids=True, return_attention_mask=False, return_offsets_mapping=True)
 
 	return " ".join(iter_to_str(_.input_ids)), " ".join(iter_to_str(_.token_type_ids))
-
-def loop_file_so(fsrc, frs, process_func=None, processor=None):
-
-	ens = "\n".encode("utf-8")
-	with sys_open(fsrc, "rb") as frd, sys_open(frs, "wb") as fwrt:
-		for line in frd:
-			tmp = line.strip()
-			if tmp:
-				fwrt.write(process_func(tmp.decode("utf-8"), processor).encode("utf-8"))
-			fwrt.write(ens)
 
 def tokenize_file(fsrc, vcb, frs, Tokenizer=None):
 
