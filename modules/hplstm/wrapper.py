@@ -102,7 +102,9 @@ class RNN(ATR):
 
 		super(RNN, self).__init__(isize, num_head=num_head, osize=_osize, fhsize=_hsize, dropout=dropout)
 
-		self.net = nn.Sequential(Linear(isize + _osize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Dropout(dropout, inplace=inplace_after_Custom_Act), Linear(_hsize, isize, bias=enable_bias)) if dropout > 0.0 else nn.Sequential(Linear(isize + _osize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize, bias=enable_bias))
+		self.net = nn.Sequential(Linear(isize + _osize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize, bias=enable_bias))
+		if dropout > 0.0:
+			self.net.insert(3, Dropout(dropout, inplace=inplace_after_Custom_Act))
 
 	def forward(self, inpute, states=None, head_mask=None, **kwargs):
 

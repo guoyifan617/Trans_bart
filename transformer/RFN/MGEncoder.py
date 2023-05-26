@@ -11,13 +11,13 @@ from cnfg.ihyp import *
 
 class Encoder(EncoderBase):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, num_layer_step=6, **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, xseql=cache_len_default, ahsize=None, num_layer_step=6, **kwargs):
 
-		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, xseql=xseql, ahsize=ahsize, **kwargs)
+		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, act_drop=act_drop, num_head=num_head, xseql=xseql, ahsize=ahsize, **kwargs)
 
 		self.nlu = num_layer_step
 		_nrfn = ceil(float(num_layer) / float(num_layer_step))
-		self.mgrs = nn.ModuleList([LSTMCell4FFN(isize, dropout=dropout) for i in range(_nrfn)]) if _nrfn > 1 else None
+		self.mgrs = nn.ModuleList([LSTMCell4FFN(isize, dropout=dropout, act_drop=act_drop) for i in range(_nrfn)]) if _nrfn > 1 else None
 
 	def forward(self, inputs, mask=None, **kwargs):
 

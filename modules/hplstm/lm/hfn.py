@@ -35,11 +35,11 @@ class MHPLSTMCore(MHPLSTMCoreBase):
 
 class HPLSTM(HPLSTMBase):
 
-	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, **kwargs):
+	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, act_drop=None, **kwargs):
 
 		_osize = parse_none(osize, isize)
 		_fhsize = _osize * 4 if fhsize is None else fhsize
 
 		super(HPLSTM, self).__init__(isize, num_head=num_head, osize=_osize, fhsize=_fhsize, dropout=dropout, **kwargs)
 
-		self.net = MHPLSTMCore(isize, num_head=self.num_head, osize=_osize, fhsize=_fhsize, dropout=dropout)
+		self.net = MHPLSTMCore(isize, num_head=self.num_head, osize=_osize, fhsize=_fhsize, dropout=dropout, act_drop=act_drop)

@@ -15,7 +15,7 @@ from cnfg.plm.bert.ihyp import *
 
 class Decoder(nn.Module):
 
-	def __init__(self, isize, nwd, num_layer=None, fhsize=None, dropout=0.0, attn_drop=0.0, emb_w=None, num_head=8, model_name="bert", **kwargs):
+	def __init__(self, isize, nwd, num_layer=None, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, emb_w=None, num_head=8, model_name="bert", **kwargs):
 
 		super(Decoder, self).__init__()
 

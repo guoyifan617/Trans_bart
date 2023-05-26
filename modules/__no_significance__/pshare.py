@@ -37,16 +37,16 @@ Linear = PShareLinear
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, wb1, wb2, dropout=0.0, act_dropout=None, custom_act=use_adv_act_default, **kwargs):
+	def __init__(self, wb1, wb2, dropout=0.0, act_drop=None, custom_act=use_adv_act_default, **kwargs):
 
-		_act_dropout = parse_none(act_dropout, dropout)
-		super(PositionwiseFF, self).__init__(wb1.size(1), wb1.size(0), dropout=dropout, act_dropout=_act_dropout, custom_act=custom_act, **kwargs)
+		_act_drop = parse_none(act_drop, dropout)
+		super(PositionwiseFF, self).__init__(wb1.size(1), wb1.size(0), dropout=dropout, act_drop=_act_drop, custom_act=custom_act, **kwargs)
 
 		self.net = nn.Sequential(Linear(wb1), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(wb2))
 		if dropout > 0.0:
 			self.net.append(Dropout(dropout, inplace=True))
-		if _act_dropout > 0.0:
-			self.net.insert(2, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))
+		if _act_drop > 0.0:
+			self.net.insert(2, Dropout(_act_drop, inplace=inplace_after_Custom_Act))
 
 class SelfAttn(SelfAttnBase):
 

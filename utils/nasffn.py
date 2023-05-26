@@ -68,6 +68,6 @@ def patch_stdffn(netin):
 	for _name, _module in netin.named_modules():
 		if isinstance(_module, PositionwiseFFBase):
 			_isize, _hsize, _drop, _act_drop, _nr = get_ffn_attr(_module)
-			add_module(netin, _name, PositionwiseFF(_isize, hsize=_hsize, dropout=_drop, act_dropout=_act_drop, norm_residual=_nr))
+			add_module(netin, _name, PositionwiseFF(_isize, hsize=_hsize, dropout=_drop, act_drop=_act_drop, norm_residual=_nr))
 
 	return netin

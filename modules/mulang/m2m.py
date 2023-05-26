@@ -13,12 +13,12 @@ from cnfg.ihyp import *
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, ngroup, hsize=None, dropout=0.0, act_dropout=None, ntask=None, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
+	def __init__(self, isize, ngroup, hsize=None, dropout=0.0, act_drop=None, ntask=None, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
 		_hsize = isize * 4 if hsize is None else hsize
-		_act_dropout = parse_none(act_dropout, dropout)
+		_act_drop = parse_none(act_drop, dropout)
 
-		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, custom_act=custom_act, enable_bias=enable_bias, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, act_drop=_act_drop, custom_act=custom_act, enable_bias=enable_bias, **kwargs)
 
 		_hsize *= ngroup
 		self.ngroup = ngroup
@@ -26,8 +26,8 @@ class PositionwiseFF(PositionwiseFFBase):
 		self.net = nn.Sequential(GroupLinear(isize * ngroup, _hsize, ngroup, shuffle=False, trans_input=False, flatten_output=False), Custom_Act() if custom_act else nn.ReLU(inplace=True), GroupLinear(_hsize, isize * ngroup, ngroup, bias=enable_bias, shuffle=False, trans_input=False, flatten_output=False))
 		if dropout > 0.0:
 			self.net.append(Dropout(dropout, inplace=True))
-		if _act_dropout > 0.0:
-			self.net.insert(2, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))
+		if _act_drop > 0.0:
+			self.net.insert(2, Dropout(_act_drop, inplace=inplace_after_Custom_Act))
 		self.normer = LayerNorm((ngroup, isize,), ntask=ntask, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters)
 
 	# (bsize, seql, ngroup, isize) => (bsize, seql, ngroup, isize)

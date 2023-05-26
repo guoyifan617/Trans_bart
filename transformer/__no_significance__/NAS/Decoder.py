@@ -23,7 +23,7 @@ def interp_edge_sel(edge_sel, snod):
 
 class DecoderLayer(nn.Module):
 
-	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, norm_residual=norm_residual_default, num_nod=8, max_prev_nodes=5, node_p=None, edge_p=None, norm_output=True, base_cost_rate=1.01, **kwargs):
+	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, ahsize=None, norm_residual=norm_residual_default, num_nod=8, max_prev_nodes=5, node_p=None, edge_p=None, norm_output=True, base_cost_rate=1.01, **kwargs):
 
 		super(DecoderLayer, self).__init__()
 
@@ -262,18 +262,18 @@ class DecoderLayer(nn.Module):
 
 class Decoder(DecoderBase):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, emb_w=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindemb=False, forbidden_index=None, num_nod=8, max_prev_nodes=5, **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, emb_w=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindemb=False, forbidden_index=None, num_nod=8, max_prev_nodes=5, **kwargs):
 
 		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
-		super(Decoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, emb_w=emb_w, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, bindemb=bindemb, forbidden_index=forbidden_index, **kwargs)
+		super(Decoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, act_drop=act_drop, emb_w=emb_w, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, bindemb=bindemb, forbidden_index=forbidden_index, **kwargs)
 
 		num_edge = ((1 + num_nod) * num_nod // 2) if num_nod < max_prev_nodes + 1 else ((1 + max_prev_nodes) * max_prev_nodes // 2 + max_prev_nodes * (num_nod - max_prev_nodes))
 		self.node_p = nn.Parameter(torch.Tensor(num_nod, 8).uniform_(- sqrt(2.0 / (8 + num_nod)), sqrt(2.0 / (8 + num_nod))))
 		self.edge_p = nn.Parameter(torch.Tensor(3, num_edge, 5).uniform_(- sqrt(2.0 / (5 + num_edge)), sqrt(2.0 / (5 + num_edge))))
 
-		self.nets = nn.ModuleList([DecoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize, False, num_nod, max_prev_nodes, self.node_p, self.edge_p) for i in range(num_layer)])
+		self.nets = nn.ModuleList([DecoderLayer(isize, _fhsize, dropout, attn_drop, act_drop, num_head, _ahsize, False, num_nod, max_prev_nodes, self.node_p, self.edge_p) for i in range(num_layer)])
 
 		self.training_arch = False
 		self.train_arch(False)

@@ -238,14 +238,14 @@ class ResTaughtCrossAttn(ResCrossAttnBase):
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_drop=None, **kwargs):
 
 		_hsize = isize * 4 if hsize is None else hsize
-		_act_dropout = parse_none(act_dropout, dropout)
+		_act_drop = parse_none(act_drop, dropout)
 
-		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, act_drop=_act_drop, **kwargs)
 
-		self.net = Cell(max(1, _hsize // isize), isize, dropout=dropout, act_dropout=_act_dropout)
+		self.net = Cell(max(1, _hsize // isize), isize, dropout=dropout, act_drop=_act_drop)
 
 	def load_base(self, base_module):
 

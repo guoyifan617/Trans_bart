@@ -12,14 +12,14 @@ from cnfg.ihyp import *
 
 class EncoderLayer(nn.Module):
 
-	def __init__(self, isize, fhsize=None, dropout=0.0, num_head=8, **kwargs):
+	def __init__(self, isize, fhsize=None, dropout=0.0, act_drop=None, num_head=8, **kwargs):
 
 		super(EncoderLayer, self).__init__()
 
 		_fhsize = isize * 4 if fhsize is None else fhsize
 
-		self.net = BiHPLSTM(isize, num_head=num_head, osize=isize, fhsize=_fhsize, dropout=dropout)
-		self.ff = PositionwiseFF(isize, hsize=_fhsize, dropout=dropout)
+		self.net = BiHPLSTM(isize, num_head=num_head, osize=isize, fhsize=_fhsize, dropout=dropout, act_drop=act_drop)
+		self.ff = PositionwiseFF(isize, hsize=_fhsize, dropout=dropout, act_drop=act_drop)
 
 		self.drop = Dropout(dropout, inplace=True) if dropout > 0.0 else None
 
@@ -34,18 +34,18 @@ class EncoderLayer(nn.Module):
 
 class Encoder(EncoderBase):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, share_layer=False, **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, share_layer=False, **kwargs):
 
 		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
-		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, share_layer=share_layer, disable_pemb=True, **kwargs)
+		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, act_drop=act_drop, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, share_layer=share_layer, disable_pemb=True, **kwargs)
 
 		if share_layer:
-			_shared_layer = EncoderLayer(isize, _fhsize, dropout, num_head)
+			_shared_layer = EncoderLayer(isize, _fhsize, dropout, act_drop, num_head)
 			self.nets = nn.ModuleList([_shared_layer for i in range(num_layer)])
 		else:
-			self.nets = nn.ModuleList([EncoderLayer(isize, _fhsize, dropout, num_head) for i in range(num_layer)])
+			self.nets = nn.ModuleList([EncoderLayer(isize, _fhsize, dropout, act_drop, num_head) for i in range(num_layer)])
 
 	def forward(self, inputs, mask=None, **kwargs):
 

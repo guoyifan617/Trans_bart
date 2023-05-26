@@ -57,18 +57,18 @@ class ResLNGLU(nn.Module):
 
 class PositionwiseFF_LNGLU(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, norm_residual=norm_residual_default, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_drop=None, norm_residual=norm_residual_default, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
 		_hsize = isize * 4 if hsize is None else hsize
-		_act_dropout = parse_none(act_dropout, dropout)
+		_act_drop = parse_none(act_drop, dropout)
 
-		super(PositionwiseFF_LNGLU, self).__init__(isize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, norm_residual=norm_residual, custom_act=custom_act, enable_bias=enable_bias, **kwargs)
+		super(PositionwiseFF_LNGLU, self).__init__(isize, hsize=_hsize, dropout=dropout, act_drop=_act_drop, norm_residual=norm_residual, custom_act=custom_act, enable_bias=enable_bias, **kwargs)
 
 		_ = [Linear(isize, _hsize, bias=enable_bias), LNGLU(_hsize), Linear(_hsize, isize, bias=enable_bias)]
 		if dropout > 0.0:
 			_.append(Dropout(dropout, inplace=True))
-		if _act_dropout > 0.0:
-			_.insert(2, Dropout(_act_dropout, inplace=True))
+		if _act_drop > 0.0:
+			_.insert(2, Dropout(_act_drop, inplace=True))
 		self.net = nn.Sequential(*_)
 
 class ResSelfAttn(ResSelfAttnBase):
@@ -129,9 +129,9 @@ class ResCrossAttn(ResCrossAttnBase):
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, norm_residual=norm_residual_default, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_drop=None, norm_residual=norm_residual_default, **kwargs):
 
-		super(PositionwiseFF, self).__init__(isize, hsize=hsize, dropout=dropout, act_dropout=act_dropout, norm_residual=norm_residual, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=hsize, dropout=dropout, act_drop=act_drop, norm_residual=norm_residual, **kwargs)
 
 		self.eff_layer = ResLNGLU(isize, dropout=dropout)
 

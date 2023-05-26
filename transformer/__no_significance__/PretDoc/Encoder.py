@@ -12,9 +12,9 @@ from cnfg.ihyp import *
 
 class CrossEncoder(CrossEncoderBase):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, nprev_context=1, **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, nprev_context=1, **kwargs):
 
-		super(CrossEncoder, self).__init__(isize, nwd, num_layer, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, xseql=xseql, ahsize=ahsize, norm_output=norm_output, nprev_context=nprev_context)
+		super(CrossEncoder, self).__init__(isize, nwd, num_layer, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, act_drop=act_drop, num_head=num_head, xseql=xseql, ahsize=ahsize, norm_output=norm_output, nprev_context=nprev_context)
 
 		self.pemb = PositionalEmb(isize, xseql, 0, 0)
 		self.semb = PositionalEmb(isize, xseql, 0, 0)#5000, isize or 5000, be consistent with MDoc.Encoder
@@ -59,7 +59,7 @@ class CrossEncoder(CrossEncoderBase):
 
 class Encoder(nn.Module):
 
-	def __init__(self, isize, nwd, pnwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, num_layer_pret=12, **kwargs):
+	def __init__(self, isize, nwd, pnwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, num_layer_pret=12, **kwargs):
 
 		super(Encoder, self).__init__()
 
@@ -67,8 +67,8 @@ class Encoder(nn.Module):
 
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
-		self.context_enc = PretEncoder(isize, pnwd, num_layer if num_layer_pret is None else num_layer_pret, _fhsize, dropout, attn_drop, num_head, xseql, _ahsize, norm_output)
-		self.enc = CrossEncoder(isize, nwd, num_layer, _fhsize, dropout, attn_drop, num_head, xseql, _ahsize, norm_output, 1)
+		self.context_enc = PretEncoder(isize, pnwd, num_layer if num_layer_pret is None else num_layer_pret, _fhsize, dropout, attn_drop, act_drop, num_head, xseql, _ahsize, norm_output)
+		self.enc = CrossEncoder(isize, nwd, num_layer, _fhsize, dropout, attn_drop, act_drop, num_head, xseql, _ahsize, norm_output, 1)
 
 	# inputs: (bsize, nsent, seql)
 	# inputc: (bsize, nsent, seql)

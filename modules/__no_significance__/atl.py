@@ -56,15 +56,15 @@ class AttnLinear(nn.Module):
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, custom_act=use_adv_act_default, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_drop=None, custom_act=use_adv_act_default, **kwargs):
 
 		_hsize = isize * 4 if hsize is None else hsize
-		_act_dropout = parse_none(act_dropout, dropout)
+		_act_drop = parse_none(act_drop, dropout)
 
-		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, custom_act=custom_act, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, act_drop=_act_drop, custom_act=custom_act, **kwargs)
 
 		self.net = nn.Sequential(AttnLinear(isize, _hsize), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize))
 		if dropout > 0.0:
 			self.net.append(Dropout(dropout, inplace=True))
-		if _act_dropout > 0.0:
-			self.net.insert(2, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))
+		if _act_drop > 0.0:
+			self.net.insert(2, Dropout(_act_drop, inplace=inplace_after_Custom_Act))

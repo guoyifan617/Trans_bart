@@ -27,7 +27,7 @@ class MSEncoderLayer(MSEncoderLayerBase):
 
 class MSEncoder(nn.Module):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, emb_w=None, share_layer=False, disable_pemb=disable_std_pemb_encoder, **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, emb_w=None, share_layer=False, disable_pemb=disable_std_pemb_encoder, **kwargs):
 
 		super(MSEncoder, self).__init__()
 
@@ -42,10 +42,10 @@ class MSEncoder(nn.Module):
 
 		self.pemb = None if disable_pemb else PositionalEmb(isize, xseql, 0, 0)
 		if share_layer:
-			_shared_layer = MSEncoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize)
+			_shared_layer = MSEncoderLayer(isize, _fhsize, dropout, attn_drop, act_drop, num_head, _ahsize)
 			self.nets = nn.ModuleList([_shared_layer for i in range(num_layer)])
 		else:
-			self.nets = nn.ModuleList([MSEncoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize) for i in range(num_layer)])
+			self.nets = nn.ModuleList([MSEncoderLayer(isize, _fhsize, dropout, attn_drop, act_drop, num_head, _ahsize) for i in range(num_layer)])
 
 		self.out_normer = nn.LayerNorm(isize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters) if norm_output else None
 
@@ -70,17 +70,17 @@ class MSEncoder(nn.Module):
 
 class Encoder(nn.Module):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, global_emb=False, **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, global_emb=False, **kwargs):
 
 		super(Encoder, self).__init__()
 
 		nwd_src, nwd_tgt = parse_double_value_tuple(nwd)
 
-		self.src_enc = EncoderBase(isize, nwd_src, num_layer, fhsize, dropout, attn_drop, num_head, xseql, ahsize, norm_output, **kwargs)
+		self.src_enc = EncoderBase(isize, nwd_src, num_layer, fhsize, dropout, attn_drop, act_drop, num_head, xseql, ahsize, norm_output, **kwargs)
 
 		emb_w = self.src_enc.wemb.weight if global_emb else None
 
-		self.tgt_enc = MSEncoder(isize, nwd_tgt, num_layer, fhsize, dropout, attn_drop, num_head, xseql, ahsize, norm_output, emb_w, **kwargs)
+		self.tgt_enc = MSEncoder(isize, nwd_tgt, num_layer, fhsize, dropout, attn_drop, act_drop, num_head, xseql, ahsize, norm_output, emb_w, **kwargs)
 
 	def forward(self, inpute, inputo, src_mask=None, tgt_mask=None, **kwargs):
 

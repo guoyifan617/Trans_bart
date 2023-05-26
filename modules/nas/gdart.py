@@ -59,12 +59,12 @@ class Node(nn.Module):
 
 class Cell(nn.Module):
 
-	def __init__(self, num_node, isize, dropout=0.0, act_dropout=None, enable_bias=enable_prev_ln_bias_default, **kwargs):
+	def __init__(self, num_node, isize, dropout=0.0, act_drop=None, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
 		super(Cell, self).__init__()
 
-		_act_dropout = parse_none(act_dropout, dropout)
-		self.nets = nn.ModuleList([Node(i, isize, dropout=_act_dropout) for i in range(1, num_node + 1)])
+		_act_drop = parse_none(act_drop, dropout)
+		self.nets = nn.ModuleList([Node(i, isize, dropout=_act_drop) for i in range(1, num_node + 1)])
 		self.trans = nn.Sequential(Linear(isize * num_node, isize, bias=enable_bias), Dropout(dropout, inplace=True)) if dropout > 0.0 else Linear(isize * num_node, isize, bias=enable_bias)
 
 	def forward(self, x, **kwargs):

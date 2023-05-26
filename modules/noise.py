@@ -204,9 +204,9 @@ class ResCrossAttn(ResCrossAttnBase):
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, power=None, custom_noiser=None, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_drop=None, power=None, custom_noiser=None, **kwargs):
 
-		super(PositionwiseFF, self).__init__(isize, hsize=hsize, dropout=dropout, act_dropout=act_dropout, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=hsize, dropout=dropout, act_drop=act_drop, **kwargs)
 
 		_noiser = parse_none(custom_noiser, Noiser)
 		self.noiser = None if power is None else _noiser(power, inplace=True)

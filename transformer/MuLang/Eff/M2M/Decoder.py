@@ -20,12 +20,12 @@ from cnfg.vocab.base import eos_id, pad_id
 
 class DecoderLayer(DecoderLayerBase):
 
-	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, ngroup=None, ntask=None, expand_layer=False, merge_layer=False, k_rel_pos=use_k_relative_position_decoder, **kwargs):
+	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, ahsize=None, ngroup=None, ntask=None, expand_layer=False, merge_layer=False, k_rel_pos=use_k_relative_position_decoder, **kwargs):
 
 		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
-		super(DecoderLayer, self).__init__(isize, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, ngroup=ngroup, ntask=ntask, expand_layer=expand_layer, merge_layer=merge_layer, k_rel_pos=k_rel_pos, **kwargs)
+		super(DecoderLayer, self).__init__(isize, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, act_drop=act_drop, num_head=num_head, ahsize=_ahsize, ngroup=ngroup, ntask=ntask, expand_layer=expand_layer, merge_layer=merge_layer, k_rel_pos=k_rel_pos, **kwargs)
 
 		self.layer_normer1 = LayerNorm(isize if expand_layer else (ngroup, isize,), ntask=ntask, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters)
 		self.layer_normer2 = LayerNorm((ngroup, isize,), ntask=ntask, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters)
@@ -87,18 +87,18 @@ class DecoderLayer(DecoderLayerBase):
 
 class Decoder(DecoderBase):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, emb_w=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindemb=True, forbidden_index=None, ntask=None, ngroup=None, task_emb_w=None, share_layer=False, **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, emb_w=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindemb=True, forbidden_index=None, ntask=None, ngroup=None, task_emb_w=None, share_layer=False, **kwargs):
 
 		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
-		super(Decoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, emb_w=emb_w, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, bindemb=bindemb, forbidden_index=forbidden_index, ntask=ntask, ngroup=ngroup, task_emb_w=task_emb_w, share_layer=share_layer, **kwargs)
+		super(Decoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, act_drop=act_drop, emb_w=emb_w, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, bindemb=bindemb, forbidden_index=forbidden_index, ntask=ntask, ngroup=ngroup, task_emb_w=task_emb_w, share_layer=share_layer, **kwargs)
 
 		if share_layer:
-			_shared_layer = DecoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize, ngroup=ngroup, ntask=ntask, expand_layer=False, merge_layer=False)
-			self.nets = nn.ModuleList([DecoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize, ngroup=ngroup, ntask=ntask, expand_layer=True, merge_layer=False)] + [_shared_layer for i in range(num_layer - 2)] + [DecoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize, ngroup=ngroup, ntask=ntask, expand_layer=False, merge_layer=True)])
+			_shared_layer = DecoderLayer(isize, _fhsize, dropout, attn_drop, act_drop, num_head, _ahsize, ngroup=ngroup, ntask=ntask, expand_layer=False, merge_layer=False)
+			self.nets = nn.ModuleList([DecoderLayer(isize, _fhsize, dropout, attn_drop, act_drop, num_head, _ahsize, ngroup=ngroup, ntask=ntask, expand_layer=True, merge_layer=False)] + [_shared_layer for i in range(num_layer - 2)] + [DecoderLayer(isize, _fhsize, dropout, attn_drop, act_drop, num_head, _ahsize, ngroup=ngroup, ntask=ntask, expand_layer=False, merge_layer=True)])
 		else:
-			self.nets = nn.ModuleList([DecoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize, ngroup=ngroup, ntask=ntask, expand_layer=(i == 0), merge_layer=(i == num_layer - 1)) for i in range(num_layer)])
+			self.nets = nn.ModuleList([DecoderLayer(isize, _fhsize, dropout, attn_drop, act_drop, num_head, _ahsize, ngroup=ngroup, ntask=ntask, expand_layer=(i == 0), merge_layer=(i == num_layer - 1)) for i in range(num_layer)])
 
 		self.classifier = MBLinear(isize, nwd, ntask)
 		if bindemb:

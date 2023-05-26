@@ -13,7 +13,7 @@ from cnfg.vocab.base import pad_id
 
 class Encoder(nn.Module):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, **kwargs):
 
 		super(Encoder, self).__init__()
 
@@ -27,7 +27,7 @@ class Encoder(nn.Module):
 		self.wemb = nn.Embedding(nwd, isize, padding_idx=pad_id)
 
 		self.pemb = CoordinateEmb(isize, xseql, num_layer, 0, 0)
-		self.net = EncoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize)
+		self.net = EncoderLayer(isize, _fhsize, dropout, attn_drop, act_drop, num_head, _ahsize)
 		self.halter = nn.Sequential(Scorer(isize), nn.Sigmoid())
 
 		self.out_normer = nn.LayerNorm(isize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters) if norm_output else None

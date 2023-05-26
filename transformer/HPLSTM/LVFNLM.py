@@ -9,9 +9,9 @@ from cnfg.vocab.base import pad_id
 
 class Decoder(DecoderBase):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, emb_w=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindemb=True, forbidden_index=None, share_layer=False, cutoffs=[20000, 40000, 200000], ignore_index=0, tie_projs=True, disable_pemb=disable_std_pemb_decoder, **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, emb_w=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, bindemb=True, forbidden_index=None, share_layer=False, cutoffs=[20000, 40000, 200000], ignore_index=0, tie_projs=True, disable_pemb=disable_std_pemb_decoder, **kwargs):
 
-		super(Decoder, self).__init__(isize, nwd, num_layer, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, emb_w=emb_w, num_head=num_head, xseql=xseql, ahsize=ahsize, norm_output=norm_output, bindemb=bindemb, forbidden_index=forbidden_index, share_layer=share_layer, disable_pemb=True, **kwargs)
+		super(Decoder, self).__init__(isize, nwd, num_layer, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, act_drop=act_drop, emb_w=emb_w, num_head=num_head, xseql=xseql, ahsize=ahsize, norm_output=norm_output, bindemb=bindemb, forbidden_index=forbidden_index, share_layer=share_layer, disable_pemb=True, **kwargs)
 
 		self.wemb = AdaptiveEmbedding(nwd, isize, cutoffs, padding_idx=pad_id)
 		self.classifier = ProjectedAdaptiveLogSoftmax(nwd, isize, cutoffs, ignore_index=ignore_index, reduction="sum")

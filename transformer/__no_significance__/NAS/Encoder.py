@@ -24,7 +24,7 @@ def interp_edge_sel(edge_sel, snod):
 
 class EncoderLayer(nn.Module):
 
-	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, norm_residual=norm_residual_default, num_nod=4, max_prev_nodes=4, node_p=None, edge_p=None, norm_output=True, base_cost_rate=2.0, **kwargs):
+	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, ahsize=None, norm_residual=norm_residual_default, num_nod=4, max_prev_nodes=4, node_p=None, edge_p=None, norm_output=True, base_cost_rate=2.0, **kwargs):
 
 		_ahsize = parse_none(ahsize, isize)
 
@@ -195,18 +195,18 @@ class EncoderLayer(nn.Module):
 
 class Encoder(EncoderBase):
 
-	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, num_nod=4, max_prev_nodes=4, **kwargs):
+	def __init__(self, isize, nwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, num_nod=4, max_prev_nodes=4, **kwargs):
 
 		_ahsize = parse_none(ahsize, isize)
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
-		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, **kwargs)
+		super(Encoder, self).__init__(isize, nwd, num_layer, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, act_drop=act_drop, num_head=num_head, xseql=xseql, ahsize=_ahsize, norm_output=norm_output, **kwargs)
 
 		num_edge = ((1 + num_nod) * num_nod // 2) if num_nod < (max_prev_nodes + 1) else ((1 + max_prev_nodes) * max_prev_nodes // 2 + max_prev_nodes * (num_nod - max_prev_nodes))
 		self.node_p = nn.Parameter(torch.zeros(num_nod, 7))
 		self.edge_p = nn.Parameter(torch.zeros(3, num_edge, 4))
 
-		self.nets = nn.ModuleList([EncoderLayer(isize, _fhsize, dropout, attn_drop, num_head, _ahsize, False, num_nod, max_prev_nodes, self.node_p, self.edge_p) for i in range(num_layer)])
+		self.nets = nn.ModuleList([EncoderLayer(isize, _fhsize, dropout, attn_drop, act_drop, num_head, _ahsize, False, num_nod, max_prev_nodes, self.node_p, self.edge_p) for i in range(num_layer)])
 
 		self.training_arch = False
 		self.train_arch(False)

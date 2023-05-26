@@ -82,6 +82,8 @@ nlayer = 6
 drop = 0.1
 # dropout rate applied to multi-head attention.
 attn_drop = drop
+# dropout rate applied to the activation of FFN.
+act_drop = drop
 
 # False for Hier/Incept Models
 norm_output = True

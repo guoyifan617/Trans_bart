@@ -23,13 +23,13 @@ class NMT(nn.Module):
 	# xseql: maxmimum length of sequence
 	# ahsize: number of hidden units for MultiHeadAttention
 
-	def __init__(self, isize, snwd, tnwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, global_emb=False, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, clip_value=None, **kwargs):
+	def __init__(self, isize, snwd, tnwd, num_layer, fhsize=None, dropout=0.0, attn_drop=0.0, act_drop=None, global_emb=False, num_head=8, xseql=cache_len_default, ahsize=None, norm_output=True, clip_value=None, **kwargs):
 
 		super(NMT, self).__init__()
 
-		self.enc1 = Encoder(isize, snwd, num_layer, fhsize, dropout, attn_drop, num_head, xseql, ahsize, norm_output)
+		self.enc1 = Encoder(isize, snwd, num_layer, fhsize, dropout, attn_drop, act_drop, num_head, xseql, ahsize, norm_output)
 
-		self.enc2 = Encoder(isize, tnwd, num_layer, fhsize, dropout, attn_drop, num_head, xseql, ahsize, norm_output)
+		self.enc2 = Encoder(isize, tnwd, num_layer, fhsize, dropout, attn_drop, act_drop, num_head, xseql, ahsize, norm_output)
 
 		if global_emb:
 			self.enc2.wemb.weight = self.enc1.wemb.weight

@@ -28,7 +28,9 @@ class MHPLSTMCore(MHPLSTMCoreBase):
 		super(MHPLSTMCore, self).__init__(isize, num_head=num_head, osize=_osize, dropout=dropout, custom_act=custom_act, enable_bias=enable_bias)
 
 		self.act = None
-		self.trans_hid = nn.Sequential(GroupLinear(i_hsize + i_hsize, _fhsize, num_head, bias=enable_bias, shuffle=False, trans_input=False, flatten_output=False), nn.LayerNorm((num_head, _head_fhsize), eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Dropout(dropout, inplace=inplace_after_Custom_Act), GroupLinear(_fhsize, o_hsize * 3, num_head, bias=enable_proj_bias, shuffle=False, trans_input=False, flatten_output=False)) if dropout > 0.0 else nn.Sequential(GroupLinear(i_hsize + i_hsize, _fhsize, num_head, bias=enable_bias, shuffle=False, trans_input=False, flatten_output=False), nn.LayerNorm((num_head, _head_fhsize), eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), GroupLinear(_fhsize, o_hsize * 3, num_head, bias=enable_proj_bias, shuffle=False, trans_input=False, flatten_output=False))
+		self.trans_hid = nn.Sequential(GroupLinear(i_hsize + i_hsize, _fhsize, num_head, bias=enable_bias, shuffle=False, trans_input=False, flatten_output=False), nn.LayerNorm((num_head, _head_fhsize), eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), GroupLinear(_fhsize, o_hsize * 3, num_head, bias=enable_proj_bias, shuffle=False, trans_input=False, flatten_output=False))
+		if dropout > 0.0:
+			self.trans_hid.insert(3, Dropout(dropout, inplace=inplace_after_Custom_Act))
 
 	def forward(self, heads_input, states=None, head_mask=None, **kwargs):
 
