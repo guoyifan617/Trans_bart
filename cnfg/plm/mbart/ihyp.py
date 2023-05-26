@@ -1,7 +1,7 @@
 #encoding: utf-8
 
 from cnfg.ihyp import *
-from cnfg.plm.bart.hyp import *
+from cnfg.plm.mbart.hyp import *
 
 # biases
 enable_prev_ln_bias_default = enable_proj_bias_default = not ease_optimization

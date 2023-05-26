@@ -27,7 +27,6 @@ class Decoder(DecoderBase):
 		bsize, nsent, nquery = inputo.size()
 
 		out = self.wemb(inputo)
-		isize = out.size(-1)
 		out = self.pemb(inputo.select(1, 0), expand=False).unsqueeze(1) + self.semb(inputo.select(-1, 0), expand=False, sind=start_sent_id).unsqueeze(2) + out * sqrt(isize)
 
 		if self.drop is not None:
@@ -48,7 +47,7 @@ class Decoder(DecoderBase):
 
 		return out
 
-	def greedy_decode(self, inpute, inputc, src_pad_mask=None, context_mask=None, max_len=512, fill_pad=False, sample=False):
+	def greedy_decode(self, inpute, inputc, src_pad_mask=None, context_mask=None, max_len=512, fill_pad=False, sample=False, **kwargs):
 
 		bsize = inpute.size(0)
 		nsent = inputc[0].size(1)
@@ -105,7 +104,7 @@ class Decoder(DecoderBase):
 
 		return torch.cat(trans, 1)
 
-	def beam_decode(self, inpute, inputc, src_pad_mask=None, context_mask=None, beam_size=8, max_len=512, length_penalty=0.0, return_all=False, clip_beam=clip_beam_with_lp, fill_pad=False):
+	def beam_decode(self, inpute, inputc, src_pad_mask=None, context_mask=None, beam_size=8, max_len=512, length_penalty=0.0, return_all=False, clip_beam=clip_beam_with_lp, fill_pad=False, **kwargs):
 
 		bsize, seql = inpute.size()[:2]
 		nsent = inputc[0].size(1)
@@ -115,8 +114,7 @@ class Decoder(DecoderBase):
 		real_bsize = bsize * beam_size
 
 		out = self.get_sos_emb(inpute)
-		isize = out.size(-1)
-		sqrt_isize = sqrt(isize)
+		sqrt_isize = sqrt(out.size(-1))
 
 		if length_penalty > 0.0:
 			lpv = out.new_ones(real_bsize, 1)

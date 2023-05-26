@@ -40,7 +40,7 @@ class NMT(NMTBase):
 		else:
 			return self.dec(ence, inputo, src_pad_mask=_mask, ind=rind), rind
 
-	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, ensemble_decoding=False):
+	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, ensemble_decoding=False, **kwargs):
 
 		mask = inpute.eq(pad_id).unsqueeze(1)
 

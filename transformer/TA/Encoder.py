@@ -29,16 +29,6 @@ class EncoderLayer(EncoderLayerBase):
 		self.attn = ResSelfAttn(isize, _ahsize, num_head=num_head, dropout=attn_drop)
 		self.ff = PositionwiseFF(isize, hsize=_fhsize, dropout=dropout, act_drop=act_drop)
 
-	# inputs: input of this layer (bsize, seql, isize)
-
-	def forward(self, inputs, mask=None, **kwargs):
-
-		context = self.attn(inputs, mask=mask)
-
-		context = self.ff(context)
-
-		return context
-
 class Encoder(EncoderBase):
 
 	# isize: size of word embedding

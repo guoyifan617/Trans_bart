@@ -41,7 +41,7 @@ class NMT(NMTBase):
 
 		return self.dec(self.enc(inpute, _mask), inputo, _mask, word_prediction=word_prediction)
 
-	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0):
+	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, **kwargs):
 
 		mask = inpute.eq(pad_id).unsqueeze(1)
 		_max_len = (inpute.size(1) + max(64, inpute.size(1) // 4)) if max_len is None else max_len

@@ -36,7 +36,6 @@ class EncoderLayer(nn.Module):
 		_fhsize = _ahsize * 4 if fhsize is None else fhsize
 
 		self.attn = ResSelfAttn(isize, _ahsize, num_head=num_head, dropout=attn_drop, norm_residual=norm_residual, k_rel_pos=k_rel_pos, max_bucket_distance=max_bucket_distance)
-
 		self.ff = PositionwiseFF(isize, hsize=_fhsize, dropout=dropout, act_drop=act_drop, norm_residual=norm_residual)
 
 	# inputs: input of this layer (bsize, seql, isize)

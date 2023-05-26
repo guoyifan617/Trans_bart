@@ -36,7 +36,7 @@ class NMT(NMTBase):
 
 		return self.dec(ence, inputo, contexts, _mask, None, start_sent_id=start_sent_id)
 
-	def decode(self, inpute, inputc, beam_size=1, max_len=None, length_penalty=0.0):
+	def decode(self, inpute, inputc, beam_size=1, max_len=None, length_penalty=0.0, **kwargs):
 
 		mask = inpute.eq(pad_id).unsqueeze(1)
 		context_mask = inputc.eq(pad_id).unsqueeze(1)

@@ -46,7 +46,7 @@ class NMT(NMTBase):
 
 		return self.dec(self.enc(inpute, edit=edit, token_types=token_types, mask=_mask), mlm_mask=_mlm_mask, tgt=tgt, prediction=prediction)
 
-	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, pad_id=pad_id, mask_id=mask_id, edit_pad_id=edit_pad_id, blank_id=blank_id, delete_id=delete_id, **kwargs):
+	def decode(self, inpute, beam_size=1, max_len=None, length_penalty=0.0, pad_id=pad_id, mask_id=mask_id, edit_pad_id=edit_pad_id, blank_id=blank_id, delete_id=delete_id, **kwargs, **kwargs):
 
 		_max_len = max(32, inpute.size(1) // 4) if max_len is None else max_len
 

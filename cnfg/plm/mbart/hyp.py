@@ -8,7 +8,7 @@ ease_optimization = False
 advance_activation_function = "GeLU"
 
 # choices: "v1", "v2"
-computation_order = "v1"
+computation_order = "v2"
 
 # default cached sequence length (for positional embedding, etc.)
 cache_len_default = 1026

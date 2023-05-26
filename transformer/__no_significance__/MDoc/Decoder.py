@@ -88,11 +88,11 @@ class Decoder(DecoderBase):
 
 		return out
 
-	def decode(self, inpute, src_pad_mask=None, beam_size=1, max_len=512, length_penalty=0.0, rsentind=None, fill_pad=False):
+	def decode(self, inpute, src_pad_mask=None, beam_size=1, max_len=512, length_penalty=0.0, rsentind=None, fill_pad=False, **kwargs):
 
-		return self.beam_decode(inpute, src_pad_mask, beam_size, max_len, length_penalty, rsentind=rsentind, fill_pad=fill_pad) if beam_size > 1 else self.greedy_decode(inpute, src_pad_mask, max_len, rsentind=rsentind, fill_pad=fill_pad)
+		return self.beam_decode(inpute, src_pad_mask, beam_size, max_len, length_penalty, rsentind=rsentind, fill_pad=fill_pad, **kwargs) if beam_size > 1 else self.greedy_decode(inpute, src_pad_mask, max_len, rsentind=rsentind, fill_pad=fill_pad, **kwargs)
 
-	def greedy_decode(self, inpute, src_pad_mask=None, max_len=512, rsentind=None, fill_pad=False, sample=False):
+	def greedy_decode(self, inpute, src_pad_mask=None, max_len=512, rsentind=None, fill_pad=False, sample=False, **kwargs):
 
 		bsize = inpute.size(0)
 
@@ -154,7 +154,7 @@ class Decoder(DecoderBase):
 
 		return torch.cat(trans, 1)
 
-	def beam_decode(self, inpute, src_pad_mask=None, beam_size=8, max_len=512, length_penalty=0.0, return_all=False, clip_beam=clip_beam_with_lp, rsentind=None, fill_pad=False):
+	def beam_decode(self, inpute, src_pad_mask=None, beam_size=8, max_len=512, length_penalty=0.0, return_all=False, clip_beam=clip_beam_with_lp, rsentind=None, fill_pad=False, **kwargs):
 
 		bsize, seql = inpute.size()[:2]
 
@@ -163,7 +163,6 @@ class Decoder(DecoderBase):
 		real_bsize = bsize * beam_size
 
 		out = self.get_sos_emb(inpute)
-		isize = out.size(-1)
 
 		if length_penalty > 0.0:
 			lpv = out.new_ones(real_bsize, 1)
@@ -173,7 +172,7 @@ class Decoder(DecoderBase):
 			_pemb = self.pemb.get_pos(0)
 			if rsentind is not None:
 				_pemb = _pemb + self.semb.get_pos(rsentind)
-			sqrt_isize = sqrt(isize)
+			sqrt_isize = sqrt(out.size(-1))
 			out = _pemb.add(out, alpha=sqrt_isize)
 
 		if self.drop is not None:

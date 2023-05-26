@@ -124,7 +124,7 @@ class Decoder(DecoderBase):
 
 		return out
 
-	def greedy_decode(self, inpute, src_pad_mask=None, max_len=512, fill_pad=False, sample=False):
+	def greedy_decode(self, inpute, src_pad_mask=None, max_len=512, fill_pad=False, sample=False, **kwargs):
 
 		bsize = inpute.size(0)
 
@@ -173,7 +173,7 @@ class Decoder(DecoderBase):
 
 		return torch.cat(trans, 1)
 
-	def beam_decode(self, inpute, src_pad_mask=None, beam_size=8, max_len=512, length_penalty=0.0, return_all=False, clip_beam=clip_beam_with_lp, fill_pad=False):
+	def beam_decode(self, inpute, src_pad_mask=None, beam_size=8, max_len=512, length_penalty=0.0, return_all=False, clip_beam=clip_beam_with_lp, fill_pad=False, **kwargs):
 
 		bsize, seql = inpute.size()[:2]
 
@@ -304,6 +304,10 @@ class Decoder(DecoderBase):
 			copy_plm_parameter(self.pemb, plm_parameters, "%s.embed_positions.weight" % _model_name)
 			copy_plm_parameter(self.out_normer.weight, plm_parameters, "%s.layernorm_embedding.weight" % _model_name)
 			copy_plm_parameter(self.out_normer.bias, plm_parameters, "%s.layernorm_embedding.bias" % _model_name)
+			if (not remove_classifier_bias) and ("final_logits_bias" in plm_parameters):
+				if self.classifier.bias is None:
+					self.classifier.bias = nn.Parameter(torch.zeros(self.classifier.weight.size(0)))
+				copy_plm_parameter(self.classifier.bias, plm_parameters, "final_logits_bias")
 			for i, net in enumerate(self.nets):
 				net.load_plm(plm_parameters, model_name=_model_name, layer_idx=i, **kwargs)
 		# BART does NOT have the bias vector in the classifier
