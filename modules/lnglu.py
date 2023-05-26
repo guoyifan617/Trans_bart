@@ -6,6 +6,7 @@ from numbers import Integral
 from torch import nn
 
 from modules.base import Dropout, Linear, PositionwiseFF as PositionwiseFFBase, ResCrossAttn as ResCrossAttnBase, ResSelfAttn as ResSelfAttnBase
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
@@ -56,16 +57,18 @@ class ResLNGLU(nn.Module):
 
 class PositionwiseFF_LNGLU(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, norm_residual=norm_residual_default, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, norm_residual=norm_residual_default, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
 		_hsize = isize * 4 if hsize is None else hsize
+		_act_dropout = parse_none(act_dropout, dropout)
 
-		super(PositionwiseFF_LNGLU, self).__init__(isize, hsize=_hsize, dropout=dropout, norm_residual=norm_residual, custom_act=custom_act, enable_bias=enable_bias, **kwargs)
+		super(PositionwiseFF_LNGLU, self).__init__(isize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, norm_residual=norm_residual, custom_act=custom_act, enable_bias=enable_bias, **kwargs)
 
 		_ = [Linear(isize, _hsize, bias=enable_bias), LNGLU(_hsize), Linear(_hsize, isize, bias=enable_bias)]
 		if dropout > 0.0:
 			_.append(Dropout(dropout, inplace=True))
-			_.insert(2, Dropout(dropout, inplace=True))
+		if _act_dropout > 0.0:
+			_.insert(2, Dropout(_act_dropout, inplace=True))
 		self.net = nn.Sequential(*_)
 
 class ResSelfAttn(ResSelfAttnBase):
@@ -126,9 +129,9 @@ class ResCrossAttn(ResCrossAttnBase):
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, norm_residual=norm_residual_default, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, norm_residual=norm_residual_default, **kwargs):
 
-		super(PositionwiseFF, self).__init__(isize, hsize=hsize, dropout=dropout, norm_residual=norm_residual, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=hsize, dropout=dropout, act_dropout=act_dropout, norm_residual=norm_residual, **kwargs)
 
 		self.eff_layer = ResLNGLU(isize, dropout=dropout)
 

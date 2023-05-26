@@ -7,6 +7,7 @@ from modules.attn.rap import CrossAttn as CrossAttnBase, SelfAttn as SelfAttnBas
 from modules.base import Linear, PositionwiseFF as PositionwiseFFBase, ResCrossAttn as ResCrossAttnBase, ResSelfAttn as ResSelfAttnBase
 from modules.nas.gdart import Cell
 from utils.decode.beam import repeat_bsize_for_beam_tensor
+from utils.fmt.parser import parse_none
 from utils.torch.comp import torch_no_grad
 
 from cnfg.ihyp import *
@@ -237,13 +238,14 @@ class ResTaughtCrossAttn(ResCrossAttnBase):
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, **kwargs):
 
 		_hsize = isize * 4 if hsize is None else hsize
+		_act_dropout = parse_none(act_dropout, dropout)
 
-		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, **kwargs)
 
-		self.net = Cell(max(1, _hsize // isize), isize, dropout=dropout)
+		self.net = Cell(max(1, _hsize // isize), isize, dropout=dropout, act_dropout=_act_dropout)
 
 	def load_base(self, base_module):
 

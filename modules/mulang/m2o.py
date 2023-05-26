@@ -7,22 +7,28 @@ from torch import nn
 from modules.base import CrossAttn as CrossAttnBase, Custom_Act, Dropout, PositionwiseFF as PositionwiseFFBase, SelfAttn as SelfAttnBase
 from modules.group.base import GroupLinear
 from modules.mulang.base import LayerNorm
+from utils.fmt.parser import parse_none
 from utils.torch.ext import bmv
 
 from cnfg.ihyp import *
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, ngroup, hsize=None, dropout=0.0, ntask=None, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
+	def __init__(self, isize, ngroup, hsize=None, dropout=0.0, act_dropout=None, ntask=None, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
 		_hsize = isize * 4 if hsize is None else hsize
+		_act_dropout = parse_none(act_dropout, dropout)
 
-		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, custom_act=custom_act, enable_bias=enable_bias, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, custom_act=custom_act, enable_bias=enable_bias, **kwargs)
 
 		_hsize *= ngroup
 		self.ngroup = ngroup
 
-		self.net = nn.Sequential(GroupLinear(isize * ngroup, _hsize, ngroup, shuffle=False, trans_input=False, flatten_output=False), Custom_Act() if custom_act else nn.ReLU(inplace=True), Dropout(dropout, inplace=inplace_after_Custom_Act), GroupLinear(_hsize, isize * ngroup, ngroup, bias=enable_bias, shuffle=False, trans_input=False, flatten_output=False), Dropout(dropout, inplace=True)) if dropout > 0.0 else nn.Sequential(GroupLinear(isize * ngroup, _hsize, ngroup, shuffle=False, trans_input=False, flatten_output=False), Custom_Act() if custom_act else nn.ReLU(inplace=True), GroupLinear(_hsize, isize * ngroup, ngroup, bias=enable_bias, shuffle=False, trans_input=False, flatten_output=False))
+		self.net = nn.Sequential(GroupLinear(isize * ngroup, _hsize, ngroup, shuffle=False, trans_input=False, flatten_output=False), Custom_Act() if custom_act else nn.ReLU(inplace=True), GroupLinear(_hsize, isize * ngroup, ngroup, bias=enable_bias, shuffle=False, trans_input=False, flatten_output=False))
+		if dropout > 0.0:
+			self.net.append(Dropout(dropout, inplace=True))
+		if _act_dropout > 0.0:
+			self.net.insert(2, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))
 		self.normer = LayerNorm((ngroup, isize,), ntask=ntask, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters)
 
 	# weight: (bsize, ngroup)

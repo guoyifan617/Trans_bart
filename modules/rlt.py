@@ -257,13 +257,14 @@ class CrossAttn(CrossAttnBase):
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, norm_residual=norm_residual_default, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, use_glu=use_glu_ffn, ngroup=4, p=None, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, norm_residual=norm_residual_default, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, use_glu=use_glu_ffn, ngroup=4, p=None, **kwargs):
 
 		_hsize = isize * 4 if hsize is None else hsize
 		if (use_glu is not None) and (_hsize % 2 == 1):
 			_hsize += 1
+		_act_dropout = parse_none(act_dropout, dropout)
 
-		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, norm_residual=norm_residual, custom_act=custom_act, enable_bias=enable_bias, use_glu=use_glu, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, norm_residual=norm_residual, custom_act=custom_act, enable_bias=enable_bias, use_glu=use_glu, **kwargs)
 
 		_ = [LTLinear(isize, _hsize, ngroup=ngroup, p=p)]
 		_drop_ind = 2
@@ -282,7 +283,8 @@ class PositionwiseFF(PositionwiseFFBase):
 			_.append(LTLinear(_hsize // 2, isize, bias=enable_bias, ngroup=ngroup, p=p))
 		if dropout > 0.0:
 			_.append(Dropout(dropout, inplace=True))
-			_.insert(_drop_ind, Dropout(dropout, inplace=inplace_after_Custom_Act))
+		if _act_dropout > 0.0:
+			_.insert(_drop_ind, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))
 		self.net = nn.Sequential(*_)
 
 class ResSelfAttn(ResSelfAttnBase):

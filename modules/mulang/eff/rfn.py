@@ -10,12 +10,12 @@ from cnfg.ihyp import *
 
 class LSTMCell4FFN(LSTMCell4FFNBase):
 
-	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, ntask=None, **kwargs):
+	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, act_dropout=None, ntask=None, **kwargs):
 
 		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
 
-		super(LSTMCell4FFN, self).__init__(isize, osize=_osize, hsize=_hsize, dropout=dropout, **kwargs)
+		super(LSTMCell4FFN, self).__init__(isize, osize=_osize, hsize=_hsize, dropout=dropout, act_dropout=act_dropout, **kwargs)
 
 		self.normer = LayerNorm((3, _osize), ntask=ntask, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters)
 

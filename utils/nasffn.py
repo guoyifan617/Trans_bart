@@ -51,19 +51,23 @@ def unfreeze_cell(netin):
 def get_ffn_attr(ffn):
 
 	_hsize, _isize = ffn.net[0].weight.size()
-	_drop = 0.0
-	for _m in ffn.modules():
+	_drop = _act_drop = 0.0
+	_ = list(ffn.modules())
+	_lind = len(_) - 1
+	for i, _m in enumerate(_):
 		if isinstance(_m, Dropout):
-			_drop = _m.p
-			break
+			if i < _lind:
+				_act_drop = _m.p
+			else:
+				_drop = _m.p
 
-	return _isize, _hsize, _drop, ffn.norm_residual
+	return _isize, _hsize, _drop, _act_drop, ffn.norm_residual
 
 def patch_stdffn(netin):
 
 	for _name, _module in netin.named_modules():
 		if isinstance(_module, PositionwiseFFBase):
-			_isize, _hsize, _drop, _nr = get_ffn_attr(_module)
-			add_module(netin, _name, PositionwiseFF(_isize, hsize=_hsize, dropout=_drop, norm_residual=_nr))
+			_isize, _hsize, _drop, _act_drop, _nr = get_ffn_attr(_module)
+			add_module(netin, _name, PositionwiseFF(_isize, hsize=_hsize, dropout=_drop, act_dropout=_act_drop, norm_residual=_nr))
 
 	return netin

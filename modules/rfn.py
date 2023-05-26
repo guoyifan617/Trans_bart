@@ -40,12 +40,13 @@ class DualInputLSTMCell4RNMT(LSTMCell4RNMT):
 
 class LSTMCell4FFN(nn.Module):
 
-	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, use_glu=use_glu_ffn, **kwargs):
+	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, act_dropout=None, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, use_glu=use_glu_ffn, **kwargs):
 
 		super(LSTMCell4FFN, self).__init__()
 
 		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
+		_act_dropout = parse_none(act_dropout, dropout)
 
 		if (use_glu is not None) and (_hsize % 2 == 1):
 			_hsize += 1
@@ -70,7 +71,8 @@ class LSTMCell4FFN(nn.Module):
 			_.append(Linear(_hsize // 2, isize, bias=enable_bias))
 		if dropout > 0.0:
 			_.append(Dropout(dropout, inplace=True))
-			_.insert(_drop_ind, Dropout(dropout, inplace=inplace_after_Custom_Act))
+		if _act_dropout > 0.0:
+			_.insert(_drop_ind, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))
 		self.net = nn.Sequential(*_)
 
 		self.osize = _osize
@@ -93,14 +95,19 @@ class LSTMCell4FFN(nn.Module):
 
 class LSTMCell4AFFN(LSTMCell4FFN):
 
-	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
+	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, act_dropout=None, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
 		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
+		_act_dropout = parse_none(act_dropout, dropout)
 
-		super(LSTMCell4AFFN, self).__init__(isize, osize=_osize, hsize=_hsize, dropout=dropout, custom_act=custom_act, enable_bias=enable_bias)
+		super(LSTMCell4AFFN, self).__init__(isize, osize=_osize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, custom_act=custom_act, enable_bias=enable_bias)
 
-		self.net = nn.Sequential(Linear(isize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Dropout(dropout, inplace=inplace_after_Custom_Act), Linear(_hsize, isize, bias=enable_bias), Dropout(dropout, inplace=True)) if dropout > 0.0 else nn.Sequential(Linear(isize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize, bias=enable_bias))
+		self.net = nn.Sequential(Linear(isize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize, bias=enable_bias))
+		if dropout > 0.0:
+			self.net.append(Dropout(dropout, inplace=True))
+		if _act_dropout > 0.0:
+			self.net.insert(3, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))
 
 	def forward(self, inpute, state, **kwargs):
 
@@ -162,17 +169,22 @@ class LSTMCell4StdFFN(LSTMCell4FFN):
 
 class DualInputLSTMCell4FFN(LSTMCell4FFN):
 
-	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
+	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, act_dropout=None, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
 		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
+		_act_dropout = parse_none(act_dropout, dropout)
 
-		super(DualInputLSTMCell4FFN, self).__init__(isize, osize=_osize, hsize=_hsize, dropout=dropout, custom_act=custom_act, enable_bias=enable_bias)
+		super(DualInputLSTMCell4FFN, self).__init__(isize, osize=_osize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, custom_act=custom_act, enable_bias=enable_bias)
 
 		self.trans = Linear(isize + isize + _osize, _osize * 3, bias=enable_bias)
 		self.normer = nn.LayerNorm((3, _osize), eps=ieps_ln_default, elementwise_affine=enable_ln_parameters)
 
-		self.net = nn.Sequential(Linear(isize + isize + _osize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Dropout(dropout, inplace=inplace_after_Custom_Act), Linear(_hsize, isize, bias=enable_bias), Dropout(dropout, inplace=True)) if dropout > 0.0 else nn.Sequential(Linear(isize + isize + _osize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize, bias=enable_bias))
+		self.net = nn.Sequential(Linear(isize + isize + _osize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize, bias=enable_bias))
+		if dropout > 0.0:
+			self.net.append(Dropout(dropout, inplace=True))
+		if _act_dropout > 0.0:
+			self.net.insert(3, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))
 
 	def forward(self, input1, input2, state, **kwargs):
 
@@ -262,12 +274,14 @@ class PositionwiseFF(PositionwiseFFBase):
 
 class RNN4FFN(nn.Sequential):
 
-	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
+	def __init__(self, isize, osize=None, hsize=None, dropout=0.0, act_dropout=None, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, **kwargs):
 
 		_osize = parse_none(osize, isize)
 		_hsize = _osize * 4 if hsize is None else hsize
+		_act_dropout = parse_none(act_dropout, dropout)
 
+		super(RNN4FFN, self).__init__(Linear(isize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize, bias=enable_bias))
 		if dropout > 0.0:
-			super(RNN4FFN, self).__init__(Linear(isize * 2, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Dropout(dropout, inplace=inplace_after_Custom_Act), Linear(_hsize, isize, bias=enable_bias), Dropout(dropout, inplace=True))
-		else:
-			super(RNN4FFN, self).__init__(Linear(isize, _hsize, bias=enable_bias), nn.LayerNorm(_hsize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize, bias=enable_bias))
+			self.append(Dropout(dropout, inplace=True))
+		if _act_dropout > 0.0:
+			self.insert(3, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))

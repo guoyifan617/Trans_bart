@@ -5,17 +5,18 @@ from torch import nn
 
 from modules.base import CrossAttn as CrossAttnBase, Dropout, ResCrossAttn as ResCrossAttnBase
 from modules.hplstm.wrapper import LSTM4RNMT as HPLSTM
+from utils.fmt.parser import parse_none
 from utils.timeseries import index_tensors, repeat_bsize_for_beam_tensor
 
 from cnfg.ihyp import *
 
 class PositionwiseFF(nn.Module):
 
-	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, **kwargs):
+	def __init__(self, isize, num_head=8, osize=None, fhsize=None, dropout=0.0, act_dropout=None, **kwargs):
 
 		super(PositionwiseFF, self).__init__()
 
-		self.net = HPLSTM(isize, num_head=num_head, osize=osize, fhsize=fhsize, dropout=dropout, **kwargs)
+		self.net = HPLSTM(isize, num_head=num_head, osize=osize, fhsize=fhsize, dropout=parse_none(act_dropout, dropout), **kwargs)
 		self.drop = Dropout(dropout, inplace=True) if dropout > 0.0 else None
 
 	# inpute: (bsize, ngroup, seql, isize)

@@ -143,11 +143,11 @@ class ResCrossAttn(ResCrossAttnBase):
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, norm_residual=norm_residual_default, k_se=k_se, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, norm_residual=norm_residual_default, k_se=k_se, **kwargs):
 
 		_s_isize = isize // k_se
 
-		super(PositionwiseFF, self).__init__(_s_isize, hsize=hsize, dropout=dropout, norm_residual=norm_residual, **kwargs)
+		super(PositionwiseFF, self).__init__(_s_isize, hsize=hsize, dropout=dropout, act_dropout=act_dropout, norm_residual=norm_residual, **kwargs)
 
 		self.normer = nn.LayerNorm(isize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters)
 		self.s_net = Squeezer(isize, k_se, dropout=dropout)

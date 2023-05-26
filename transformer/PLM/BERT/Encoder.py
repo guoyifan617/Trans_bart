@@ -5,7 +5,6 @@ from math import sqrt
 from torch import nn
 
 from modules.dropout import Dropout
-from modules.plm.bert import PositionwiseFF
 from transformer.Encoder import Encoder as EncoderBase
 from transformer.TA.Encoder import EncoderLayer as EncoderLayerBase
 from utils.fmt.parser import parse_none
@@ -20,13 +19,9 @@ class EncoderLayer(EncoderLayerBase):
 
 	def __init__(self, isize, fhsize=None, dropout=0.0, attn_drop=0.0, num_head=8, ahsize=None, norm_residual=norm_residual_default, k_rel_pos=use_k_relative_position_encoder, max_bucket_distance=relative_position_max_bucket_distance_encoder, model_name="bert", **kwargs):
 
-		_ahsize = parse_none(ahsize, isize)
-		_fhsize = _ahsize * 4 if fhsize is None else fhsize
-
-		super(EncoderLayer, self).__init__(isize, fhsize=_fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=_ahsize, norm_residual=norm_residual, k_rel_pos=k_rel_pos, max_bucket_distance=max_bucket_distance, **kwargs)
+		super(EncoderLayer, self).__init__(isize, fhsize=fhsize, dropout=dropout, attn_drop=attn_drop, num_head=num_head, ahsize=ahsize, norm_residual=norm_residual, k_rel_pos=k_rel_pos, max_bucket_distance=max_bucket_distance, **kwargs)
 
 		self.model_name = model_name
-		self.ff = PositionwiseFF(isize, hsize=_fhsize, dropout=dropout, norm_residual=norm_residual, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, use_glu=use_glu_ffn)
 
 	def load_plm(self, plm_parameters, model_name=None, layer_idx=None, **kwargs):
 

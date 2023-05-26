@@ -41,8 +41,6 @@ class PositionwiseFF(PositionwiseFFBase):
 
 	def __init__(self, *args, **kwargs):
 
-		_hsize = isize * 4 if hsize is None else hsize
-
 		super(PositionwiseFF, self).__init__(*args, **kwargs)
 
 		self.reg_w = 0.0

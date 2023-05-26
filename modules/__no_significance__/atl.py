@@ -7,6 +7,7 @@ from modules.act import Custom_Act
 from modules.base import Dropout, Linear, PositionwiseFF as PositionwiseFFBase
 from modules.group.base import GroupLinear
 from utils.base import float2odd
+from utils.fmt.parser import parse_none
 
 from cnfg.ihyp import *
 
@@ -55,10 +56,15 @@ class AttnLinear(nn.Module):
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, custom_act=use_adv_act_default, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, custom_act=use_adv_act_default, **kwargs):
 
 		_hsize = isize * 4 if hsize is None else hsize
+		_act_dropout = parse_none(act_dropout, dropout)
 
-		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, custom_act=custom_act, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, act_dropout=_act_dropout, custom_act=custom_act, **kwargs)
 
-		self.net = nn.Sequential(AttnLinear(isize, _hsize), Custom_Act() if custom_act else nn.ReLU(inplace=True), Dropout(dropout, inplace=inplace_after_Custom_Act), Linear(_hsize, isize), Dropout(dropout, inplace=True)) if dropout > 0.0 else nn.Sequential(AttnLinear(isize, _hsize), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize))
+		self.net = nn.Sequential(AttnLinear(isize, _hsize), Custom_Act() if custom_act else nn.ReLU(inplace=True), Linear(_hsize, isize))
+		if dropout > 0.0:
+			self.net.append(Dropout(dropout, inplace=True))
+		if _act_dropout > 0.0:
+			self.net.insert(2, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))

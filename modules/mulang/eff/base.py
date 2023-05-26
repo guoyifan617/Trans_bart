@@ -124,11 +124,9 @@ class ResCrossAttn(ResCrossAttnBase):
 
 class PositionwiseFF(PositionwiseFFBase):
 
-	def __init__(self, isize, hsize=None, dropout=0.0, norm_residual=norm_residual_default, ntask=None, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, norm_residual=norm_residual_default, ntask=None, **kwargs):
 
-		_hsize = isize * 4 if hsize is None else hsize
-
-		super(PositionwiseFF, self).__init__(isize, hsize=_hsize, dropout=dropout, norm_residual=norm_residual, **kwargs)
+		super(PositionwiseFF, self).__init__(isize, hsize=hsize, dropout=dropout, act_dropout=act_dropout, norm_residual=norm_residual, **kwargs)
 
 		self.normer = LayerNorm(isize, ntask=ntask, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters)
 

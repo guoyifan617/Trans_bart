@@ -24,11 +24,12 @@ class PositionwiseFF(nn.Module):
 	# isize: input dimension
 	# hsize: hidden dimension
 
-	def __init__(self, isize, hsize=None, dropout=0.0, norm_residual=norm_residual_default, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, use_glu=use_glu_ffn, **kwargs):
+	def __init__(self, isize, hsize=None, dropout=0.0, act_dropout=None, norm_residual=norm_residual_default, custom_act=use_adv_act_default, enable_bias=enable_prev_ln_bias_default, use_glu=use_glu_ffn, **kwargs):
 
 		super(PositionwiseFF, self).__init__()
 
 		_hsize = isize * 4 if hsize is None else hsize
+		_act_dropout = parse_none(act_dropout, dropout)
 
 		if (use_glu is not None) and (_hsize % 2 == 1):
 			_hsize += 1
@@ -50,7 +51,8 @@ class PositionwiseFF(nn.Module):
 			_.append(Linear(_hsize // 2, isize, bias=enable_bias))
 		if dropout > 0.0:
 			_.append(Dropout(dropout, inplace=True))
-			_.insert(_drop_ind, Dropout(dropout, inplace=inplace_after_Custom_Act))
+		if _act_dropout > 0.0:
+			_.insert(_drop_ind, Dropout(_act_dropout, inplace=inplace_after_Custom_Act))
 		self.net = nn.Sequential(*_)
 
 		self.normer = nn.LayerNorm(isize, eps=ieps_ln_default, elementwise_affine=enable_ln_parameters)

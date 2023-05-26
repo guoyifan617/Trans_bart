@@ -57,6 +57,7 @@ nlayer = 6
 
 drop = 0.1
 attn_drop = drop
+act_drop = drop
 
 # False for Hier/Incept Models
 norm_output = True
