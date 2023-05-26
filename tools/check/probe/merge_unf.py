@@ -17,11 +17,11 @@ def handle(cnfg, srcmtf, unfdecf, rsf):
 	with h5File(cnfg.dev_data, "r") as tdf:
 		nwordi, nwordt = tdf["nword"][()].tolist()
 
-	mymodel = NMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
+	mymodel = NMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.act_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
 	init_model_params(mymodel)
 	mymodel = load_model_cpu(srcmtf, mymodel)
 	_, dec_layer = parse_double_value_tuple(cnfg.nlayer)
-	_tmpm_dec = Decoder(cnfg.isize, nwordt, dec_layer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, None, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes).nets# comment .nets for old code
+	_tmpm_dec = Decoder(cnfg.isize, nwordt, dec_layer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.act_drop, None, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes).nets# comment .nets for old code
 	init_model_params(_tmpm_dec)
 	_tmpm_dec = load_model_cpu(unfdecf, _tmpm_dec)
 	mymodel.dec.nets = _tmpm_dec# add .nets for old code

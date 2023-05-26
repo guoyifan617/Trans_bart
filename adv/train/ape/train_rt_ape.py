@@ -224,7 +224,7 @@ nwordi, nwordt = nword[0], nword[-1]
 tl = [str(i) for i in range(ntrain)]
 
 logger.info("Design models with seed: %d" % torch.initial_seed())
-mymodel = NMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
+mymodel = NMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.act_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
 
 fine_tune_m = cnfg.fine_tune_m
 
@@ -235,7 +235,7 @@ if fine_tune_m is not None:
 	mymodel = load_model_cpu(fine_tune_m, mymodel)
 	mymodel.apply(load_fixing)
 
-src_tgt_m, tgt_src_m = StdNMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer_mt, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes), StdNMT(cnfg.isize, nwordt, nwordi, cnfg.nlayer_mt, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.tsm_forbidden_indexes)
+src_tgt_m, tgt_src_m = StdNMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer_mt, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.act_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes), StdNMT(cnfg.isize, nwordt, nwordi, cnfg.nlayer_mt, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.act_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.tsm_forbidden_indexes)
 src_tgt_m, tgt_src_m = init_model_params(src_tgt_m), init_model_params(tgt_src_m)
 src_tgt_m.apply(init_fixing)
 tgt_src_m.apply(init_fixing)

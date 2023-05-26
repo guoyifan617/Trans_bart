@@ -238,7 +238,7 @@ use_kd = remain_steps <= kd_step
 kd_loss_w = kd_T * kd_T * cnfg.kd_weight
 
 logger.info("Design models with seed: %d" % torch.initial_seed())
-mymodel = NMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes, num_topk=cnfg.num_topk, T=kd_T, warm_cache_steps=cnfg.warm_cache_steps, min_gold_p=cnfg.min_gold_p, mavg_beta=cnfg.mavg_beta, warm_mvavg_steps=cnfg.warm_mvavg_steps, num_cache_topk=cnfg.num_cache_topk)
+mymodel = NMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.act_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes, num_topk=cnfg.num_topk, T=kd_T, warm_cache_steps=cnfg.warm_cache_steps, min_gold_p=cnfg.min_gold_p, mavg_beta=cnfg.mavg_beta, warm_mvavg_steps=cnfg.warm_mvavg_steps, num_cache_topk=cnfg.num_cache_topk)
 
 fine_tune_m = cnfg.fine_tune_m
 

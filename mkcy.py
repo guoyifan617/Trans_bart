@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
 	eccargs = ["-Ofast", "-march=native", "-pipe", "-fomit-frame-pointer"]
 
-	baselist = ["lrsch.py", "translator.py"]
+	baselist = ["lrsch.py"]
 	extlist = [Extension(get_name(pyf), [pyf], extra_compile_args=eccargs) for pyf in baselist]
 	for _mp in ("parallel/", "loss/", "optm/", "modules/", "transformer/", "utils/", "datautils/",):
 		_tmp = walk_path(_mp, eccargs)

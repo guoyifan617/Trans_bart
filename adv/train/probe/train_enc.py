@@ -210,7 +210,7 @@ nwordi, nwordt = nword[0], nword[-1]
 tl = [str(i) for i in range(ntrain)]
 
 logger.info("Design models with seed: %d" % torch.initial_seed())
-mymodel = NMT(cnfg.isize, nwordi, cnfg.num_layer_fwd, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bind_emb)
+mymodel = NMT(cnfg.isize, nwordi, cnfg.num_layer_fwd, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.act_drop, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bind_emb)
 
 fine_tune_m = cnfg.fine_tune_m
 
@@ -218,7 +218,7 @@ mymodel = init_model_params(mymodel)
 mymodel.apply(init_fixing)
 if fine_tune_m is not None:
 	logger.info("Load pre-trained model from: " + fine_tune_m)
-	_tmpm = NMTBase(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
+	_tmpm = NMTBase(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.act_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
 	_tmpm = init_model_params(_tmpm)
 	_tmpm.apply(init_fixing)
 	_tmpm = load_model_cpu(fine_tune_m, _tmpm)

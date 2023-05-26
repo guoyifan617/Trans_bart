@@ -243,7 +243,7 @@ ntrain = len(tl)
 vl = [(str(nsent), str(_curd),) for nsent, ndata in zip(vd["nsent"][()].tolist(), vd["ndata"][()].tolist()) for _curd in range(ndata)]
 
 logger.info("Design models with seed: %d" % torch.initial_seed())
-mymodel = NMT(cnfg.isize, nwordi, nwordp, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes, cnfg.num_layer_pret)
+mymodel = NMT(cnfg.isize, nwordi, nwordp, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.act_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes, cnfg.num_layer_pret)
 mymodel.enc.context_enc = patch_pret_model_ffn(mymodel.enc.context_enc)
 
 fine_tune_m = cnfg.fine_tune_m
@@ -253,7 +253,7 @@ base_para_group = None
 mymodel = init_model_params(mymodel)
 if fine_tune_m is not None:
 	logger.info("Load pre-trained model from: " + fine_tune_m)
-	_tmpm = BaseNMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
+	_tmpm = BaseNMT(cnfg.isize, nwordi, nwordt, cnfg.nlayer, cnfg.ff_hsize, cnfg.drop, cnfg.attn_drop, cnfg.act_drop, cnfg.share_emb, cnfg.nhead, cache_len_default, cnfg.attn_hsize, cnfg.norm_output, cnfg.bindDecoderEmb, cnfg.forbidden_indexes)
 	_tmpm = load_model_cpu(fine_tune_m, _tmpm)
 	if cnfg.fine_tune_mdoc is None:
 		_tmpmdocenc = None

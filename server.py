@@ -7,7 +7,7 @@ from datautils.bpe import BPEApplier, BPERemover
 from datautils.moses import SentenceSplitter
 # import Tokenizer/Detokenizer/SentenceSplitter from datautils.zh for Chinese
 from datautils.pymoses import Detokenizer, Detruecaser, Normalizepunctuation, Tokenizer, Truecaser
-from translator import Translator, TranslatorCore
+from modules.server.transformer import Translator, TranslatorCore
 
 import cnfg.base as cnfg
 
