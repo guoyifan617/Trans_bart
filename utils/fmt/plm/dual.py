@@ -4,7 +4,7 @@ from math import ceil
 
 from utils.fmt.base import get_bsize, iter_to_int, list_reader as file_reader, pad_batch
 
-from cnfg.vocab.base import pad_id
+from cnfg.vocab.base_bart import pad_id
 
 def batch_loader(finput, ftarget, bsize, maxpad, maxpart, maxtoken, minbsize, get_bsize=get_bsize, file_reader=file_reader, iter_to_int=iter_to_int, **kwargs):
 

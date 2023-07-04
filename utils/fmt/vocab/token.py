@@ -4,7 +4,7 @@ import sys
 
 from utils.fmt.base import list_reader as file_reader, sys_open
 
-from cnfg.vocab.base import init_normal_token_id, init_vocab
+from cnfg.vocab.base_bart import init_normal_token_id, init_vocab
 
 sep_load, sep_save = None, " "
 

@@ -1,7 +1,7 @@
 #encoding: utf-8
 
 import sys
-from transformers import BartTokenizerFast as Tokenizer
+from transformers import BertTokenizer as Tokenizer
 
 from utils.fmt.plm.token import map_file as map_func
 

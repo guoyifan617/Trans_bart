@@ -6,7 +6,7 @@ from utils.fmt.base import clean_list, iter_to_str, loop_file_so
 from utils.fmt.vocab.base import map_instance, no_unk_mapper
 from utils.fmt.vocab.token import ldvocab
 
-from cnfg.vocab.base import eos_id, init_normal_token_id, init_vocab, sos_id, unk_id, use_unk
+from cnfg.vocab.base_bart import eos_id, init_normal_token_id, init_vocab, sos_id, unk_id, use_unk
 
 def handle(srcf, vcbf, rsf, add_sp_tokens=True, minfreq=False, vsize=False):
 

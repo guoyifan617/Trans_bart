@@ -7,7 +7,7 @@ from lzma import open as xz_open
 from random import shuffle
 
 from cnfg.hyp import raw_cache_compression_level
-from cnfg.vocab.base import pad_id
+from cnfg.vocab.base_bart import pad_id
 
 serial_func, deserial_func = repr, eval
 

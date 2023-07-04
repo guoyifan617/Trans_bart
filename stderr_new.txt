@@ -1,0 +1,2185 @@
++ source /home/yfguo/scripts/init_conda.sh
++++ /home/yfguo/miniconda3/bin/conda shell.bash hook
+++ __conda_setup='export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\''
+
+# Copyright (C) 2012 Anaconda, Inc
+# SPDX-License-Identifier: BSD-3-Clause
+
+__conda_exe() (
+    "$CONDA_EXE" $_CE_M $_CE_CONDA "$@"
+)
+
+__conda_hashr() {
+    if [ -n "${ZSH_VERSION:+x}" ]; then
+        \rehash
+    elif [ -n "${POSH_VERSION:+x}" ]; then
+        :  # pass
+    else
+        \hash -r
+    fi
+}
+
+__conda_activate() {
+    if [ -n "${CONDA_PS1_BACKUP:+x}" ]; then
+        # Handle transition from shell activated with conda <= 4.3 to a subsequent activation
+        # after conda updated to >= 4.4. See issue #6173.
+        PS1="$CONDA_PS1_BACKUP"
+        \unset CONDA_PS1_BACKUP
+    fi
+    \local ask_conda
+    ask_conda="$(PS1="${PS1:-}" __conda_exe shell.posix "$@")" || \return
+    \eval "$ask_conda"
+    __conda_hashr
+}
+
+__conda_reactivate() {
+    \local ask_conda
+    ask_conda="$(PS1="${PS1:-}" __conda_exe shell.posix reactivate)" || \return
+    \eval "$ask_conda"
+    __conda_hashr
+}
+
+conda() {
+    \local cmd="${1-__missing__}"
+    case "$cmd" in
+        activate|deactivate)
+            __conda_activate "$@"
+            ;;
+        install|update|upgrade|remove|uninstall)
+            __conda_exe "$@" || \return
+            __conda_reactivate
+            ;;
+        *)
+            __conda_exe "$@"
+            ;;
+    esac
+}
+
+if [ -z "${CONDA_SHLVL+x}" ]; then
+    \export CONDA_SHLVL=0
+    # In dev-mode CONDA_EXE is python.exe and on Windows
+    # it is in a different relative location to condabin.
+    if [ -n "${_CE_CONDA:+x}" ] && [ -n "${WINDIR+x}" ]; then
+        PATH="$(\dirname "$CONDA_EXE")/condabin${PATH:+":${PATH}"}"
+    else
+        PATH="$(\dirname "$(\dirname "$CONDA_EXE")")/condabin${PATH:+":${PATH}"}"
+    fi
+    \export PATH
+
+    # We'\''re not allowing PS1 to be unbound. It must at least be set.
+    # However, we'\''re not exporting it, which can cause problems when starting a second shell
+    # via a first shell (i.e. starting zsh from bash).
+    if [ -z "${PS1+x}" ]; then
+        PS1=
+    fi
+fi
+
+conda activate base'
+++ '[' 0 -eq 0 ']'
+++ eval 'export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\''
+
+# Copyright (C) 2012 Anaconda, Inc
+# SPDX-License-Identifier: BSD-3-Clause
+
+__conda_exe() (
+    "$CONDA_EXE" $_CE_M $_CE_CONDA "$@"
+)
+
+__conda_hashr() {
+    if [ -n "${ZSH_VERSION:+x}" ]; then
+        \rehash
+    elif [ -n "${POSH_VERSION:+x}" ]; then
+        :  # pass
+    else
+        \hash -r
+    fi
+}
+
+__conda_activate() {
+    if [ -n "${CONDA_PS1_BACKUP:+x}" ]; then
+        # Handle transition from shell activated with conda <= 4.3 to a subsequent activation
+        # after conda updated to >= 4.4. See issue #6173.
+        PS1="$CONDA_PS1_BACKUP"
+        \unset CONDA_PS1_BACKUP
+    fi
+    \local ask_conda
+    ask_conda="$(PS1="${PS1:-}" __conda_exe shell.posix "$@")" || \return
+    \eval "$ask_conda"
+    __conda_hashr
+}
+
+__conda_reactivate() {
+    \local ask_conda
+    ask_conda="$(PS1="${PS1:-}" __conda_exe shell.posix reactivate)" || \return
+    \eval "$ask_conda"
+    __conda_hashr
+}
+
+conda() {
+    \local cmd="${1-__missing__}"
+    case "$cmd" in
+        activate|deactivate)
+            __conda_activate "$@"
+            ;;
+        install|update|upgrade|remove|uninstall)
+            __conda_exe "$@" || \return
+            __conda_reactivate
+            ;;
+        *)
+            __conda_exe "$@"
+            ;;
+    esac
+}
+
+if [ -z "${CONDA_SHLVL+x}" ]; then
+    \export CONDA_SHLVL=0
+    # In dev-mode CONDA_EXE is python.exe and on Windows
+    # it is in a different relative location to condabin.
+    if [ -n "${_CE_CONDA:+x}" ] && [ -n "${WINDIR+x}" ]; then
+        PATH="$(\dirname "$CONDA_EXE")/condabin${PATH:+":${PATH}"}"
+    else
+        PATH="$(\dirname "$(\dirname "$CONDA_EXE")")/condabin${PATH:+":${PATH}"}"
+    fi
+    \export PATH
+
+    # We'\''re not allowing PS1 to be unbound. It must at least be set.
+    # However, we'\''re not exporting it, which can cause problems when starting a second shell
+    # via a first shell (i.e. starting zsh from bash).
+    if [ -z "${PS1+x}" ]; then
+        PS1=
+    fi
+fi
+
+conda activate base'
++++ export CONDA_EXE=/home/yfguo/miniconda3/bin/conda
++++ CONDA_EXE=/home/yfguo/miniconda3/bin/conda
++++ export _CE_M=
++++ _CE_M=
++++ export _CE_CONDA=
++++ _CE_CONDA=
++++ export CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
++++ CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
++++ '[' -z '' ']'
++++ export CONDA_SHLVL=0
++++ CONDA_SHLVL=0
++++ '[' -n '' ']'
++++++ dirname /home/yfguo/miniconda3/bin/conda
+++++ dirname /home/yfguo/miniconda3/bin
++++ PATH=/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
++++ export PATH
++++ '[' -z '' ']'
++++ PS1=
++++ conda activate base
++++ local cmd=activate
++++ case "$cmd" in
++++ __conda_activate activate base
++++ '[' -n '' ']'
++++ local ask_conda
+++++ PS1=
+++++ __conda_exe shell.posix activate base
+++++ /home/yfguo/miniconda3/bin/conda shell.posix activate base
++++ ask_conda='PS1='\''(base) '\''
+export PATH='\''/home/yfguo/miniconda3/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'\''
+export CONDA_PREFIX='\''/home/yfguo/miniconda3'\''
+export CONDA_SHLVL='\''1'\''
+export CONDA_DEFAULT_ENV='\''base'\''
+export CONDA_PROMPT_MODIFIER='\''(base) '\''
+export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\'''
++++ eval 'PS1='\''(base) '\''
+export PATH='\''/home/yfguo/miniconda3/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'\''
+export CONDA_PREFIX='\''/home/yfguo/miniconda3'\''
+export CONDA_SHLVL='\''1'\''
+export CONDA_DEFAULT_ENV='\''base'\''
+export CONDA_PROMPT_MODIFIER='\''(base) '\''
+export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\'''
+++++ PS1='(base) '
+++++ export PATH=/home/yfguo/miniconda3/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+++++ PATH=/home/yfguo/miniconda3/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+++++ export CONDA_PREFIX=/home/yfguo/miniconda3
+++++ CONDA_PREFIX=/home/yfguo/miniconda3
+++++ export CONDA_SHLVL=1
+++++ CONDA_SHLVL=1
+++++ export CONDA_DEFAULT_ENV=base
+++++ CONDA_DEFAULT_ENV=base
+++++ export 'CONDA_PROMPT_MODIFIER=(base) '
+++++ CONDA_PROMPT_MODIFIER='(base) '
+++++ export CONDA_EXE=/home/yfguo/miniconda3/bin/conda
+++++ CONDA_EXE=/home/yfguo/miniconda3/bin/conda
+++++ export _CE_M=
+++++ _CE_M=
+++++ export _CE_CONDA=
+++++ _CE_CONDA=
+++++ export CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
+++++ CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
++++ __conda_hashr
++++ '[' -n '' ']'
++++ '[' -n '' ']'
++++ hash -r
+++ unset __conda_setup
++ conda activate Trans_base
++ local cmd=activate
++ case "$cmd" in
++ __conda_activate activate Trans_base
++ '[' -n '' ']'
++ local ask_conda
+++ PS1='(base) '
+++ __conda_exe shell.posix activate Trans_base
+++ /home/yfguo/miniconda3/bin/conda shell.posix activate Trans_base
++ ask_conda='PS1='\''(Trans_base) '\''
+export PATH='\''/home/yfguo/miniconda3/envs/Trans_base/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'\''
+export CONDA_PREFIX='\''/home/yfguo/miniconda3/envs/Trans_base'\''
+export CONDA_SHLVL='\''2'\''
+export CONDA_DEFAULT_ENV='\''Trans_base'\''
+export CONDA_PROMPT_MODIFIER='\''(Trans_base) '\''
+export CONDA_PREFIX_1='\''/home/yfguo/miniconda3'\''
+export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\'''
++ eval 'PS1='\''(Trans_base) '\''
+export PATH='\''/home/yfguo/miniconda3/envs/Trans_base/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'\''
+export CONDA_PREFIX='\''/home/yfguo/miniconda3/envs/Trans_base'\''
+export CONDA_SHLVL='\''2'\''
+export CONDA_DEFAULT_ENV='\''Trans_base'\''
+export CONDA_PROMPT_MODIFIER='\''(Trans_base) '\''
+export CONDA_PREFIX_1='\''/home/yfguo/miniconda3'\''
+export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\'''
+++ PS1='(Trans_base) '
+++ export PATH=/home/yfguo/miniconda3/envs/Trans_base/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+++ PATH=/home/yfguo/miniconda3/envs/Trans_base/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+++ export CONDA_PREFIX=/home/yfguo/miniconda3/envs/Trans_base
+++ CONDA_PREFIX=/home/yfguo/miniconda3/envs/Trans_base
+++ export CONDA_SHLVL=2
+++ CONDA_SHLVL=2
+++ export CONDA_DEFAULT_ENV=Trans_base
+++ CONDA_DEFAULT_ENV=Trans_base
+++ export 'CONDA_PROMPT_MODIFIER=(Trans_base) '
+++ CONDA_PROMPT_MODIFIER='(Trans_base) '
+++ export CONDA_PREFIX_1=/home/yfguo/miniconda3
+++ CONDA_PREFIX_1=/home/yfguo/miniconda3
+++ export CONDA_EXE=/home/yfguo/miniconda3/bin/conda
+++ CONDA_EXE=/home/yfguo/miniconda3/bin/conda
+++ export _CE_M=
+++ _CE_M=
+++ export _CE_CONDA=
+++ _CE_CONDA=
+++ export CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
+++ CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
++ __conda_hashr
++ '[' -n '' ']'
++ '[' -n '' ']'
++ hash -r
++ python true_dict_meng_train_bart.py
+
+Session terminated, killing shell...+ source /home/yfguo/scripts/init_conda.sh
++++ /home/yfguo/miniconda3/bin/conda shell.bash hook
+++ __conda_setup='export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\''
+
+# Copyright (C) 2012 Anaconda, Inc
+# SPDX-License-Identifier: BSD-3-Clause
+
+__conda_exe() (
+    "$CONDA_EXE" $_CE_M $_CE_CONDA "$@"
+)
+
+__conda_hashr() {
+    if [ -n "${ZSH_VERSION:+x}" ]; then
+        \rehash
+    elif [ -n "${POSH_VERSION:+x}" ]; then
+        :  # pass
+    else
+        \hash -r
+    fi
+}
+
+__conda_activate() {
+    if [ -n "${CONDA_PS1_BACKUP:+x}" ]; then
+        # Handle transition from shell activated with conda <= 4.3 to a subsequent activation
+        # after conda updated to >= 4.4. See issue #6173.
+        PS1="$CONDA_PS1_BACKUP"
+        \unset CONDA_PS1_BACKUP
+    fi
+    \local ask_conda
+    ask_conda="$(PS1="${PS1:-}" __conda_exe shell.posix "$@")" || \return
+    \eval "$ask_conda"
+    __conda_hashr
+}
+
+__conda_reactivate() {
+    \local ask_conda
+    ask_conda="$(PS1="${PS1:-}" __conda_exe shell.posix reactivate)" || \return
+    \eval "$ask_conda"
+    __conda_hashr
+}
+
+conda() {
+    \local cmd="${1-__missing__}"
+    case "$cmd" in
+        activate|deactivate)
+            __conda_activate "$@"
+            ;;
+        install|update|upgrade|remove|uninstall)
+            __conda_exe "$@" || \return
+            __conda_reactivate
+            ;;
+        *)
+            __conda_exe "$@"
+            ;;
+    esac
+}
+
+if [ -z "${CONDA_SHLVL+x}" ]; then
+    \export CONDA_SHLVL=0
+    # In dev-mode CONDA_EXE is python.exe and on Windows
+    # it is in a different relative location to condabin.
+    if [ -n "${_CE_CONDA:+x}" ] && [ -n "${WINDIR+x}" ]; then
+        PATH="$(\dirname "$CONDA_EXE")/condabin${PATH:+":${PATH}"}"
+    else
+        PATH="$(\dirname "$(\dirname "$CONDA_EXE")")/condabin${PATH:+":${PATH}"}"
+    fi
+    \export PATH
+
+    # We'\''re not allowing PS1 to be unbound. It must at least be set.
+    # However, we'\''re not exporting it, which can cause problems when starting a second shell
+    # via a first shell (i.e. starting zsh from bash).
+    if [ -z "${PS1+x}" ]; then
+        PS1=
+    fi
+fi
+
+conda activate base'
+++ '[' 0 -eq 0 ']'
+++ eval 'export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\''
+
+# Copyright (C) 2012 Anaconda, Inc
+# SPDX-License-Identifier: BSD-3-Clause
+
+__conda_exe() (
+    "$CONDA_EXE" $_CE_M $_CE_CONDA "$@"
+)
+
+__conda_hashr() {
+    if [ -n "${ZSH_VERSION:+x}" ]; then
+        \rehash
+    elif [ -n "${POSH_VERSION:+x}" ]; then
+        :  # pass
+    else
+        \hash -r
+    fi
+}
+
+__conda_activate() {
+    if [ -n "${CONDA_PS1_BACKUP:+x}" ]; then
+        # Handle transition from shell activated with conda <= 4.3 to a subsequent activation
+        # after conda updated to >= 4.4. See issue #6173.
+        PS1="$CONDA_PS1_BACKUP"
+        \unset CONDA_PS1_BACKUP
+    fi
+    \local ask_conda
+    ask_conda="$(PS1="${PS1:-}" __conda_exe shell.posix "$@")" || \return
+    \eval "$ask_conda"
+    __conda_hashr
+}
+
+__conda_reactivate() {
+    \local ask_conda
+    ask_conda="$(PS1="${PS1:-}" __conda_exe shell.posix reactivate)" || \return
+    \eval "$ask_conda"
+    __conda_hashr
+}
+
+conda() {
+    \local cmd="${1-__missing__}"
+    case "$cmd" in
+        activate|deactivate)
+            __conda_activate "$@"
+            ;;
+        install|update|upgrade|remove|uninstall)
+            __conda_exe "$@" || \return
+            __conda_reactivate
+            ;;
+        *)
+            __conda_exe "$@"
+            ;;
+    esac
+}
+
+if [ -z "${CONDA_SHLVL+x}" ]; then
+    \export CONDA_SHLVL=0
+    # In dev-mode CONDA_EXE is python.exe and on Windows
+    # it is in a different relative location to condabin.
+    if [ -n "${_CE_CONDA:+x}" ] && [ -n "${WINDIR+x}" ]; then
+        PATH="$(\dirname "$CONDA_EXE")/condabin${PATH:+":${PATH}"}"
+    else
+        PATH="$(\dirname "$(\dirname "$CONDA_EXE")")/condabin${PATH:+":${PATH}"}"
+    fi
+    \export PATH
+
+    # We'\''re not allowing PS1 to be unbound. It must at least be set.
+    # However, we'\''re not exporting it, which can cause problems when starting a second shell
+    # via a first shell (i.e. starting zsh from bash).
+    if [ -z "${PS1+x}" ]; then
+        PS1=
+    fi
+fi
+
+conda activate base'
++++ export CONDA_EXE=/home/yfguo/miniconda3/bin/conda
++++ CONDA_EXE=/home/yfguo/miniconda3/bin/conda
++++ export _CE_M=
++++ _CE_M=
++++ export _CE_CONDA=
++++ _CE_CONDA=
++++ export CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
++++ CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
++++ '[' -z '' ']'
++++ export CONDA_SHLVL=0
++++ CONDA_SHLVL=0
++++ '[' -n '' ']'
++++++ dirname /home/yfguo/miniconda3/bin/conda
+++++ dirname /home/yfguo/miniconda3/bin
++++ PATH=/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
++++ export PATH
++++ '[' -z '' ']'
++++ PS1=
++++ conda activate base
++++ local cmd=activate
++++ case "$cmd" in
++++ __conda_activate activate base
++++ '[' -n '' ']'
++++ local ask_conda
+++++ PS1=
+++++ __conda_exe shell.posix activate base
+++++ /home/yfguo/miniconda3/bin/conda shell.posix activate base
++++ ask_conda='PS1='\''(base) '\''
+export PATH='\''/home/yfguo/miniconda3/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'\''
+export CONDA_PREFIX='\''/home/yfguo/miniconda3'\''
+export CONDA_SHLVL='\''1'\''
+export CONDA_DEFAULT_ENV='\''base'\''
+export CONDA_PROMPT_MODIFIER='\''(base) '\''
+export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\'''
++++ eval 'PS1='\''(base) '\''
+export PATH='\''/home/yfguo/miniconda3/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'\''
+export CONDA_PREFIX='\''/home/yfguo/miniconda3'\''
+export CONDA_SHLVL='\''1'\''
+export CONDA_DEFAULT_ENV='\''base'\''
+export CONDA_PROMPT_MODIFIER='\''(base) '\''
+export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\'''
+++++ PS1='(base) '
+++++ export PATH=/home/yfguo/miniconda3/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+++++ PATH=/home/yfguo/miniconda3/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+++++ export CONDA_PREFIX=/home/yfguo/miniconda3
+++++ CONDA_PREFIX=/home/yfguo/miniconda3
+++++ export CONDA_SHLVL=1
+++++ CONDA_SHLVL=1
+++++ export CONDA_DEFAULT_ENV=base
+++++ CONDA_DEFAULT_ENV=base
+++++ export 'CONDA_PROMPT_MODIFIER=(base) '
+++++ CONDA_PROMPT_MODIFIER='(base) '
+++++ export CONDA_EXE=/home/yfguo/miniconda3/bin/conda
+++++ CONDA_EXE=/home/yfguo/miniconda3/bin/conda
+++++ export _CE_M=
+++++ _CE_M=
+++++ export _CE_CONDA=
+++++ _CE_CONDA=
+++++ export CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
+++++ CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
++++ __conda_hashr
++++ '[' -n '' ']'
++++ '[' -n '' ']'
++++ hash -r
+++ unset __conda_setup
++ conda activate Trans_base
++ local cmd=activate
++ case "$cmd" in
++ __conda_activate activate Trans_base
++ '[' -n '' ']'
++ local ask_conda
+++ PS1='(base) '
+++ __conda_exe shell.posix activate Trans_base
+++ /home/yfguo/miniconda3/bin/conda shell.posix activate Trans_base
++ ask_conda='PS1='\''(Trans_base) '\''
+export PATH='\''/home/yfguo/miniconda3/envs/Trans_base/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'\''
+export CONDA_PREFIX='\''/home/yfguo/miniconda3/envs/Trans_base'\''
+export CONDA_SHLVL='\''2'\''
+export CONDA_DEFAULT_ENV='\''Trans_base'\''
+export CONDA_PROMPT_MODIFIER='\''(Trans_base) '\''
+export CONDA_PREFIX_1='\''/home/yfguo/miniconda3'\''
+export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\'''
++ eval 'PS1='\''(Trans_base) '\''
+export PATH='\''/home/yfguo/miniconda3/envs/Trans_base/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'\''
+export CONDA_PREFIX='\''/home/yfguo/miniconda3/envs/Trans_base'\''
+export CONDA_SHLVL='\''2'\''
+export CONDA_DEFAULT_ENV='\''Trans_base'\''
+export CONDA_PROMPT_MODIFIER='\''(Trans_base) '\''
+export CONDA_PREFIX_1='\''/home/yfguo/miniconda3'\''
+export CONDA_EXE='\''/home/yfguo/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/home/yfguo/miniconda3/bin/python'\'''
+++ PS1='(Trans_base) '
+++ export PATH=/home/yfguo/miniconda3/envs/Trans_base/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+++ PATH=/home/yfguo/miniconda3/envs/Trans_base/bin:/home/yfguo/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+++ export CONDA_PREFIX=/home/yfguo/miniconda3/envs/Trans_base
+++ CONDA_PREFIX=/home/yfguo/miniconda3/envs/Trans_base
+++ export CONDA_SHLVL=2
+++ CONDA_SHLVL=2
+++ export CONDA_DEFAULT_ENV=Trans_base
+++ CONDA_DEFAULT_ENV=Trans_base
+++ export 'CONDA_PROMPT_MODIFIER=(Trans_base) '
+++ CONDA_PROMPT_MODIFIER='(Trans_base) '
+++ export CONDA_PREFIX_1=/home/yfguo/miniconda3
+++ CONDA_PREFIX_1=/home/yfguo/miniconda3
+++ export CONDA_EXE=/home/yfguo/miniconda3/bin/conda
+++ CONDA_EXE=/home/yfguo/miniconda3/bin/conda
+++ export _CE_M=
+++ _CE_M=
+++ export _CE_CONDA=
+++ _CE_CONDA=
+++ export CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
+++ CONDA_PYTHON_EXE=/home/yfguo/miniconda3/bin/python
++ __conda_hashr
++ '[' -n '' ']'
++ '[' -n '' ']'
++ hash -r
++ python train_bart_wei2zh.py
+Design models with seed: 666666
+Load pre-trained model from: /home/yfguo/CCMT_model/bart_wright/bart-base-chinese/pytorch_model.bin
+Init lr: 1e-05, Dev Loss/Error: 12.092 99.21
+Initial model saved
+Average loss over 532016 tokens: 5.705, valid loss/error: 4.599 61.81
+New best model saved
+Average loss over 536484 tokens: 4.830, valid loss/error: 4.401 59.73
+New best model saved
+Average loss over 524128 tokens: 4.710, valid loss/error: 4.304 58.66
+New best model saved
+Average loss over 535130 tokens: 4.586, valid loss/error: 4.246 57.87
+New best model saved
+Average loss over 534633 tokens: 4.538, valid loss/error: 4.205 57.41
+New best model saved
+Average loss over 534054 tokens: 4.481, valid loss/error: 4.172 56.96
+New best model saved
+Average loss over 539141 tokens: 4.429, valid loss/error: 4.143 56.64
+New best model saved
+Average loss over 533504 tokens: 4.448, valid loss/error: 4.123 56.29
+New best model saved
+Average loss over 166023 tokens: 4.403
+Epoch: 1, train loss: 4.703, valid loss/error: 4.120 56.33
+New best model saved
+Average loss over 534590 tokens: 4.396, valid loss/error: 4.099 56.02
+New best model saved
+Average loss over 532757 tokens: 4.368, valid loss/error: 4.088 55.83
+New best model saved
+Average loss over 530170 tokens: 4.365, valid loss/error: 4.074 55.61
+New best model saved
+Average loss over 530916 tokens: 4.362, valid loss/error: 4.065 55.47
+New best model saved
+Average loss over 539665 tokens: 4.310, valid loss/error: 4.055 55.28
+New best model saved
+Average loss over 531816 tokens: 4.318, valid loss/error: 4.040 55.06
+New best model saved
+Average loss over 535186 tokens: 4.304, valid loss/error: 4.032 54.93
+New best model saved
+Average loss over 538127 tokens: 4.260, valid loss/error: 4.024 54.85
+New best model saved
+Average loss over 161886 tokens: 4.324
+Epoch: 2, train loss: 4.335, valid loss/error: 4.025 54.94
+Average loss over 536710 tokens: 4.247, valid loss/error: 4.016 54.82
+New best model saved
+Average loss over 530150 tokens: 4.284, valid loss/error: 4.010 54.77
+New best model saved
+Average loss over 532801 tokens: 4.279, valid loss/error: 4.004 54.79
+New best model saved
+Average loss over 531324 tokens: 4.260, valid loss/error: 3.999 54.51
+New best model saved
+Average loss over 528791 tokens: 4.267, valid loss/error: 3.993 54.42
+New best model saved
+Average loss over 533414 tokens: 4.245, valid loss/error: 3.989 54.43
+New best model saved
+Average loss over 537647 tokens: 4.204, valid loss/error: 3.984 54.46
+New best model saved
+Average loss over 536221 tokens: 4.208, valid loss/error: 3.978 54.36
+New best model saved
+Average loss over 168055 tokens: 4.191
+Epoch: 3, train loss: 4.247, valid loss/error: 3.977 54.38
+New best model saved
+Average loss over 532828 tokens: 4.222, valid loss/error: 3.971 54.30
+New best model saved
+Average loss over 538478 tokens: 4.194, valid loss/error: 3.967 54.09
+New best model saved
+Average loss over 530562 tokens: 4.195, valid loss/error: 3.964 54.20
+New best model saved
+Average loss over 534571 tokens: 4.198, valid loss/error: 3.960 54.11
+New best model saved
+Average loss over 535943 tokens: 4.199, valid loss/error: 3.961 54.17
+Average loss over 531407 tokens: 4.184, valid loss/error: 3.954 54.02
+New best model saved
+Average loss over 532800 tokens: 4.185, valid loss/error: 3.949 54.05
+New best model saved
+Average loss over 532813 tokens: 4.190, valid loss/error: 3.945 53.79
+New best model saved
+Average loss over 165711 tokens: 4.193
+Epoch: 4, train loss: 4.196, valid loss/error: 3.945 53.91
+New best model saved
+Average loss over 533980 tokens: 4.174, valid loss/error: 3.941 53.76
+New best model saved
+Average loss over 534386 tokens: 4.174, valid loss/error: 3.945 53.93
+Average loss over 531617 tokens: 4.166, valid loss/error: 3.937 53.76
+New best model saved
+Average loss over 535581 tokens: 4.167, valid loss/error: 3.933 53.68
+New best model saved
+Average loss over 537632 tokens: 4.135, valid loss/error: 3.932 53.74
+New best model saved
+Average loss over 530701 tokens: 4.153, valid loss/error: 3.934 53.92
+Average loss over 535267 tokens: 4.158, valid loss/error: 3.927 53.59
+New best model saved
+Average loss over 530823 tokens: 4.138, valid loss/error: 3.923 53.55
+New best model saved
+Average loss over 165126 tokens: 4.151
+Epoch: 5, train loss: 4.158, valid loss/error: 3.924 53.63
+Average loss over 530115 tokens: 4.157, valid loss/error: 3.919 53.45
+New best model saved
+Average loss over 528698 tokens: 4.139, valid loss/error: 3.915 53.45
+New best model saved
+Average loss over 538960 tokens: 4.108, valid loss/error: 3.913 53.30
+New best model saved
+Average loss over 535093 tokens: 4.121, valid loss/error: 3.913 53.41
+Average loss over 533982 tokens: 4.117, valid loss/error: 3.906 53.35
+New best model saved
+Average loss over 533885 tokens: 4.119, valid loss/error: 3.902 53.21
+New best model saved
+Average loss over 535601 tokens: 4.115, valid loss/error: 3.906 53.34
+Average loss over 530050 tokens: 4.106, valid loss/error: 3.896 53.13
+New best model saved
+Average loss over 168729 tokens: 4.092
+Epoch: 6, train loss: 4.122, valid loss/error: 3.894 53.15
+New best model saved
+Average loss over 532478 tokens: 4.110, valid loss/error: 3.891 53.08
+New best model saved
+Average loss over 530297 tokens: 4.079, valid loss/error: 3.890 53.08
+New best model saved
+Average loss over 537844 tokens: 4.069, valid loss/error: 3.890 53.16
+New best model saved
+Average loss over 535135 tokens: 4.097, valid loss/error: 3.883 52.94
+New best model saved
+Average loss over 532732 tokens: 4.085, valid loss/error: 3.878 52.96
+New best model saved
+Average loss over 532386 tokens: 4.083, valid loss/error: 3.881 52.96
+Average loss over 531057 tokens: 4.081, valid loss/error: 3.874 52.83
+New best model saved
+Average loss over 537527 tokens: 4.069, valid loss/error: 3.871 52.82
+New best model saved
+Average loss over 165657 tokens: 4.093
+Epoch: 7, train loss: 4.084, valid loss/error: 3.868 52.82
+New best model saved
+Average loss over 533372 tokens: 4.079, valid loss/error: 3.868 52.75
+New best model saved
+Average loss over 536691 tokens: 4.071, valid loss/error: 3.864 52.66
+New best model saved
+Average loss over 534966 tokens: 4.037, valid loss/error: 3.860 52.63
+New best model saved
+Average loss over 530330 tokens: 4.053, valid loss/error: 3.859 52.65
+New best model saved
+Average loss over 539090 tokens: 4.043, valid loss/error: 3.856 52.56
+New best model saved
+Average loss over 528799 tokens: 4.051, valid loss/error: 3.854 52.60
+New best model saved
+Average loss over 531838 tokens: 4.051, valid loss/error: 3.852 52.59
+New best model saved
+Average loss over 534878 tokens: 4.044, valid loss/error: 3.849 52.45
+New best model saved
+Average loss over 165149 tokens: 4.031
+Epoch: 8, train loss: 4.053, valid loss/error: 3.849 52.58
+Average loss over 536464 tokens: 4.015, valid loss/error: 3.850 52.53
+Average loss over 528965 tokens: 4.033, valid loss/error: 3.845 52.43
+New best model saved
+Average loss over 536135 tokens: 4.039, valid loss/error: 3.841 52.32
+New best model saved
+Average loss over 531274 tokens: 4.042, valid loss/error: 3.838 52.34
+New best model saved
+Average loss over 534255 tokens: 4.020, valid loss/error: 3.837 52.26
+New best model saved
+Average loss over 536099 tokens: 4.017, valid loss/error: 3.836 52.15
+New best model saved
+Average loss over 535235 tokens: 4.010, valid loss/error: 3.834 52.20
+New best model saved
+Average loss over 532438 tokens: 4.003, valid loss/error: 3.831 52.09
+New best model saved
+Average loss over 164248 tokens: 4.039
+Epoch: 9, train loss: 4.023, valid loss/error: 3.829 52.16
+New best model saved
+Average loss over 536159 tokens: 3.998, valid loss/error: 3.828 52.24
+New best model saved
+Average loss over 532212 tokens: 4.002, valid loss/error: 3.826 52.05
+New best model saved
+Average loss over 529389 tokens: 4.019, valid loss/error: 3.822 52.05
+New best model saved
+Average loss over 537424 tokens: 3.997, valid loss/error: 3.821 51.99
+New best model saved
+Average loss over 537706 tokens: 3.992, valid loss/error: 3.818 51.96
+New best model saved
+Average loss over 535289 tokens: 3.978, valid loss/error: 3.819 51.98
+Average loss over 530495 tokens: 4.004, valid loss/error: 3.818 52.03
+Average loss over 531297 tokens: 3.995, valid loss/error: 3.811 51.86
+New best model saved
+Average loss over 165142 tokens: 3.927
+Epoch: 10, train loss: 3.995, valid loss/error: 3.812 51.89
+Average loss over 531451 tokens: 3.975, valid loss/error: 3.807 51.93
+New best model saved
+Average loss over 532844 tokens: 3.985, valid loss/error: 3.809 51.82
+New best model saved
+Average loss over 532769 tokens: 3.966, valid loss/error: 3.804 51.79
+New best model saved
+Average loss over 532490 tokens: 3.966, valid loss/error: 3.800 51.79
+New best model saved
+Average loss over 531415 tokens: 3.977, valid loss/error: 3.800 51.78
+New best model saved
+Average loss over 537464 tokens: 3.960, valid loss/error: 3.795 51.56
+New best model saved
+Average loss over 539120 tokens: 3.951, valid loss/error: 3.794 51.62
+New best model saved
+Average loss over 532467 tokens: 3.958, valid loss/error: 3.793 51.73
+New best model saved
+Average loss over 165093 tokens: 4.001
+Epoch: 11, train loss: 3.968, valid loss/error: 3.788 51.53
+New best model saved
+Average loss over 537801 tokens: 3.929, valid loss/error: 3.788 51.48
+New best model saved
+Average loss over 532059 tokens: 3.945, valid loss/error: 3.785 51.49
+New best model saved
+Average loss over 530381 tokens: 3.955, valid loss/error: 3.784 51.41
+New best model saved
+Average loss over 533499 tokens: 3.943, valid loss/error: 3.781 51.39
+New best model saved
+Average loss over 534389 tokens: 3.939, valid loss/error: 3.778 51.37
+New best model saved
+Average loss over 532259 tokens: 3.933, valid loss/error: 3.773 51.35
+New best model saved
+Average loss over 535367 tokens: 3.938, valid loss/error: 3.773 51.30
+New best model saved
+Average loss over 534456 tokens: 3.943, valid loss/error: 3.771 51.19
+New best model saved
+Average loss over 164902 tokens: 3.941
+Epoch: 12, train loss: 3.941, valid loss/error: 3.767 51.29
+New best model saved
+Average loss over 531531 tokens: 3.945, valid loss/error: 3.766 51.23
+New best model saved
+Average loss over 539307 tokens: 3.894, valid loss/error: 3.764 51.14
+New best model saved
+Average loss over 532697 tokens: 3.910, valid loss/error: 3.762 51.09
+New best model saved
+Average loss over 534312 tokens: 3.918, valid loss/error: 3.759 51.09
+New best model saved
+Average loss over 533263 tokens: 3.909, valid loss/error: 3.757 50.96
+New best model saved
+Average loss over 535765 tokens: 3.910, valid loss/error: 3.753 50.94
+New best model saved
+Average loss over 534417 tokens: 3.903, valid loss/error: 3.751 50.90
+New best model saved
+Average loss over 531154 tokens: 3.909, valid loss/error: 3.747 50.83
+New best model saved
+Average loss over 162667 tokens: 3.944
+Epoch: 13, train loss: 3.913, valid loss/error: 3.746 50.83
+New best model saved
+Average loss over 535568 tokens: 3.901, valid loss/error: 3.743 50.86
+New best model saved
+Average loss over 536023 tokens: 3.903, valid loss/error: 3.738 50.77
+New best model saved
+Average loss over 538291 tokens: 3.872, valid loss/error: 3.739 50.78
+Average loss over 530758 tokens: 3.895, valid loss/error: 3.735 50.67
+New best model saved
+Average loss over 533471 tokens: 3.870, valid loss/error: 3.733 50.66
+New best model saved
+Average loss over 533757 tokens: 3.878, valid loss/error: 3.729 50.58
+New best model saved
+Average loss over 531727 tokens: 3.883, valid loss/error: 3.728 50.50
+New best model saved
+Average loss over 531505 tokens: 3.894, valid loss/error: 3.724 50.49
+New best model saved
+Average loss over 164013 tokens: 3.866
+Epoch: 14, train loss: 3.886, valid loss/error: 3.721 50.44
+New best model saved
+Average loss over 535326 tokens: 3.872, valid loss/error: 3.721 50.49
+New best model saved
+Average loss over 538328 tokens: 3.847, valid loss/error: 3.716 50.35
+New best model saved
+Average loss over 538238 tokens: 3.859, valid loss/error: 3.712 50.34
+New best model saved
+Average loss over 536562 tokens: 3.849, valid loss/error: 3.710 50.32
+New best model saved
+Average loss over 534076 tokens: 3.862, valid loss/error: 3.705 50.17
+New best model saved
+Average loss over 527239 tokens: 3.851, valid loss/error: 3.703 50.19
+New best model saved
+Average loss over 532253 tokens: 3.863, valid loss/error: 3.700 50.14
+New best model saved
+Average loss over 530657 tokens: 3.861, valid loss/error: 3.700 50.18
+Average loss over 162434 tokens: 3.842
+Epoch: 15, train loss: 3.857, valid loss/error: 3.693 50.02
+New best model saved
+Average loss over 536439 tokens: 3.837, valid loss/error: 3.693 50.05
+New best model saved
+Average loss over 535547 tokens: 3.821, valid loss/error: 3.688 49.88
+New best model saved
+Average loss over 533284 tokens: 3.847, valid loss/error: 3.688 49.90
+Average loss over 534397 tokens: 3.832, valid loss/error: 3.685 49.92
+New best model saved
+Average loss over 535909 tokens: 3.820, valid loss/error: 3.678 49.79
+New best model saved
+Average loss over 533798 tokens: 3.830, valid loss/error: 3.678 49.86
+New best model saved
+Average loss over 529776 tokens: 3.823, valid loss/error: 3.674 49.75
+New best model saved
+Average loss over 531778 tokens: 3.822, valid loss/error: 3.666 49.53
+New best model saved
+Average loss over 164185 tokens: 3.841
+Epoch: 16, train loss: 3.830, valid loss/error: 3.667 49.65
+Average loss over 528289 tokens: 3.810, valid loss/error: 3.664 49.51
+New best model saved
+Average loss over 537536 tokens: 3.806, valid loss/error: 3.662 49.60
+New best model saved
+Average loss over 533963 tokens: 3.785, valid loss/error: 3.658 49.51
+New best model saved
+Average loss over 535550 tokens: 3.777, valid loss/error: 3.652 49.40
+New best model saved
+Average loss over 532643 tokens: 3.809, valid loss/error: 3.649 49.38
+New best model saved
+Average loss over 536634 tokens: 3.802, valid loss/error: 3.640 49.33
+New best model saved
+Average loss over 533840 tokens: 3.789, valid loss/error: 3.638 49.22
+New best model saved
+Average loss over 532058 tokens: 3.803, valid loss/error: 3.637 49.17
+New best model saved
+Average loss over 164600 tokens: 3.819
+Epoch: 17, train loss: 3.798, valid loss/error: 3.634 49.11
+New best model saved
+Average loss over 534048 tokens: 3.765, valid loss/error: 3.627 49.00
+New best model saved
+Average loss over 536426 tokens: 3.767, valid loss/error: 3.623 48.99
+New best model saved
+Average loss over 539465 tokens: 3.757, valid loss/error: 3.625 49.12
+Average loss over 532159 tokens: 3.774, valid loss/error: 3.618 48.97
+New best model saved
+Average loss over 533101 tokens: 3.773, valid loss/error: 3.611 48.86
+New best model saved
+Average loss over 529093 tokens: 3.760, valid loss/error: 3.608 48.82
+New best model saved
+Average loss over 533736 tokens: 3.767, valid loss/error: 3.603 48.78
+New best model saved
+Average loss over 533747 tokens: 3.759, valid loss/error: 3.596 48.62
+New best model saved
+Average loss over 163338 tokens: 3.778
+Epoch: 18, train loss: 3.766, valid loss/error: 3.595 48.59
+New best model saved
+Average loss over 534287 tokens: 3.722, valid loss/error: 3.592 48.54
+New best model saved
+Average loss over 535644 tokens: 3.733, valid loss/error: 3.588 48.58
+New best model saved
+Average loss over 534159 tokens: 3.746, valid loss/error: 3.583 48.38
+New best model saved
+Average loss over 528601 tokens: 3.755, valid loss/error: 3.579 48.28
+New best model saved
+Average loss over 540469 tokens: 3.729, valid loss/error: 3.576 48.29
+New best model saved
+Average loss over 533112 tokens: 3.728, valid loss/error: 3.567 48.14
+New best model saved
+Average loss over 533333 tokens: 3.733, valid loss/error: 3.565 48.13
+New best model saved
+Average loss over 527316 tokens: 3.723, valid loss/error: 3.560 48.00
+New best model saved
+Average loss over 168192 tokens: 3.705
+Epoch: 19, train loss: 3.733, valid loss/error: 3.559 48.01
+New best model saved
+Average loss over 534399 tokens: 3.719, valid loss/error: 3.552 47.99
+New best model saved
+Average loss over 534352 tokens: 3.687, valid loss/error: 3.546 47.81
+New best model saved
+Average loss over 532509 tokens: 3.712, valid loss/error: 3.545 47.78
+New best model saved
+Average loss over 536538 tokens: 3.694, valid loss/error: 3.538 47.66
+New best model saved
+Average loss over 535676 tokens: 3.700, valid loss/error: 3.532 47.61
+New best model saved
+Average loss over 530079 tokens: 3.704, valid loss/error: 3.528 47.55
+New best model saved
+Average loss over 534898 tokens: 3.679, valid loss/error: 3.522 47.37
+New best model saved
+Average loss over 530199 tokens: 3.682, valid loss/error: 3.515 47.31
+New best model saved
+Average loss over 166463 tokens: 3.672
+Epoch: 20, train loss: 3.696, valid loss/error: 3.515 47.31
+New best model saved
+Average loss over 535535 tokens: 3.648, valid loss/error: 3.509 47.18
+New best model saved
+Average loss over 535622 tokens: 3.666, valid loss/error: 3.502 47.04
+New best model saved
+Average loss over 531686 tokens: 3.669, valid loss/error: 3.499 46.94
+New best model saved
+Average loss over 529449 tokens: 3.671, valid loss/error: 3.491 46.76
+New best model saved
+Average loss over 536012 tokens: 3.659, valid loss/error: 3.488 46.81
+New best model saved
+Average loss over 533772 tokens: 3.652, valid loss/error: 3.484 46.72
+New best model saved
+Average loss over 535997 tokens: 3.645, valid loss/error: 3.477 46.61
+New best model saved
+Average loss over 535391 tokens: 3.649, valid loss/error: 3.472 46.49
+New best model saved
+Average loss over 161649 tokens: 3.681
+Epoch: 21, train loss: 3.658, valid loss/error: 3.470 46.47
+New best model saved
+Average loss over 536943 tokens: 3.632, valid loss/error: 3.468 46.43
+New best model saved
+Average loss over 534876 tokens: 3.629, valid loss/error: 3.461 46.28
+New best model saved
+Average loss over 534674 tokens: 3.617, valid loss/error: 3.451 46.11
+New best model saved
+Average loss over 530386 tokens: 3.609, valid loss/error: 3.445 46.00
+New best model saved
+Average loss over 532101 tokens: 3.617, valid loss/error: 3.444 45.98
+New best model saved
+Average loss over 531849 tokens: 3.601, valid loss/error: 3.435 45.78
+New best model saved
+Average loss over 533649 tokens: 3.626, valid loss/error: 3.428 45.63
+New best model saved
+Average loss over 534247 tokens: 3.605, valid loss/error: 3.422 45.54
+New best model saved
+Average loss over 166388 tokens: 3.625
+Epoch: 22, train loss: 3.617, valid loss/error: 3.420 45.45
+New best model saved
+Average loss over 536860 tokens: 3.562, valid loss/error: 3.412 45.38
+New best model saved
+Average loss over 530660 tokens: 3.604, valid loss/error: 3.408 45.18
+New best model saved
+Average loss over 535291 tokens: 3.577, valid loss/error: 3.401 45.11
+New best model saved
+Average loss over 531495 tokens: 3.568, valid loss/error: 3.393 44.93
+New best model saved
+Average loss over 533374 tokens: 3.583, valid loss/error: 3.387 44.88
+New best model saved
+Average loss over 534781 tokens: 3.561, valid loss/error: 3.384 44.79
+New best model saved
+Average loss over 532476 tokens: 3.576, valid loss/error: 3.377 44.63
+New best model saved
+Average loss over 534236 tokens: 3.552, valid loss/error: 3.370 44.44
+New best model saved
+Average loss over 165940 tokens: 3.573
+Epoch: 23, train loss: 3.573, valid loss/error: 3.363 44.42
+New best model saved
+Average loss over 531038 tokens: 3.564, valid loss/error: 3.363 44.31
+New best model saved
+Average loss over 532738 tokens: 3.527, valid loss/error: 3.354 44.13
+New best model saved
+Average loss over 533957 tokens: 3.519, valid loss/error: 3.349 44.11
+New best model saved
+Average loss over 535319 tokens: 3.520, valid loss/error: 3.341 43.89
+New best model saved
+Average loss over 531190 tokens: 3.519, valid loss/error: 3.333 43.75
+New best model saved
+Average loss over 534874 tokens: 3.526, valid loss/error: 3.327 43.51
+New best model saved
+Average loss over 538163 tokens: 3.509, valid loss/error: 3.317 43.40
+New best model saved
+Average loss over 535078 tokens: 3.522, valid loss/error: 3.309 43.20
+New best model saved
+Average loss over 162756 tokens: 3.552
+Epoch: 24, train loss: 3.527, valid loss/error: 3.311 43.14
+New best model saved
+Average loss over 533773 tokens: 3.496, valid loss/error: 3.300 42.97
+New best model saved
+Average loss over 527057 tokens: 3.513, valid loss/error: 3.295 42.92
+New best model saved
+Average loss over 536884 tokens: 3.492, valid loss/error: 3.289 42.76
+New best model saved
+Average loss over 528608 tokens: 3.482, valid loss/error: 3.285 42.61
+New best model saved
+Average loss over 532041 tokens: 3.457, valid loss/error: 3.272 42.42
+New best model saved
+Average loss over 533873 tokens: 3.479, valid loss/error: 3.270 42.32
+New best model saved
+Average loss over 537519 tokens: 3.476, valid loss/error: 3.261 42.09
+New best model saved
+Average loss over 537245 tokens: 3.443, valid loss/error: 3.259 42.12
+New best model saved
+Average loss over 168113 tokens: 3.433
+Epoch: 25, train loss: 3.478, valid loss/error: 3.250 41.94
+New best model saved
+Average loss over 541349 tokens: 3.445, valid loss/error: 3.245 41.77
+New best model saved
+Average loss over 533589 tokens: 3.425, valid loss/error: 3.237 41.61
+New best model saved
+Average loss over 533519 tokens: 3.440, valid loss/error: 3.230 41.52
+New best model saved
+Average loss over 531831 tokens: 3.446, valid loss/error: 3.227 41.45
+New best model saved
+Average loss over 534086 tokens: 3.428, valid loss/error: 3.218 41.19
+New best model saved
+Average loss over 531327 tokens: 3.427, valid loss/error: 3.213 41.11
+New best model saved
+Average loss over 534003 tokens: 3.404, valid loss/error: 3.206 41.01
+New best model saved
+Average loss over 529068 tokens: 3.411, valid loss/error: 3.197 40.82
+New best model saved
+Average loss over 166341 tokens: 3.388
+Epoch: 26, train loss: 3.427, valid loss/error: 3.194 40.79
+New best model saved
+Average loss over 538792 tokens: 3.396, valid loss/error: 3.187 40.56
+New best model saved
+Average loss over 535081 tokens: 3.368, valid loss/error: 3.184 40.55
+New best model saved
+Average loss over 531957 tokens: 3.375, valid loss/error: 3.173 40.25
+New best model saved
+Average loss over 535460 tokens: 3.378, valid loss/error: 3.166 40.14
+New best model saved
+Average loss over 532378 tokens: 3.383, valid loss/error: 3.157 39.86
+New best model saved
+Average loss over 532562 tokens: 3.380, valid loss/error: 3.153 39.86
+New best model saved
+Average loss over 535418 tokens: 3.374, valid loss/error: 3.146 39.72
+New best model saved
+Average loss over 528628 tokens: 3.369, valid loss/error: 3.139 39.67
+New best model saved
+Average loss over 164837 tokens: 3.322
+Epoch: 27, train loss: 3.376, valid loss/error: 3.139 39.50
+New best model saved
+Average loss over 532916 tokens: 3.349, valid loss/error: 3.130 39.43
+New best model saved
+Average loss over 538187 tokens: 3.350, valid loss/error: 3.122 39.15
+New best model saved
+Average loss over 529172 tokens: 3.339, valid loss/error: 3.120 39.12
+New best model saved
+Average loss over 535556 tokens: 3.329, valid loss/error: 3.114 39.01
+New best model saved
+Average loss over 535284 tokens: 3.307, valid loss/error: 3.104 38.82
+New best model saved
+Average loss over 535032 tokens: 3.311, valid loss/error: 3.101 38.69
+New best model saved
+Average loss over 534534 tokens: 3.310, valid loss/error: 3.092 38.59
+New best model saved
+Average loss over 534287 tokens: 3.318, valid loss/error: 3.086 38.41
+New best model saved
+Average loss over 160145 tokens: 3.278
+Epoch: 28, train loss: 3.325, valid loss/error: 3.086 38.48
+New best model saved
+Average loss over 535773 tokens: 3.288, valid loss/error: 3.079 38.13
+New best model saved
+Average loss over 533366 tokens: 3.280, valid loss/error: 3.072 38.08
+New best model saved
+Average loss over 529776 tokens: 3.278, valid loss/error: 3.067 38.03
+New best model saved
+Average loss over 534228 tokens: 3.281, valid loss/error: 3.059 37.88
+New best model saved
+Average loss over 534972 tokens: 3.288, valid loss/error: 3.052 37.69
+New best model saved
+Average loss over 527632 tokens: 3.272, valid loss/error: 3.050 37.66
+New best model saved
+Average loss over 538678 tokens: 3.260, valid loss/error: 3.041 37.57
+New best model saved
+Average loss over 534108 tokens: 3.264, valid loss/error: 3.037 37.37
+New best model saved
+Average loss over 166580 tokens: 3.220
+Epoch: 29, train loss: 3.274, valid loss/error: 3.035 37.41
+New best model saved
+Average loss over 532432 tokens: 3.247, valid loss/error: 3.031 37.22
+New best model saved
+Average loss over 531335 tokens: 3.232, valid loss/error: 3.023 37.00
+New best model saved
+Average loss over 531785 tokens: 3.256, valid loss/error: 3.017 37.05
+New best model saved
+Average loss over 532976 tokens: 3.237, valid loss/error: 3.014 36.97
+New best model saved
+Average loss over 536415 tokens: 3.197, valid loss/error: 3.006 36.73
+New best model saved
+Average loss over 531204 tokens: 3.220, valid loss/error: 3.003 36.69
+New best model saved
+Average loss over 536630 tokens: 3.227, valid loss/error: 2.994 36.51
+New best model saved
+Average loss over 536770 tokens: 3.210, valid loss/error: 2.988 36.36
+New best model saved
+Average loss over 165566 tokens: 3.184
+Epoch: 30, train loss: 3.227, valid loss/error: 2.986 36.32
+New best model saved
+Average loss over 535588 tokens: 3.199, valid loss/error: 2.982 36.28
+New best model saved
+Average loss over 533780 tokens: 3.187, valid loss/error: 2.980 36.21
+New best model saved
+Average loss over 530430 tokens: 3.190, valid loss/error: 2.970 35.85
+New best model saved
+Average loss over 533369 tokens: 3.174, valid loss/error: 2.966 35.83
+New best model saved
+Average loss over 534606 tokens: 3.195, valid loss/error: 2.962 35.77
+New best model saved
+Average loss over 532671 tokens: 3.169, valid loss/error: 2.965 35.78
+Average loss over 536202 tokens: 3.162, valid loss/error: 2.953 35.61
+New best model saved
+Average loss over 536047 tokens: 3.169, valid loss/error: 2.945 35.39
+New best model saved
+Average loss over 162420 tokens: 3.189
+Epoch: 31, train loss: 3.181, valid loss/error: 2.952 35.45
+Average loss over 532490 tokens: 3.149, valid loss/error: 2.939 35.21
+New best model saved
+Average loss over 538347 tokens: 3.155, valid loss/error: 2.934 35.13
+New best model saved
+Average loss over 535566 tokens: 3.139, valid loss/error: 2.930 35.09
+New best model saved
+Average loss over 532088 tokens: 3.141, valid loss/error: 2.927 34.96
+New best model saved
+Average loss over 535433 tokens: 3.124, valid loss/error: 2.924 34.82
+New best model saved
+Average loss over 529629 tokens: 3.122, valid loss/error: 2.915 34.53
+New best model saved
+Average loss over 529362 tokens: 3.138, valid loss/error: 2.910 34.45
+New best model saved
+Average loss over 535961 tokens: 3.130, valid loss/error: 2.905 34.25
+New best model saved
+Average loss over 166237 tokens: 3.122
+Epoch: 32, train loss: 3.137, valid loss/error: 2.902 34.30
+New best model saved
+Average loss over 533137 tokens: 3.113, valid loss/error: 2.897 34.22
+New best model saved
+Average loss over 534820 tokens: 3.100, valid loss/error: 2.895 34.14
+New best model saved
+Average loss over 535016 tokens: 3.087, valid loss/error: 2.893 34.00
+New best model saved
+Average loss over 527659 tokens: 3.113, valid loss/error: 2.891 33.96
+New best model saved
+Average loss over 537191 tokens: 3.088, valid loss/error: 2.881 33.82
+New best model saved
+Average loss over 534792 tokens: 3.084, valid loss/error: 2.880 33.82
+New best model saved
+Average loss over 533022 tokens: 3.084, valid loss/error: 2.874 33.74
+New best model saved
+Average loss over 535175 tokens: 3.084, valid loss/error: 2.867 33.63
+New best model saved
+Average loss over 164301 tokens: 3.061
+Epoch: 33, train loss: 3.093, valid loss/error: 2.869 33.53
+New best model saved
+Average loss over 535234 tokens: 3.081, valid loss/error: 2.869 33.55
+Average loss over 528446 tokens: 3.069, valid loss/error: 2.862 33.43
+New best model saved
+Average loss over 535607 tokens: 3.050, valid loss/error: 2.857 33.36
+New best model saved
+Average loss over 533602 tokens: 3.057, valid loss/error: 2.854 33.22
+New best model saved
+Average loss over 538716 tokens: 3.032, valid loss/error: 2.848 33.11
+New best model saved
+Average loss over 534603 tokens: 3.047, valid loss/error: 2.844 33.03
+New best model saved
+Average loss over 534023 tokens: 3.051, valid loss/error: 2.839 32.99
+New best model saved
+Average loss over 529207 tokens: 3.032, valid loss/error: 2.836 32.83
+New best model saved
+Average loss over 165675 tokens: 3.044
+Epoch: 34, train loss: 3.052, valid loss/error: 2.836 32.87
+Average loss over 531705 tokens: 3.044, valid loss/error: 2.835 32.84
+New best model saved
+Average loss over 533348 tokens: 3.028, valid loss/error: 2.830 32.74
+New best model saved
+Average loss over 531147 tokens: 3.013, valid loss/error: 2.827 32.61
+New best model saved
+Average loss over 534204 tokens: 3.013, valid loss/error: 2.823 32.54
+New best model saved
+Average loss over 530657 tokens: 3.032, valid loss/error: 2.819 32.50
+New best model saved
+Average loss over 537377 tokens: 3.000, valid loss/error: 2.812 32.41
+New best model saved
+Average loss over 540685 tokens: 3.011, valid loss/error: 2.815 32.32
+New best model saved
+Average loss over 530082 tokens: 2.987, valid loss/error: 2.811 32.32
+New best model saved
+Average loss over 165908 tokens: 2.969
+Epoch: 35, train loss: 3.014, valid loss/error: 2.808 32.15
+New best model saved
+Average loss over 534075 tokens: 3.001, valid loss/error: 2.810 32.25
+Average loss over 536372 tokens: 2.963, valid loss/error: 2.803 32.14
+New best model saved
+Average loss over 540278 tokens: 2.999, valid loss/error: 2.799 32.02
+New best model saved
+Average loss over 533645 tokens: 2.968, valid loss/error: 2.797 31.96
+New best model saved
+Average loss over 537899 tokens: 2.974, valid loss/error: 2.790 31.85
+New best model saved
+Average loss over 531749 tokens: 2.995, valid loss/error: 2.790 31.84
+New best model saved
+Average loss over 528463 tokens: 2.973, valid loss/error: 2.788 31.72
+New best model saved
+Average loss over 525850 tokens: 2.977, valid loss/error: 2.784 31.71
+New best model saved
+Average loss over 166782 tokens: 2.956
+Epoch: 36, train loss: 2.980, valid loss/error: 2.780 31.59
+New best model saved
+Average loss over 529655 tokens: 2.943, valid loss/error: 2.778 31.64
+New best model saved
+Average loss over 533352 tokens: 2.945, valid loss/error: 2.778 31.62
+New best model saved
+Average loss over 535207 tokens: 2.941, valid loss/error: 2.776 31.58
+New best model saved
+Average loss over 535605 tokens: 2.953, valid loss/error: 2.771 31.50
+New best model saved
+Average loss over 529668 tokens: 2.953, valid loss/error: 2.773 31.47
+New best model saved
+Average loss over 538106 tokens: 2.942, valid loss/error: 2.766 31.32
+New best model saved
+Average loss over 533814 tokens: 2.948, valid loss/error: 2.767 31.39
+Average loss over 533035 tokens: 2.969, valid loss/error: 2.760 31.37
+New best model saved
+Average loss over 166671 tokens: 2.922
+Epoch: 37, train loss: 2.948, valid loss/error: 2.763 31.34
+Average loss over 536135 tokens: 2.926, valid loss/error: 2.760 31.23
+New best model saved
+Average loss over 537883 tokens: 2.937, valid loss/error: 2.758 31.16
+New best model saved
+Average loss over 534969 tokens: 2.920, valid loss/error: 2.753 31.09
+New best model saved
+Average loss over 532493 tokens: 2.903, valid loss/error: 2.755 31.12
+Average loss over 536333 tokens: 2.893, valid loss/error: 2.752 31.07
+New best model saved
+Average loss over 531077 tokens: 2.932, valid loss/error: 2.746 30.95
+New best model saved
+Average loss over 529800 tokens: 2.943, valid loss/error: 2.744 30.99
+New best model saved
+Average loss over 528474 tokens: 2.898, valid loss/error: 2.743 30.90
+New best model saved
+Average loss over 167949 tokens: 2.912
+Epoch: 38, train loss: 2.919, valid loss/error: 2.741 30.88
+New best model saved
+Average loss over 532625 tokens: 2.898, valid loss/error: 2.742 30.95
+Average loss over 535223 tokens: 2.893, valid loss/error: 2.736 30.77
+New best model saved
+Average loss over 525814 tokens: 2.905, valid loss/error: 2.739 30.86
+Average loss over 533767 tokens: 2.913, valid loss/error: 2.731 30.70
+New best model saved
+Average loss over 532946 tokens: 2.883, valid loss/error: 2.738 30.72
+Average loss over 532778 tokens: 2.893, valid loss/error: 2.726 30.59
+New best model saved
+Average loss over 538826 tokens: 2.869, valid loss/error: 2.724 30.52
+New best model saved
+Average loss over 536873 tokens: 2.876, valid loss/error: 2.723 30.50
+New best model saved
+Average loss over 166261 tokens: 2.917
+Epoch: 39, train loss: 2.892, valid loss/error: 2.728 30.54
+Average loss over 533156 tokens: 2.878, valid loss/error: 2.725 30.46
+New best model saved
+Average loss over 527185 tokens: 2.877, valid loss/error: 2.719 30.35
+New best model saved
+Average loss over 532145 tokens: 2.879, valid loss/error: 2.720 30.40
+Average loss over 531967 tokens: 2.849, valid loss/error: 2.716 30.31
+New best model saved
+Average loss over 536468 tokens: 2.852, valid loss/error: 2.715 30.27
+New best model saved
+Average loss over 533402 tokens: 2.874, valid loss/error: 2.714 30.30
+New best model saved
+Average loss over 535852 tokens: 2.852, valid loss/error: 2.710 30.09
+New best model saved
+Average loss over 537150 tokens: 2.868, valid loss/error: 2.709 30.14
+New best model saved
+Average loss over 167788 tokens: 2.882
+Epoch: 40, train loss: 2.867, valid loss/error: 2.708 30.18
+New best model saved
+Average loss over 533307 tokens: 2.859, valid loss/error: 2.708 30.03
+New best model saved
+Average loss over 534264 tokens: 2.843, valid loss/error: 2.705 29.98
+New best model saved
+Average loss over 532645 tokens: 2.837, valid loss/error: 2.702 29.96
+New best model saved
+Average loss over 533287 tokens: 2.849, valid loss/error: 2.705 29.99
+Average loss over 539666 tokens: 2.842, valid loss/error: 2.704 29.96
+Average loss over 530787 tokens: 2.825, valid loss/error: 2.698 29.86
+New best model saved
+Average loss over 533182 tokens: 2.827, valid loss/error: 2.696 29.82
+New best model saved
+Average loss over 532104 tokens: 2.854, valid loss/error: 2.693 29.82
+New best model saved
+Average loss over 165871 tokens: 2.864
+Epoch: 41, train loss: 2.843, valid loss/error: 2.692 29.84
+New best model saved
+Average loss over 531013 tokens: 2.835, valid loss/error: 2.694 29.82
+Average loss over 529737 tokens: 2.828, valid loss/error: 2.692 29.79
+New best model saved
+Average loss over 534555 tokens: 2.838, valid loss/error: 2.691 29.77
+New best model saved
+Average loss over 532723 tokens: 2.835, valid loss/error: 2.693 29.78
+Average loss over 536234 tokens: 2.802, valid loss/error: 2.690 29.73
+New best model saved
+Average loss over 537415 tokens: 2.810, valid loss/error: 2.684 29.55
+New best model saved
+Average loss over 531743 tokens: 2.815, valid loss/error: 2.684 29.58
+New best model saved
+Average loss over 536230 tokens: 2.799, valid loss/error: 2.678 29.44
+New best model saved
+Average loss over 165463 tokens: 2.837
+Epoch: 42, train loss: 2.821, valid loss/error: 2.681 29.60
+Average loss over 536409 tokens: 2.796, valid loss/error: 2.684 29.53
+Average loss over 537943 tokens: 2.800, valid loss/error: 2.683 29.60
+Average loss over 525819 tokens: 2.814, valid loss/error: 2.683 29.54
+Average loss over 535929 tokens: 2.789, valid loss/error: 2.675 29.34
+New best model saved
+Average loss over 531963 tokens: 2.791, valid loss/error: 2.675 29.38
+Average loss over 537472 tokens: 2.774, valid loss/error: 2.673 29.37
+New best model saved
+Average loss over 531813 tokens: 2.807, valid loss/error: 2.671 29.32
+New best model saved
+Average loss over 535468 tokens: 2.812, valid loss/error: 2.671 29.35
+New best model saved
+Average loss over 162297 tokens: 2.850
+Epoch: 43, train loss: 2.800, valid loss/error: 2.671 29.37
+Average loss over 538633 tokens: 2.789, valid loss/error: 2.668 29.26
+New best model saved
+Average loss over 533551 tokens: 2.785, valid loss/error: 2.670 29.23
+New best model saved
+Average loss over 528535 tokens: 2.766, valid loss/error: 2.668 29.23
+Average loss over 535163 tokens: 2.775, valid loss/error: 2.667 29.12
+New best model saved
+Average loss over 535052 tokens: 2.764, valid loss/error: 2.665 29.12
+New best model saved
+Average loss over 535383 tokens: 2.803, valid loss/error: 2.664 29.11
+New best model saved
+Average loss over 529527 tokens: 2.799, valid loss/error: 2.661 29.01
+New best model saved
+Average loss over 531930 tokens: 2.759, valid loss/error: 2.656 29.02
+New best model saved
+Average loss over 167339 tokens: 2.789
+Epoch: 44, train loss: 2.780, valid loss/error: 2.658 29.01
+New best model saved
+Average loss over 530286 tokens: 2.755, valid loss/error: 2.660 29.03
+Average loss over 532757 tokens: 2.770, valid loss/error: 2.659 29.03
+Average loss over 536369 tokens: 2.776, valid loss/error: 2.659 28.97
+New best model saved
+Average loss over 533560 tokens: 2.759, valid loss/error: 2.656 28.94
+New best model saved
+Average loss over 535952 tokens: 2.762, valid loss/error: 2.657 28.97
+Average loss over 535214 tokens: 2.765, valid loss/error: 2.649 28.78
+New best model saved
+Average loss over 533993 tokens: 2.751, valid loss/error: 2.651 28.89
+Average loss over 532647 tokens: 2.765, valid loss/error: 2.652 28.79
+Average loss over 164335 tokens: 2.740
+Epoch: 45, train loss: 2.762, valid loss/error: 2.650 28.78
+New best model saved
+Average loss over 529007 tokens: 2.760, valid loss/error: 2.650 28.85
+Average loss over 529534 tokens: 2.751, valid loss/error: 2.648 28.80
+New best model saved
+Average loss over 536397 tokens: 2.749, valid loss/error: 2.647 28.76
+New best model saved
+Average loss over 536571 tokens: 2.743, valid loss/error: 2.644 28.73
+New best model saved
+Average loss over 534648 tokens: 2.727, valid loss/error: 2.643 28.69
+New best model saved
+Average loss over 533031 tokens: 2.727, valid loss/error: 2.642 28.64
+New best model saved
+Average loss over 532790 tokens: 2.725, valid loss/error: 2.641 28.66
+New best model saved
+Average loss over 538196 tokens: 2.760, valid loss/error: 2.637 28.62
+New best model saved
+Average loss over 164939 tokens: 2.788
+Epoch: 46, train loss: 2.744, valid loss/error: 2.641 28.71
+Average loss over 539267 tokens: 2.729, valid loss/error: 2.641 28.65
+Average loss over 530726 tokens: 2.723, valid loss/error: 2.638 28.64
+Average loss over 534199 tokens: 2.720, valid loss/error: 2.637 28.57
+New best model saved
+Average loss over 527979 tokens: 2.732, valid loss/error: 2.638 28.59
+Average loss over 537786 tokens: 2.733, valid loss/error: 2.631 28.43
+New best model saved
+Average loss over 534212 tokens: 2.741, valid loss/error: 2.630 28.51
+New best model saved
+Average loss over 534409 tokens: 2.743, valid loss/error: 2.638 28.54
+Average loss over 531793 tokens: 2.703, valid loss/error: 2.631 28.45
+Average loss over 164742 tokens: 2.749
+Epoch: 47, train loss: 2.729, valid loss/error: 2.630 28.47
+Average loss over 532757 tokens: 2.730, valid loss/error: 2.633 28.42
+New best model saved
+Average loss over 535919 tokens: 2.686, valid loss/error: 2.631 28.51
+Average loss over 530306 tokens: 2.713, valid loss/error: 2.628 28.42
+New best model saved
+Average loss over 536893 tokens: 2.721, valid loss/error: 2.623 28.35
+New best model saved
+Average loss over 536445 tokens: 2.697, valid loss/error: 2.627 28.40
+Average loss over 533682 tokens: 2.707, valid loss/error: 2.628 28.36
+Average loss over 533104 tokens: 2.727, valid loss/error: 2.620 28.20
+New best model saved
+Average loss over 530271 tokens: 2.719, valid loss/error: 2.621 28.35
+Average loss over 165736 tokens: 2.724
+Epoch: 48, train loss: 2.713, valid loss/error: 2.621 28.27
+Average loss over 534537 tokens: 2.697, valid loss/error: 2.619 28.23
+New best model saved
+Average loss over 535785 tokens: 2.697, valid loss/error: 2.621 28.25
+Average loss over 533804 tokens: 2.687, valid loss/error: 2.620 28.27
+Average loss over 534918 tokens: 2.697, valid loss/error: 2.617 28.24
+New best model saved
+Average loss over 530325 tokens: 2.689, valid loss/error: 2.619 28.25
+Average loss over 533344 tokens: 2.716, valid loss/error: 2.614 28.18
+New best model saved
+Average loss over 533317 tokens: 2.701, valid loss/error: 2.617 28.18
+Average loss over 534925 tokens: 2.698, valid loss/error: 2.614 28.18
+New best model saved
+Average loss over 164158 tokens: 2.690
+Epoch: 49, train loss: 2.697, valid loss/error: 2.615 28.14
+New best model saved
+Average loss over 533100 tokens: 2.710, valid loss/error: 2.612 28.14
+New best model saved
+Average loss over 533991 tokens: 2.678, valid loss/error: 2.615 28.22
+Average loss over 534952 tokens: 2.691, valid loss/error: 2.610 28.08
+New best model saved
+Average loss over 530126 tokens: 2.680, valid loss/error: 2.615 28.18
+Average loss over 534682 tokens: 2.675, valid loss/error: 2.612 28.07
+New best model saved
+Average loss over 535062 tokens: 2.687, valid loss/error: 2.607 28.05
+New best model saved
+Average loss over 532788 tokens: 2.683, valid loss/error: 2.608 28.06
+Average loss over 533328 tokens: 2.676, valid loss/error: 2.610 28.07
+Average loss over 167084 tokens: 2.654
+Epoch: 50, train loss: 2.684, valid loss/error: 2.604 27.96
+New best model saved
+Average loss over 532877 tokens: 2.670, valid loss/error: 2.605 27.96
+New best model saved
+Average loss over 532413 tokens: 2.669, valid loss/error: 2.608 28.03
+Average loss over 533719 tokens: 2.677, valid loss/error: 2.606 28.04
+Average loss over 534255 tokens: 2.660, valid loss/error: 2.605 28.02
+Average loss over 529944 tokens: 2.668, valid loss/error: 2.602 27.91
+New best model saved
+Average loss over 534250 tokens: 2.663, valid loss/error: 2.601 27.88
+New best model saved
+Average loss over 535975 tokens: 2.670, valid loss/error: 2.599 27.84
+New best model saved
+Average loss over 535525 tokens: 2.682, valid loss/error: 2.597 27.81
+New best model saved
+Average loss over 166155 tokens: 2.666
+Epoch: 51, train loss: 2.670, valid loss/error: 2.603 27.96
+Average loss over 537233 tokens: 2.666, valid loss/error: 2.599 27.84
+Average loss over 533626 tokens: 2.667, valid loss/error: 2.601 27.91
+Average loss over 534410 tokens: 2.662, valid loss/error: 2.601 27.85
+Average loss over 530842 tokens: 2.675, valid loss/error: 2.599 27.85
+Average loss over 537459 tokens: 2.648, valid loss/error: 2.596 27.84
+New best model saved
+Average loss over 534575 tokens: 2.636, valid loss/error: 2.600 27.91
+Average loss over 531383 tokens: 2.657, valid loss/error: 2.595 27.83
+New best model saved
+Average loss over 531291 tokens: 2.636, valid loss/error: 2.601 27.88
+Average loss over 164294 tokens: 2.697
+Epoch: 52, train loss: 2.657, valid loss/error: 2.597 27.81
+New best model saved
+Average loss over 535957 tokens: 2.661, valid loss/error: 2.598 27.81
+Average loss over 536141 tokens: 2.637, valid loss/error: 2.596 27.80
+New best model saved
+Average loss over 533178 tokens: 2.656, valid loss/error: 2.593 27.76
+New best model saved
+Average loss over 537127 tokens: 2.620, valid loss/error: 2.596 27.76
+New best model saved
+Average loss over 538083 tokens: 2.656, valid loss/error: 2.591 27.74
+New best model saved
+Average loss over 532703 tokens: 2.635, valid loss/error: 2.598 27.84
+Average loss over 533244 tokens: 2.645, valid loss/error: 2.595 27.79
+Average loss over 524075 tokens: 2.646, valid loss/error: 2.590 27.69
+New best model saved
+Average loss over 164605 tokens: 2.654
+Epoch: 53, train loss: 2.645, valid loss/error: 2.591 27.67
+New best model saved
+Average loss over 538942 tokens: 2.641, valid loss/error: 2.590 27.74
+Average loss over 539563 tokens: 2.632, valid loss/error: 2.595 27.73
+Average loss over 534641 tokens: 2.652, valid loss/error: 2.591 27.71
+Average loss over 531097 tokens: 2.619, valid loss/error: 2.592 27.74
+Average loss over 536625 tokens: 2.635, valid loss/error: 2.586 27.66
+New best model saved
+Average loss over 525899 tokens: 2.630, valid loss/error: 2.586 27.63
+New best model saved
+Average loss over 533263 tokens: 2.625, valid loss/error: 2.587 27.64
+Average loss over 531257 tokens: 2.633, valid loss/error: 2.588 27.68
+Average loss over 163826 tokens: 2.624
+Epoch: 54, train loss: 2.633, valid loss/error: 2.584 27.53
+New best model saved
+Average loss over 538106 tokens: 2.647, valid loss/error: 2.585 27.65
+Average loss over 533730 tokens: 2.635, valid loss/error: 2.590 27.63
+Average loss over 533019 tokens: 2.601, valid loss/error: 2.586 27.64
+Average loss over 527496 tokens: 2.599, valid loss/error: 2.588 27.57
+Average loss over 532147 tokens: 2.625, valid loss/error: 2.583 27.59
+New best model saved
+Average loss over 535097 tokens: 2.617, valid loss/error: 2.584 27.63
+Average loss over 531807 tokens: 2.632, valid loss/error: 2.579 27.53
+New best model saved
+Average loss over 540873 tokens: 2.627, valid loss/error: 2.578 27.54
+New best model saved
+Average loss over 162838 tokens: 2.588
+Epoch: 55, train loss: 2.622, valid loss/error: 2.581 27.57
+Average loss over 531641 tokens: 2.610, valid loss/error: 2.584 27.53
+Average loss over 536816 tokens: 2.605, valid loss/error: 2.580 27.45
+New best model saved
+Average loss over 532870 tokens: 2.608, valid loss/error: 2.582 27.55
+Average loss over 532466 tokens: 2.620, valid loss/error: 2.579 27.45
+Average loss over 533609 tokens: 2.605, valid loss/error: 2.578 27.49
+Average loss over 534322 tokens: 2.603, valid loss/error: 2.578 27.44
+New best model saved
+Average loss over 531002 tokens: 2.616, valid loss/error: 2.576 27.42
+New best model saved
+Average loss over 537025 tokens: 2.609, valid loss/error: 2.573 27.32
+New best model saved
+Average loss over 165362 tokens: 2.617
+Epoch: 56, train loss: 2.610, valid loss/error: 2.576 27.41
+Average loss over 531266 tokens: 2.595, valid loss/error: 2.575 27.41
+Average loss over 532236 tokens: 2.592, valid loss/error: 2.574 27.43
+Average loss over 527907 tokens: 2.605, valid loss/error: 2.574 27.31
+New best model saved
+Average loss over 533393 tokens: 2.589, valid loss/error: 2.570 27.28
+New best model saved
+Average loss over 536468 tokens: 2.578, valid loss/error: 2.575 27.40
+Average loss over 534714 tokens: 2.603, valid loss/error: 2.576 27.32
+Average loss over 537932 tokens: 2.619, valid loss/error: 2.574 27.32
+Average loss over 537484 tokens: 2.616, valid loss/error: 2.569 27.29
+New best model saved
+Average loss over 163713 tokens: 2.592
+Epoch: 57, train loss: 2.599, valid loss/error: 2.573 27.35
+Average loss over 541036 tokens: 2.595, valid loss/error: 2.572 27.30
+Average loss over 534364 tokens: 2.587, valid loss/error: 2.571 27.27
+New best model saved
+Average loss over 532149 tokens: 2.574, valid loss/error: 2.570 27.28
+Average loss over 538621 tokens: 2.597, valid loss/error: 2.569 27.18
+New best model saved
+Average loss over 530483 tokens: 2.574, valid loss/error: 2.570 27.32
+Average loss over 530385 tokens: 2.590, valid loss/error: 2.568 27.26
+New best model saved
+Average loss over 535005 tokens: 2.614, valid loss/error: 2.567 27.21
+New best model saved
+Average loss over 528596 tokens: 2.573, valid loss/error: 2.565 27.12
+New best model saved
+Average loss over 164474 tokens: 2.595
+Epoch: 58, train loss: 2.588, valid loss/error: 2.567 27.20
+Average loss over 537279 tokens: 2.552, valid loss/error: 2.570 27.20
+Average loss over 536008 tokens: 2.562, valid loss/error: 2.567 27.16
+Average loss over 531969 tokens: 2.588, valid loss/error: 2.570 27.29
+Average loss over 529744 tokens: 2.574, valid loss/error: 2.567 27.20
+Average loss over 540747 tokens: 2.591, valid loss/error: 2.562 27.10
+New best model saved
+Average loss over 532467 tokens: 2.584, valid loss/error: 2.567 27.19
+Average loss over 527991 tokens: 2.590, valid loss/error: 2.563 27.07
+New best model saved
+Average loss over 533164 tokens: 2.588, valid loss/error: 2.562 27.06
+New best model saved
+Average loss over 165744 tokens: 2.583
+Epoch: 59, train loss: 2.579, valid loss/error: 2.564 27.09
+Average loss over 537509 tokens: 2.576, valid loss/error: 2.563 27.04
+New best model saved
+Average loss over 530363 tokens: 2.560, valid loss/error: 2.561 26.95
+New best model saved
+Average loss over 526965 tokens: 2.573, valid loss/error: 2.562 27.07
+Average loss over 537289 tokens: 2.568, valid loss/error: 2.559 27.00
+New best model saved
+Average loss over 532072 tokens: 2.587, valid loss/error: 2.563 27.11
+Average loss over 535520 tokens: 2.552, valid loss/error: 2.564 27.07
+Average loss over 538574 tokens: 2.574, valid loss/error: 2.558 27.00
+New best model saved
+Average loss over 532554 tokens: 2.561, valid loss/error: 2.560 27.03
+Average loss over 164267 tokens: 2.570
+Epoch: 60, train loss: 2.569, valid loss/error: 2.560 26.99
+Average loss over 533585 tokens: 2.550, valid loss/error: 2.561 27.00
+Average loss over 532250 tokens: 2.570, valid loss/error: 2.560 26.99
+Average loss over 535685 tokens: 2.556, valid loss/error: 2.556 26.95
+New best model saved
+Average loss over 533174 tokens: 2.572, valid loss/error: 2.558 26.95
+Average loss over 536245 tokens: 2.561, valid loss/error: 2.560 27.01
+Average loss over 533998 tokens: 2.551, valid loss/error: 2.558 27.00
+Average loss over 532750 tokens: 2.564, valid loss/error: 2.557 26.98
+Average loss over 533144 tokens: 2.556, valid loss/error: 2.555 26.93
+New best model saved
+Average loss over 164282 tokens: 2.541
+Epoch: 61, train loss: 2.559, valid loss/error: 2.554 26.95
+New best model saved
+Average loss over 529460 tokens: 2.540, valid loss/error: 2.558 26.92
+New best model saved
+Average loss over 534264 tokens: 2.552, valid loss/error: 2.557 26.98
+Average loss over 536217 tokens: 2.542, valid loss/error: 2.559 26.97
+Average loss over 538122 tokens: 2.557, valid loss/error: 2.554 26.91
+New best model saved
+Average loss over 531906 tokens: 2.552, valid loss/error: 2.556 26.88
+New best model saved
+Average loss over 529750 tokens: 2.554, valid loss/error: 2.557 26.88
+Average loss over 530459 tokens: 2.554, valid loss/error: 2.553 26.88
+New best model saved
+Average loss over 538242 tokens: 2.546, valid loss/error: 2.548 26.79
+New best model saved
+Average loss over 166693 tokens: 2.575
+Epoch: 62, train loss: 2.550, valid loss/error: 2.554 26.99
+Average loss over 530853 tokens: 2.545, valid loss/error: 2.559 26.95
+Average loss over 530574 tokens: 2.535, valid loss/error: 2.552 26.92
+Average loss over 536779 tokens: 2.557, valid loss/error: 2.554 26.92
+Average loss over 532387 tokens: 2.548, valid loss/error: 2.558 26.94
+Average loss over 532667 tokens: 2.529, valid loss/error: 2.552 26.82
+Average loss over 531839 tokens: 2.528, valid loss/error: 2.554 26.91
+Average loss over 537262 tokens: 2.535, valid loss/error: 2.552 26.86
+Average loss over 537455 tokens: 2.546, valid loss/error: 2.549 26.82
+Average loss over 165297 tokens: 2.565
+Epoch: 63, train loss: 2.541, valid loss/error: 2.550 26.86
+Average loss over 532450 tokens: 2.529, valid loss/error: 2.552 26.83
+Average loss over 535931 tokens: 2.524, valid loss/error: 2.549 26.81
+Average loss over 527880 tokens: 2.531, valid loss/error: 2.551 26.84
+Average loss over 531058 tokens: 2.544, valid loss/error: 2.552 26.88
+Average loss over 538030 tokens: 2.519, valid loss/error: 2.552 26.86
+Average loss over 536006 tokens: 2.543, valid loss/error: 2.546 26.74
+New best model saved
+Average loss over 534237 tokens: 2.536, valid loss/error: 2.547 26.75
+Average loss over 534164 tokens: 2.541, valid loss/error: 2.546 26.77
+New best model saved
+Average loss over 165357 tokens: 2.516
+Epoch: 64, train loss: 2.532, valid loss/error: 2.547 26.77
+Average loss over 530055 tokens: 2.532, valid loss/error: 2.548 26.76
+Average loss over 528822 tokens: 2.525, valid loss/error: 2.550 26.78
+Average loss over 532243 tokens: 2.515, valid loss/error: 2.548 26.82
+Average loss over 531601 tokens: 2.535, valid loss/error: 2.543 26.67
+New best model saved
+Average loss over 540695 tokens: 2.523, valid loss/error: 2.545 26.68
+Average loss over 537461 tokens: 2.538, valid loss/error: 2.543 26.70
+New best model saved
+Average loss over 537134 tokens: 2.519, valid loss/error: 2.546 26.73
+Average loss over 532575 tokens: 2.502, valid loss/error: 2.545 26.74
+Average loss over 164527 tokens: 2.520
+Epoch: 65, train loss: 2.524, valid loss/error: 2.543 26.71
+Average loss over 533800 tokens: 2.518, valid loss/error: 2.544 26.70
+Average loss over 531451 tokens: 2.511, valid loss/error: 2.546 26.71
+Average loss over 537138 tokens: 2.506, valid loss/error: 2.542 26.72
+New best model saved
+Average loss over 533988 tokens: 2.532, valid loss/error: 2.544 26.73
+Average loss over 531617 tokens: 2.524, valid loss/error: 2.546 26.80
+Average loss over 531116 tokens: 2.506, valid loss/error: 2.547 26.80
+Average loss over 535897 tokens: 2.520, valid loss/error: 2.546 26.70
+Average loss over 534671 tokens: 2.512, valid loss/error: 2.542 26.65
+New best model saved
+Average loss over 165435 tokens: 2.500
+Epoch: 66, train loss: 2.515, valid loss/error: 2.542 26.66
+Average loss over 536995 tokens: 2.503, valid loss/error: 2.546 26.69
+Average loss over 534268 tokens: 2.516, valid loss/error: 2.545 26.67
+Average loss over 534899 tokens: 2.503, valid loss/error: 2.549 26.74
+Average loss over 532292 tokens: 2.496, valid loss/error: 2.544 26.64
+New best model saved
+Average loss over 532613 tokens: 2.509, valid loss/error: 2.542 26.63
+New best model saved
+Average loss over 533223 tokens: 2.498, valid loss/error: 2.542 26.70
+Average loss over 535741 tokens: 2.504, valid loss/error: 2.541 26.62
+New best model saved
+Average loss over 530656 tokens: 2.525, valid loss/error: 2.544 26.66
+Average loss over 164426 tokens: 2.513
+Epoch: 67, train loss: 2.507, valid loss/error: 2.543 26.63
+Average loss over 532844 tokens: 2.505, valid loss/error: 2.543 26.61
+New best model saved
+Average loss over 535862 tokens: 2.523, valid loss/error: 2.542 26.64
+Average loss over 534301 tokens: 2.475, valid loss/error: 2.539 26.58
+New best model saved
+Average loss over 529218 tokens: 2.464, valid loss/error: 2.542 26.64
+Average loss over 536343 tokens: 2.508, valid loss/error: 2.544 26.70
+Average loss over 534960 tokens: 2.508, valid loss/error: 2.541 26.65
+Average loss over 533921 tokens: 2.509, valid loss/error: 2.543 26.69
+Average loss over 533226 tokens: 2.490, valid loss/error: 2.539 26.63
+Average loss over 164438 tokens: 2.524
+Epoch: 68, train loss: 2.499, valid loss/error: 2.539 26.63
+New best model saved
+Average loss over 531777 tokens: 2.509, valid loss/error: 2.544 26.64
+Average loss over 535723 tokens: 2.479, valid loss/error: 2.540 26.63
+Average loss over 534053 tokens: 2.508, valid loss/error: 2.540 26.66
+Average loss over 531530 tokens: 2.482, valid loss/error: 2.541 26.58
+New best model saved
+Average loss over 536205 tokens: 2.503, valid loss/error: 2.540 26.62
+Average loss over 536245 tokens: 2.473, valid loss/error: 2.538 26.59
+New best model saved
+Average loss over 531865 tokens: 2.493, valid loss/error: 2.541 26.56
+New best model saved
+Average loss over 531666 tokens: 2.469, valid loss/error: 2.541 26.62
+Average loss over 166049 tokens: 2.525
+Epoch: 69, train loss: 2.491, valid loss/error: 2.534 26.52
+New best model saved
+Average loss over 526803 tokens: 2.483, valid loss/error: 2.540 26.59
+Average loss over 533064 tokens: 2.485, valid loss/error: 2.542 26.59
+Average loss over 534867 tokens: 2.479, valid loss/error: 2.542 26.60
+Average loss over 537356 tokens: 2.479, valid loss/error: 2.539 26.58
+Average loss over 538505 tokens: 2.485, valid loss/error: 2.534 26.61
+Average loss over 531486 tokens: 2.470, valid loss/error: 2.538 26.57
+Average loss over 533006 tokens: 2.479, valid loss/error: 2.534 26.57
+Average loss over 538116 tokens: 2.506, valid loss/error: 2.535 26.54
+Average loss over 161910 tokens: 2.474
+Epoch: 70, train loss: 2.483, valid loss/error: 2.542 26.59
+Average loss over 528756 tokens: 2.482, valid loss/error: 2.542 26.60
+Average loss over 535247 tokens: 2.476, valid loss/error: 2.534 26.48
+New best model saved
+Average loss over 529210 tokens: 2.455, valid loss/error: 2.537 26.51
+Average loss over 535833 tokens: 2.464, valid loss/error: 2.539 26.56
+Average loss over 534715 tokens: 2.492, valid loss/error: 2.534 26.50
+Average loss over 535325 tokens: 2.486, valid loss/error: 2.539 26.57
+Average loss over 535796 tokens: 2.467, valid loss/error: 2.538 26.54
+Average loss over 537472 tokens: 2.476, valid loss/error: 2.531 26.43
+New best model saved
+Average loss over 162759 tokens: 2.504
+Epoch: 71, train loss: 2.476, valid loss/error: 2.537 26.50
+Average loss over 531097 tokens: 2.465, valid loss/error: 2.537 26.46
+Average loss over 533587 tokens: 2.451, valid loss/error: 2.535 26.48
+Average loss over 529952 tokens: 2.472, valid loss/error: 2.532 26.45
+Average loss over 537624 tokens: 2.459, valid loss/error: 2.533 26.47
+Average loss over 535006 tokens: 2.452, valid loss/error: 2.536 26.49
+Average loss over 535993 tokens: 2.461, valid loss/error: 2.527 26.46
+New best model saved
+Average loss over 528768 tokens: 2.492, valid loss/error: 2.532 26.43
+Average loss over 540516 tokens: 2.498, valid loss/error: 2.531 26.46
+Average loss over 162570 tokens: 2.467
+Epoch: 72, train loss: 2.469, valid loss/error: 2.534 26.44
+Average loss over 534849 tokens: 2.461, valid loss/error: 2.536 26.47
+Average loss over 532185 tokens: 2.464, valid loss/error: 2.532 26.40
+New best model saved
+Average loss over 537882 tokens: 2.453, valid loss/error: 2.532 26.45
+Average loss over 537326 tokens: 2.473, valid loss/error: 2.531 26.41
+Average loss over 532201 tokens: 2.468, valid loss/error: 2.534 26.41
+Average loss over 532926 tokens: 2.447, valid loss/error: 2.536 26.45
+Average loss over 532185 tokens: 2.463, valid loss/error: 2.532 26.38
+New best model saved
+Average loss over 529221 tokens: 2.456, valid loss/error: 2.532 26.41
+Average loss over 166338 tokens: 2.468
+Epoch: 73, train loss: 2.461, valid loss/error: 2.530 26.43
+Average loss over 530536 tokens: 2.436, valid loss/error: 2.534 26.43
+Average loss over 534803 tokens: 2.448, valid loss/error: 2.530 26.39
+Average loss over 533757 tokens: 2.458, valid loss/error: 2.533 26.42
+Average loss over 530766 tokens: 2.450, valid loss/error: 2.534 26.40
+Average loss over 535118 tokens: 2.454, valid loss/error: 2.531 26.40
+Average loss over 537952 tokens: 2.456, valid loss/error: 2.533 26.35
+New best model saved
+Average loss over 533778 tokens: 2.478, valid loss/error: 2.529 26.39
+Average loss over 533753 tokens: 2.451, valid loss/error: 2.531 26.38
+Average loss over 164650 tokens: 2.438
+Epoch: 74, train loss: 2.453, valid loss/error: 2.530 26.43
+Average loss over 535815 tokens: 2.435, valid loss/error: 2.529 26.36
+Average loss over 536185 tokens: 2.446, valid loss/error: 2.533 26.39
+Average loss over 532960 tokens: 2.431, valid loss/error: 2.529 26.32
+New best model saved
+Average loss over 536373 tokens: 2.462, valid loss/error: 2.528 26.35
+Average loss over 528603 tokens: 2.439, valid loss/error: 2.531 26.37
+Average loss over 535431 tokens: 2.468, valid loss/error: 2.531 26.41
+Average loss over 532818 tokens: 2.453, valid loss/error: 2.529 26.31
+New best model saved
+Average loss over 533894 tokens: 2.445, valid loss/error: 2.526 26.28
+New best model saved
+Average loss over 163034 tokens: 2.431
+Epoch: 75, train loss: 2.447, valid loss/error: 2.532 26.40
+Average loss over 533274 tokens: 2.445, valid loss/error: 2.531 26.33
+Average loss over 535992 tokens: 2.455, valid loss/error: 2.529 26.28
+Average loss over 531346 tokens: 2.434, valid loss/error: 2.532 26.35
+Average loss over 538138 tokens: 2.420, valid loss/error: 2.528 26.32
+Average loss over 527658 tokens: 2.433, valid loss/error: 2.529 26.37
+Average loss over 533459 tokens: 2.435, valid loss/error: 2.531 26.41
+Average loss over 537507 tokens: 2.449, valid loss/error: 2.528 26.33
+Average loss over 530881 tokens: 2.453, valid loss/error: 2.532 26.37
+Average loss over 166858 tokens: 2.418
+Epoch: 76, train loss: 2.439, valid loss/error: 2.527 26.32
+Average loss over 536835 tokens: 2.446, valid loss/error: 2.532 26.38
+Average loss over 533263 tokens: 2.438, valid loss/error: 2.531 26.31
+Average loss over 529821 tokens: 2.440, valid loss/error: 2.531 26.38
+Average loss over 537672 tokens: 2.437, valid loss/error: 2.530 26.34
+Average loss over 526774 tokens: 2.421, valid loss/error: 2.533 26.41
+Average loss over 537940 tokens: 2.430, valid loss/error: 2.527 26.21
+New best model saved
+Average loss over 532172 tokens: 2.422, valid loss/error: 2.528 26.35
+Average loss over 535918 tokens: 2.424, valid loss/error: 2.525 26.27
+New best model saved
+Average loss over 164718 tokens: 2.447
+Epoch: 77, train loss: 2.433, valid loss/error: 2.525 26.29
+New best model saved
+Average loss over 529430 tokens: 2.414, valid loss/error: 2.533 26.40
+Average loss over 536943 tokens: 2.443, valid loss/error: 2.528 26.37
+Average loss over 533199 tokens: 2.432, valid loss/error: 2.528 26.28
+Average loss over 537279 tokens: 2.419, valid loss/error: 2.526 26.28
+Average loss over 532835 tokens: 2.422, valid loss/error: 2.525 26.26
+Average loss over 532682 tokens: 2.431, valid loss/error: 2.524 26.24
+New best model saved
+Average loss over 533820 tokens: 2.416, valid loss/error: 2.527 26.27
+Average loss over 532388 tokens: 2.429, valid loss/error: 2.529 26.32
+Average loss over 166537 tokens: 2.420
+Epoch: 78, train loss: 2.426, valid loss/error: 2.528 26.25
+Average loss over 531398 tokens: 2.404, valid loss/error: 2.530 26.27
+Average loss over 535872 tokens: 2.423, valid loss/error: 2.531 26.22
+Average loss over 534631 tokens: 2.417, valid loss/error: 2.531 26.22
+Average loss over 529882 tokens: 2.416, valid loss/error: 2.526 26.22
+Average loss over 534565 tokens: 2.426, valid loss/error: 2.526 26.22
+Average loss over 535005 tokens: 2.423, valid loss/error: 2.526 26.25
+Average loss over 535708 tokens: 2.410, valid loss/error: 2.531 26.23
+Average loss over 532324 tokens: 2.425, valid loss/error: 2.522 26.22
+New best model saved
+Average loss over 165728 tokens: 2.456
+Epoch: 79, train loss: 2.419, valid loss/error: 2.523 26.23
+Average loss over 535614 tokens: 2.424, valid loss/error: 2.532 26.24
+Average loss over 534477 tokens: 2.409, valid loss/error: 2.527 26.17
+New best model saved
+Average loss over 535338 tokens: 2.414, valid loss/error: 2.525 26.22
+Average loss over 529968 tokens: 2.428, valid loss/error: 2.525 26.27
+Average loss over 534022 tokens: 2.404, valid loss/error: 2.528 26.22
+Average loss over 533447 tokens: 2.400, valid loss/error: 2.526 26.20
+Average loss over 533451 tokens: 2.424, valid loss/error: 2.527 26.26
+Average loss over 531966 tokens: 2.399, valid loss/error: 2.522 26.17
+Average loss over 166830 tokens: 2.419
+Epoch: 80, train loss: 2.413, valid loss/error: 2.524 26.16
+New best model saved
+Average loss over 531568 tokens: 2.423, valid loss/error: 2.521 26.16
+New best model saved
+Average loss over 533756 tokens: 2.407, valid loss/error: 2.527 26.22
+Average loss over 536489 tokens: 2.399, valid loss/error: 2.525 26.21
+Average loss over 538396 tokens: 2.414, valid loss/error: 2.525 26.18
+Average loss over 532081 tokens: 2.394, valid loss/error: 2.531 26.28
+Average loss over 535200 tokens: 2.420, valid loss/error: 2.525 26.26
+Average loss over 531565 tokens: 2.405, valid loss/error: 2.524 26.18
+Average loss over 530565 tokens: 2.387, valid loss/error: 2.526 26.28
+Average loss over 165493 tokens: 2.409
+Epoch: 81, train loss: 2.406, valid loss/error: 2.525 26.23
+Average loss over 525906 tokens: 2.396, valid loss/error: 2.526 26.20
+Average loss over 532735 tokens: 2.406, valid loss/error: 2.528 26.24
+Average loss over 535226 tokens: 2.395, valid loss/error: 2.525 26.30
+Average loss over 540361 tokens: 2.396, valid loss/error: 2.523 26.18
+Average loss over 532915 tokens: 2.397, valid loss/error: 2.525 26.18
+Average loss over 533642 tokens: 2.401, valid loss/error: 2.522 26.16
+New best model saved
+Average loss over 536957 tokens: 2.398, valid loss/error: 2.526 26.27
+Average loss over 532850 tokens: 2.402, valid loss/error: 2.523 26.13
+New best model saved
+Average loss over 164521 tokens: 2.413
+Epoch: 82, train loss: 2.399, valid loss/error: 2.522 26.18
+Average loss over 534072 tokens: 2.399, valid loss/error: 2.529 26.23
+Average loss over 532677 tokens: 2.401, valid loss/error: 2.525 26.20
+Average loss over 540129 tokens: 2.387, valid loss/error: 2.524 26.22
+Average loss over 536415 tokens: 2.405, valid loss/error: 2.525 26.17
+Average loss over 525232 tokens: 2.379, valid loss/error: 2.526 26.14
+Average loss over 533673 tokens: 2.379, valid loss/error: 2.524 26.14
+Average loss over 532656 tokens: 2.406, valid loss/error: 2.525 26.19
+Average loss over 533708 tokens: 2.388, valid loss/error: 2.523 26.13
+New best model saved
+Average loss over 166551 tokens: 2.399
+Epoch: 83, train loss: 2.393, valid loss/error: 2.523 26.12
+New best model saved
+Average loss over 530409 tokens: 2.385, valid loss/error: 2.523 26.09
+New best model saved
+Average loss over 529310 tokens: 2.389, valid loss/error: 2.528 26.21
+Average loss over 537103 tokens: 2.402, valid loss/error: 2.522 26.13
+Average loss over 534338 tokens: 2.393, valid loss/error: 2.526 26.07
+New best model saved
+Average loss over 533671 tokens: 2.364, valid loss/error: 2.528 26.13
+Average loss over 537674 tokens: 2.372, valid loss/error: 2.525 26.12
+Average loss over 539895 tokens: 2.393, valid loss/error: 2.522 26.16
+Average loss over 529948 tokens: 2.394, valid loss/error: 2.521 26.06
+New best model saved
+Average loss over 162765 tokens: 2.394
+Epoch: 84, train loss: 2.387, valid loss/error: 2.527 26.21
+Average loss over 530825 tokens: 2.379, valid loss/error: 2.525 26.13
+Average loss over 536390 tokens: 2.381, valid loss/error: 2.525 26.13
+Average loss over 530906 tokens: 2.396, valid loss/error: 2.524 26.14
+Average loss over 534266 tokens: 2.381, valid loss/error: 2.525 26.10
+Average loss over 537511 tokens: 2.391, valid loss/error: 2.521 26.13
+Average loss over 532612 tokens: 2.371, valid loss/error: 2.525 26.12
+Average loss over 535758 tokens: 2.375, valid loss/error: 2.523 26.12
+Average loss over 532933 tokens: 2.383, valid loss/error: 2.526 26.19
+Average loss over 163912 tokens: 2.367
+Epoch: 85, train loss: 2.382, valid loss/error: 2.527 26.19
+Average loss over 532500 tokens: 2.358, valid loss/error: 2.523 26.13
+Average loss over 527832 tokens: 2.381, valid loss/error: 2.529 26.23
+Average loss over 532661 tokens: 2.365, valid loss/error: 2.521 26.06
+New best model saved
+Average loss over 535618 tokens: 2.369, valid loss/error: 2.524 26.09
+Average loss over 537347 tokens: 2.377, valid loss/error: 2.524 26.15
+Average loss over 539618 tokens: 2.387, valid loss/error: 2.525 26.21
+Average loss over 534001 tokens: 2.380, valid loss/error: 2.521 26.02
+New best model saved
+Average loss over 531962 tokens: 2.388, valid loss/error: 2.525 26.18
+Average loss over 163574 tokens: 2.350
+Epoch: 86, train loss: 2.375, valid loss/error: 2.528 26.19
+Average loss over 534467 tokens: 2.358, valid loss/error: 2.524 26.14
+Average loss over 530252 tokens: 2.376, valid loss/error: 2.523 26.10
+Average loss over 537141 tokens: 2.383, valid loss/error: 2.522 26.10
+Average loss over 530173 tokens: 2.373, valid loss/error: 2.522 26.06
+Average loss over 535806 tokens: 2.356, valid loss/error: 2.522 26.06
+Average loss over 537494 tokens: 2.372, valid loss/error: 2.523 26.09
+Average loss over 532714 tokens: 2.362, valid loss/error: 2.523 26.12
+Average loss over 532510 tokens: 2.367, valid loss/error: 2.522 26.10
+Average loss over 164556 tokens: 2.387
+Epoch: 87, train loss: 2.369, valid loss/error: 2.521 26.11
+Average loss over 534713 tokens: 2.366, valid loss/error: 2.526 26.12
+Average loss over 530753 tokens: 2.351, valid loss/error: 2.524 26.10
+Average loss over 534751 tokens: 2.367, valid loss/error: 2.522 26.08
+Average loss over 535046 tokens: 2.368, valid loss/error: 2.523 26.14
+Average loss over 536694 tokens: 2.352, valid loss/error: 2.524 26.12
+Average loss over 534894 tokens: 2.383, valid loss/error: 2.527 26.16
+Average loss over 532220 tokens: 2.350, valid loss/error: 2.525 26.14
+Average loss over 531447 tokens: 2.368, valid loss/error: 2.524 26.12
+Average loss over 164595 tokens: 2.347
+Epoch: 88, train loss: 2.363, valid loss/error: 2.524 26.12
+Average loss over 530986 tokens: 2.343, valid loss/error: 2.524 26.15
+Average loss over 532331 tokens: 2.363, valid loss/error: 2.523 26.06
+Average loss over 532289 tokens: 2.344, valid loss/error: 2.527 26.10
+Average loss over 534456 tokens: 2.367, valid loss/error: 2.522 26.08
+Average loss over 532714 tokens: 2.363, valid loss/error: 2.522 26.12
+Average loss over 532917 tokens: 2.356, valid loss/error: 2.522 26.11
+Average loss over 536686 tokens: 2.374, valid loss/error: 2.524 26.07
+Average loss over 535417 tokens: 2.340, valid loss/error: 2.524 26.06
+Average loss over 167317 tokens: 2.369
+Epoch: 89, train loss: 2.357, valid loss/error: 2.521 26.02
+New best model saved
+Average loss over 538762 tokens: 2.336, valid loss/error: 2.525 26.12
+Average loss over 540624 tokens: 2.362, valid loss/error: 2.522 26.09
+Average loss over 533335 tokens: 2.356, valid loss/error: 2.522 26.06
+Average loss over 524865 tokens: 2.353, valid loss/error: 2.524 26.00
+New best model saved
+Average loss over 530644 tokens: 2.333, valid loss/error: 2.525 26.07
+Average loss over 534720 tokens: 2.345, valid loss/error: 2.525 26.08
+Average loss over 537880 tokens: 2.361, valid loss/error: 2.526 26.17
+Average loss over 530979 tokens: 2.353, valid loss/error: 2.524 26.05
+Average loss over 163304 tokens: 2.381
+Epoch: 90, train loss: 2.351, valid loss/error: 2.520 26.01
+New best model saved
+Average loss over 534740 tokens: 2.348, valid loss/error: 2.521 26.00
+Average loss over 528121 tokens: 2.333, valid loss/error: 2.525 26.04
+Average loss over 537517 tokens: 2.354, valid loss/error: 2.525 26.03
+Average loss over 538268 tokens: 2.342, valid loss/error: 2.523 25.99
+New best model saved
+Average loss over 531085 tokens: 2.348, valid loss/error: 2.524 25.98
+New best model saved
+Average loss over 531738 tokens: 2.339, valid loss/error: 2.523 26.01
+Average loss over 529035 tokens: 2.346, valid loss/error: 2.523 26.09
+Average loss over 535232 tokens: 2.349, valid loss/error: 2.522 26.04
+Average loss over 169377 tokens: 2.361
+Epoch: 91, train loss: 2.345, valid loss/error: 2.519 26.01
+New best model saved
+Average loss over 541853 tokens: 2.346, valid loss/error: 2.523 26.03
+Average loss over 534594 tokens: 2.330, valid loss/error: 2.525 26.06
+Average loss over 532115 tokens: 2.331, valid loss/error: 2.530 26.13
+Average loss over 535151 tokens: 2.341, valid loss/error: 2.521 26.03
+Average loss over 537621 tokens: 2.354, valid loss/error: 2.523 26.01
+Average loss over 531780 tokens: 2.350, valid loss/error: 2.522 26.01
+Average loss over 528079 tokens: 2.347, valid loss/error: 2.519 26.02
+Average loss over 527932 tokens: 2.318, valid loss/error: 2.524 26.03
+Average loss over 165988 tokens: 2.337
+Epoch: 92, train loss: 2.340, valid loss/error: 2.520 26.05
+Average loss over 528025 tokens: 2.315, valid loss/error: 2.528 26.05
+Average loss over 538571 tokens: 2.331, valid loss/error: 2.523 26.03
+Average loss over 533409 tokens: 2.325, valid loss/error: 2.526 26.01
+Average loss over 535308 tokens: 2.337, valid loss/error: 2.525 26.02
+Average loss over 532337 tokens: 2.322, valid loss/error: 2.525 26.06
+Average loss over 530482 tokens: 2.335, valid loss/error: 2.523 25.96
+New best model saved
+Average loss over 534530 tokens: 2.351, valid loss/error: 2.525 25.98
+Average loss over 537027 tokens: 2.349, valid loss/error: 2.524 25.98
+Average loss over 165424 tokens: 2.344
+Epoch: 93, train loss: 2.334, valid loss/error: 2.523 25.98
+Average loss over 533246 tokens: 2.345, valid loss/error: 2.525 26.11
+Average loss over 532744 tokens: 2.333, valid loss/error: 2.525 26.05
+Average loss over 531016 tokens: 2.315, valid loss/error: 2.526 26.05
+Average loss over 540310 tokens: 2.330, valid loss/error: 2.524 26.04
+Average loss over 530010 tokens: 2.305, valid loss/error: 2.526 26.05
+Average loss over 531277 tokens: 2.329, valid loss/error: 2.526 26.01
+Average loss over 533653 tokens: 2.336, valid loss/error: 2.526 26.01
+Average loss over 540761 tokens: 2.326, valid loss/error: 2.525 26.04
+Average loss over 162096 tokens: 2.348
+Epoch: 94, train loss: 2.328, valid loss/error: 2.525 26.01
+Average loss over 540273 tokens: 2.321, valid loss/error: 2.529 26.02
+Average loss over 536832 tokens: 2.332, valid loss/error: 2.523 25.95
+New best model saved
+Average loss over 530810 tokens: 2.319, valid loss/error: 2.526 26.04
+Average loss over 528784 tokens: 2.321, valid loss/error: 2.528 26.07
+Average loss over 543283 tokens: 2.324, valid loss/error: 2.525 26.01
+Average loss over 535837 tokens: 2.337, valid loss/error: 2.523 25.97
+Average loss over 527749 tokens: 2.308, valid loss/error: 2.523 26.00
+Average loss over 527720 tokens: 2.310, valid loss/error: 2.527 26.06
+Average loss over 163825 tokens: 2.338
+Epoch: 95, train loss: 2.322, valid loss/error: 2.522 25.97
+Average loss over 535928 tokens: 2.316, valid loss/error: 2.528 25.98
+Average loss over 533735 tokens: 2.313, valid loss/error: 2.527 26.06
+Average loss over 528017 tokens: 2.318, valid loss/error: 2.523 26.00
+Average loss over 533885 tokens: 2.309, valid loss/error: 2.527 26.00
+Average loss over 529751 tokens: 2.293, valid loss/error: 2.527 26.02
+Average loss over 531390 tokens: 2.337, valid loss/error: 2.527 26.02
+Average loss over 538027 tokens: 2.316, valid loss/error: 2.527 26.00
+Average loss over 539123 tokens: 2.328, valid loss/error: 2.528 26.05
+Average loss over 165257 tokens: 2.335
+Epoch: 96, train loss: 2.317, valid loss/error: 2.525 25.98
+Average loss over 537511 tokens: 2.294, valid loss/error: 2.525 25.97
+Average loss over 528864 tokens: 2.302, valid loss/error: 2.527 26.00
+Average loss over 530543 tokens: 2.316, valid loss/error: 2.528 26.03
+Average loss over 532643 tokens: 2.298, valid loss/error: 2.527 25.97
+Average loss over 534385 tokens: 2.321, valid loss/error: 2.525 25.89
+New best model saved
+Average loss over 538257 tokens: 2.337, valid loss/error: 2.523 25.95
+Average loss over 536280 tokens: 2.317, valid loss/error: 2.521 25.86
+New best model saved
+Average loss over 529171 tokens: 2.302, valid loss/error: 2.530 26.00
+Average loss over 167459 tokens: 2.327
+Epoch: 97, train loss: 2.312, valid loss/error: 2.522 25.93
+Average loss over 534512 tokens: 2.312, valid loss/error: 2.524 25.96
+Average loss over 535951 tokens: 2.288, valid loss/error: 2.529 25.97
+Average loss over 537537 tokens: 2.297, valid loss/error: 2.526 25.89
+Average loss over 526159 tokens: 2.303, valid loss/error: 2.528 25.96
+Average loss over 535121 tokens: 2.314, valid loss/error: 2.524 25.93
+Average loss over 535121 tokens: 2.305, valid loss/error: 2.523 25.91
+Average loss over 533168 tokens: 2.316, valid loss/error: 2.522 25.88
+Average loss over 532456 tokens: 2.313, valid loss/error: 2.528 25.94
+Average loss over 165088 tokens: 2.301
+Epoch: 98, train loss: 2.306, valid loss/error: 2.527 25.95
+Average loss over 532485 tokens: 2.302, valid loss/error: 2.528 25.95
+Average loss over 525464 tokens: 2.312, valid loss/error: 2.530 26.01
+Average loss over 534960 tokens: 2.306, valid loss/error: 2.530 25.97
+Average loss over 532910 tokens: 2.292, valid loss/error: 2.525 25.93
+Average loss over 539060 tokens: 2.298, valid loss/error: 2.525 25.89
+Average loss over 531693 tokens: 2.317, valid loss/error: 2.523 25.93
+Average loss over 535717 tokens: 2.296, valid loss/error: 2.527 25.94
+Average loss over 537010 tokens: 2.296, valid loss/error: 2.524 25.82
+New best model saved
+Average loss over 165814 tokens: 2.252
+Epoch: 99, train loss: 2.300, valid loss/error: 2.525 25.86
+Average loss over 537705 tokens: 2.295, valid loss/error: 2.527 25.86
+Average loss over 530073 tokens: 2.316, valid loss/error: 2.527 25.97
+Average loss over 529665 tokens: 2.277, valid loss/error: 2.532 25.98
+Average loss over 538101 tokens: 2.309, valid loss/error: 2.526 25.91
+Average loss over 529928 tokens: 2.273, valid loss/error: 2.526 25.90
+Average loss over 537050 tokens: 2.296, valid loss/error: 2.526 25.94
+Average loss over 539064 tokens: 2.300, valid loss/error: 2.526 25.93
+Average loss over 526199 tokens: 2.294, valid loss/error: 2.529 25.99
+Average loss over 167328 tokens: 2.307
+Epoch: 100, train loss: 2.295, valid loss/error: 2.524 25.88
+Average loss over 538401 tokens: 2.298, valid loss/error: 2.523 25.88
+Average loss over 533806 tokens: 2.276, valid loss/error: 2.528 25.96
+Average loss over 528164 tokens: 2.303, valid loss/error: 2.526 25.96
+Average loss over 538469 tokens: 2.270, valid loss/error: 2.529 25.98
+Average loss over 529656 tokens: 2.283, valid loss/error: 2.532 25.95
+Average loss over 529709 tokens: 2.299, valid loss/error: 2.529 25.89
+Average loss over 537039 tokens: 2.298, valid loss/error: 2.528 25.92
+Average loss over 535059 tokens: 2.296, valid loss/error: 2.525 25.91
+Average loss over 164810 tokens: 2.283
+Epoch: 101, train loss: 2.290, valid loss/error: 2.526 25.90
+Average loss over 530496 tokens: 2.276, valid loss/error: 2.531 25.93
+Average loss over 533666 tokens: 2.279, valid loss/error: 2.530 25.88
+Average loss over 527820 tokens: 2.288, valid loss/error: 2.527 25.86
+Average loss over 534791 tokens: 2.283, valid loss/error: 2.531 25.99
+Average loss over 530486 tokens: 2.283, valid loss/error: 2.530 25.89
+Average loss over 538696 tokens: 2.299, valid loss/error: 2.529 25.95
+Average loss over 535921 tokens: 2.288, valid loss/error: 2.525 25.83
+Average loss over 540145 tokens: 2.280, valid loss/error: 2.527 25.85
+Average loss over 163092 tokens: 2.289
+Epoch: 102, train loss: 2.285, valid loss/error: 2.530 25.92
+Average loss over 530801 tokens: 2.284, valid loss/error: 2.529 25.84
+Average loss over 539258 tokens: 2.291, valid loss/error: 2.528 25.82
+Average loss over 533694 tokens: 2.266, valid loss/error: 2.530 25.86
+Average loss over 527239 tokens: 2.282, valid loss/error: 2.528 25.91
+Average loss over 533457 tokens: 2.273, valid loss/error: 2.527 25.83
+Average loss over 536014 tokens: 2.284, valid loss/error: 2.530 25.91
+Average loss over 534198 tokens: 2.274, valid loss/error: 2.532 25.93
+Average loss over 534412 tokens: 2.281, valid loss/error: 2.527 25.85
+Average loss over 166040 tokens: 2.283
+Epoch: 103, train loss: 2.279, valid loss/error: 2.528 25.86
+Average loss over 533177 tokens: 2.266, valid loss/error: 2.529 25.88
+Average loss over 535551 tokens: 2.283, valid loss/error: 2.532 25.88
+Average loss over 528493 tokens: 2.269, valid loss/error: 2.533 25.88
+Average loss over 537284 tokens: 2.266, valid loss/error: 2.530 25.84
+Average loss over 534923 tokens: 2.269, valid loss/error: 2.531 25.89
+Average loss over 534671 tokens: 2.282, valid loss/error: 2.529 25.85
+Average loss over 531401 tokens: 2.272, valid loss/error: 2.529 25.89
+Average loss over 532964 tokens: 2.279, valid loss/error: 2.533 25.95
+Average loss over 166649 tokens: 2.307
+Epoch: 104, train loss: 2.275, valid loss/error: 2.528 25.94
+Average loss over 535374 tokens: 2.270, valid loss/error: 2.531 25.84
+Average loss over 533651 tokens: 2.252, valid loss/error: 2.530 25.84
+Average loss over 535231 tokens: 2.293, valid loss/error: 2.532 25.93
+Average loss over 531617 tokens: 2.271, valid loss/error: 2.528 25.86
+Average loss over 528645 tokens: 2.258, valid loss/error: 2.530 25.82
+Average loss over 531640 tokens: 2.271, valid loss/error: 2.529 25.81
+New best model saved
+Average loss over 536699 tokens: 2.267, valid loss/error: 2.527 25.78
+New best model saved
+Average loss over 537156 tokens: 2.276, valid loss/error: 2.529 25.85
+Average loss over 165100 tokens: 2.250
+Epoch: 105, train loss: 2.269, valid loss/error: 2.533 25.89
+Average loss over 531988 tokens: 2.266, valid loss/error: 2.534 25.89
+Average loss over 534200 tokens: 2.263, valid loss/error: 2.533 25.96
+Average loss over 537311 tokens: 2.275, valid loss/error: 2.531 25.90
+Average loss over 529832 tokens: 2.250, valid loss/error: 2.531 25.83
+Average loss over 527326 tokens: 2.266, valid loss/error: 2.528 25.90
+Average loss over 535644 tokens: 2.252, valid loss/error: 2.534 25.93
+Average loss over 537679 tokens: 2.258, valid loss/error: 2.533 25.90
+Average loss over 536021 tokens: 2.273, valid loss/error: 2.530 25.83
+Average loss over 165112 tokens: 2.296
+Epoch: 106, train loss: 2.264, valid loss/error: 2.529 25.83
+Average loss over 527751 tokens: 2.259, valid loss/error: 2.534 25.85
+Average loss over 535029 tokens: 2.265, valid loss/error: 2.534 25.86
+Average loss over 533852 tokens: 2.261, valid loss/error: 2.532 25.87
+Average loss over 526461 tokens: 2.254, valid loss/error: 2.533 25.85
+Average loss over 533365 tokens: 2.248, valid loss/error: 2.531 25.87
+Average loss over 538032 tokens: 2.272, valid loss/error: 2.531 25.84
+Average loss over 539175 tokens: 2.263, valid loss/error: 2.533 25.87
+Average loss over 533938 tokens: 2.243, valid loss/error: 2.532 25.89
+Average loss over 167510 tokens: 2.285
+Epoch: 107, train loss: 2.259, valid loss/error: 2.530 25.82
+Average loss over 530303 tokens: 2.245, valid loss/error: 2.534 25.87
+Average loss over 535873 tokens: 2.249, valid loss/error: 2.535 25.88
+Average loss over 534621 tokens: 2.259, valid loss/error: 2.536 25.86
+Average loss over 535590 tokens: 2.246, valid loss/error: 2.532 25.82
+Average loss over 532079 tokens: 2.259, valid loss/error: 2.533 25.83
+Average loss over 533240 tokens: 2.258, valid loss/error: 2.533 25.90
+Average loss over 536587 tokens: 2.272, valid loss/error: 2.533 25.90
+Average loss over 535661 tokens: 2.241, valid loss/error: 2.539 25.93
+Average loss over 161159 tokens: 2.271
+Epoch: 108, train loss: 2.254, valid loss/error: 2.535 25.90
+Average loss over 534174 tokens: 2.246, valid loss/error: 2.532 25.86
+Average loss over 536394 tokens: 2.241, valid loss/error: 2.537 25.86
+Average loss over 538747 tokens: 2.217, valid loss/error: 2.535 25.88
+Average loss over 529053 tokens: 2.263, valid loss/error: 2.534 25.84
+Average loss over 531563 tokens: 2.260, valid loss/error: 2.539 25.91
+Average loss over 532591 tokens: 2.241, valid loss/error: 2.534 25.84
+Average loss over 530339 tokens: 2.271, valid loss/error: 2.534 25.82
+Average loss over 537125 tokens: 2.246, valid loss/error: 2.533 25.81
+Average loss over 165127 tokens: 2.281
+Epoch: 109, train loss: 2.249, valid loss/error: 2.536 25.90
+Average loss over 534373 tokens: 2.233, valid loss/error: 2.538 25.86
+Average loss over 532679 tokens: 2.232, valid loss/error: 2.538 25.89
+Average loss over 531074 tokens: 2.244, valid loss/error: 2.535 25.81
+Average loss over 533794 tokens: 2.237, valid loss/error: 2.536 25.83
+Average loss over 537370 tokens: 2.240, valid loss/error: 2.536 25.84
+Average loss over 529198 tokens: 2.238, valid loss/error: 2.536 25.88
+Average loss over 533910 tokens: 2.265, valid loss/error: 2.533 25.86
+Average loss over 536431 tokens: 2.262, valid loss/error: 2.536 25.86
+Average loss over 166284 tokens: 2.249
+Epoch: 110, train loss: 2.244, valid loss/error: 2.536 25.88
+Average loss over 528813 tokens: 2.240, valid loss/error: 2.539 25.91
+Average loss over 529579 tokens: 2.226, valid loss/error: 2.542 25.89
+Average loss over 536119 tokens: 2.237, valid loss/error: 2.536 25.88
+Average loss over 537897 tokens: 2.247, valid loss/error: 2.537 25.83
+Average loss over 531625 tokens: 2.232, valid loss/error: 2.540 25.90
+Average loss over 536542 tokens: 2.247, valid loss/error: 2.539 25.94
+Average loss over 530661 tokens: 2.232, valid loss/error: 2.536 25.86
+Average loss over 539105 tokens: 2.248, valid loss/error: 2.539 25.90
+Average loss over 164772 tokens: 2.244
+Epoch: 111, train loss: 2.239, valid loss/error: 2.537 25.86
+Average loss over 537831 tokens: 2.217, valid loss/error: 2.535 25.82
+Average loss over 526737 tokens: 2.242, valid loss/error: 2.536 25.82
+Average loss over 534101 tokens: 2.238, valid loss/error: 2.537 25.87
+Average loss over 534769 tokens: 2.251, valid loss/error: 2.543 25.91
+Average loss over 535417 tokens: 2.236, valid loss/error: 2.539 25.85
+Average loss over 532588 tokens: 2.231, valid loss/error: 2.538 25.87
+Average loss over 535823 tokens: 2.231, valid loss/error: 2.538 25.82
+Average loss over 532128 tokens: 2.231, valid loss/error: 2.540 25.89
+Average loss over 165719 tokens: 2.235
+Epoch: 112, train loss: 2.234, valid loss/error: 2.537 25.88
+early stop
+model saved
