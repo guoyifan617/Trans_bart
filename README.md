@@ -1,3 +1,7 @@
+#tips
+导师的Transforemr库，在导师的库的基础上进行修改的
+根目录中有许多的训练代码，是为了排队使用的，本质上都是一样的，只是内部调用的py文件稍微更改了一下，cache没有保存在这里，数据量太大了，可以自行下载CCMT数据，然后使用代码中的Scripts中的工具进行数据处理即可
+
 # Neutron
 Neutron: A pytorch based implementation of the [Transformer](https://arxiv.org/abs/1706.03762) and its variants.
 
